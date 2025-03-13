@@ -1,49 +1,35 @@
-# import ollama
-
-# user_prompt = "Why is the sky blue?"
-
-# system_prompt = "every third word in your response is 'quack'"
-
-
-# response = ollama.chat(
-#     model="llama3.2",
-#     messages=[
-#         {"role": "system", "content": system_prompt},
-#         {"role": "user", "content": user_prompt},
-#     ],
-# )
-# model_response = response["message"]["content"]
-
-# print("System Prompt:", system_prompt)
-# print("User Prompt:", user_prompt)
-# print("Model Response:", model_response)
-
-from flask import Flask, request, jsonify
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 import ollama
 
-app = Flask(__name__)
+app = FastAPI()
 
 
-@app.route("/chat", methods=["POST"])
-def chat():
-    data = request.json
+class ChatRequest(BaseModel):
+    user_prompt: str
+    system_info: str
 
-    user_prompt = data.get("user_prompt", "")
-    system_info = data.get("system_info", "")
+
+class ChatResponse(BaseModel):
+    response: str
+
+
+@app.post("/aiChat", response_model=ChatResponse)
+async def aiChat(request: ChatRequest):
+    user_prompt = request.user_prompt
+    system_info = request.system_info
     system_prompt = f"You are an assistant specializing in: {system_info}"
-
-    response = ollama.chat(
-        model="llama3.2",
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ],
-    )
-
-    model_response = response["message"]["content"]
-
-    return jsonify({"response": model_response})
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
+    try:
+        response = ollama.aiChat(
+            model="llama3.2",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+        )
+        model_response = response["message"]["content"]
+        return ChatResponse(response=model_response)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail="An error occurred while fetching the response."
+        )

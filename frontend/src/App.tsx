@@ -1,52 +1,59 @@
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from 'react';
+import axios from 'axios';
 
-function App() {
-
-
-  interface ChatRequest {
-    user_prompt: string;
-    system_info: string;
-  }
-
-  interface ChatResponse {
-    response: string;
-  }
-
-  // Der Fetch-Aufruf mit Typen:
-  async function sendChatRequest(): Promise<void> {
-    const requestBody: ChatRequest = {
-      user_prompt: "Why is the sky blue?",
-      system_info: "physics and atmospheric sciences"
-    };
-
-    try {
-      const response = await fetch('/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestBody)
-      });
-
-      // Stelle sicher, dass die Antwort dem definierten Typ entspricht
-      const data: ChatResponse = await response.json();
-      console.log(data.response);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  }
-
-  // Rufe die Funktion auf
-  sendChatRequest();
-
-
-  return (
-    <>
-      <p>Hallo</p>
-    </>
-  )
+interface ChatRequest {
+  user_prompt: string;
+  system_info: string;
 }
 
-export default App
+interface ChatResponse {
+  response: string;
+}
+
+const App: React.FC = () => {
+  const [userPrompt, setUserPrompt] = useState('');
+  const [response, setResponse] = useState('');
+
+  const handleSend = async () => {
+    if (userPrompt.trim() === '') {
+      alert('Please enter a question.');
+      return;
+    }
+
+    const requestBody: ChatRequest = {
+      user_prompt: userPrompt,
+      system_info: 'physics and atmospheric sciences',
+    };
+
+    console.log(userPrompt)
+
+    try {
+      const res = await axios.post<ChatResponse>('/aiChat', requestBody, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      setResponse(res.data.response);
+    } catch (error) {
+      console.error('Error:', error);
+      setResponse('Error occurred while fetching the response.');
+    }
+  };
+
+  return (
+    <div style={{ padding: '20px' }}>
+      <h1>komischer Schreibassitent</h1>
+      <input
+        type="text"
+        value={userPrompt}
+        onChange={(e) => setUserPrompt(e.target.value)}
+        placeholder="Enter your question"
+        style={{ marginRight: '10px' }}
+      />
+      <button onClick={handleSend}>Send</button>
+      <div style={{ marginTop: '20px' }}>{response && `AI Response: ${response}`}</div>
+    </div>
+  );
+};
+
+export default App;
