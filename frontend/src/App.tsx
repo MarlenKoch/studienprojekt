@@ -12,6 +12,7 @@ interface ChatResponse {
 
 const App: React.FC = () => {
   const [userPrompt, setUserPrompt] = useState('');
+  const [systemInfo, setSystemInfo] = useState('');
   const [response, setResponse] = useState('');
 
   const handleSend = async () => {
@@ -20,12 +21,18 @@ const App: React.FC = () => {
       return;
     }
 
+    if (systemInfo.trim() === '') {
+      alert('Please enter some context');
+      return;
+    }
+
     const requestBody: ChatRequest = {
       user_prompt: userPrompt,
-      system_info: 'physics and atmospheric sciences',
+      system_info: systemInfo,
     };
 
     console.log(userPrompt)
+    console.log(systemInfo)
 
     try {
       const res = await axios.post<ChatResponse>('http://localhost:8000/aiChat', requestBody, {
@@ -43,12 +50,19 @@ const App: React.FC = () => {
 
   return (
     <div style={{ padding: '20px' }}>
-      <h1>komischer Schreibassitent</h1>
+      <h1>komischer Schreibassistent</h1>
       <input
         type="text"
         value={userPrompt}
         onChange={(e) => setUserPrompt(e.target.value)}
         placeholder="Enter your question"
+        style={{ marginRight: '10px' }}
+      />
+      <input
+        type="text"
+        value={systemInfo}
+        onChange={(e) => setSystemInfo(e.target.value)}
+        placeholder="Enter context information"
         style={{ marginRight: '10px' }}
       />
       <button onClick={handleSend}>Send</button>
