@@ -20,7 +20,7 @@ class ChatResponse(BaseModel):
 async def aiChat(request: ChatRequest):
     user_prompt = request.user_prompt
     system_info = request.system_info
-    system_prompt = f"You are an assistant specializing in: {system_info}"
+    system_prompt = f"{system_info}"
     try:
         response = chat(
             model="llama3.2",
