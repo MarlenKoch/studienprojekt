@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 interface ChatRequest {
@@ -28,7 +28,7 @@ const App: React.FC = () => {
     console.log(userPrompt)
 
     try {
-      const res = await axios.post<ChatResponse>('/aiChat', requestBody, {
+      const res = await axios.post<ChatResponse>('http://localhost:8000/aiChat', requestBody, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -39,6 +39,7 @@ const App: React.FC = () => {
       setResponse('Error occurred while fetching the response.');
     }
   };
+
 
   return (
     <div style={{ padding: '20px' }}>
@@ -52,6 +53,7 @@ const App: React.FC = () => {
       />
       <button onClick={handleSend}>Send</button>
       <div style={{ marginTop: '20px' }}>{response && `AI Response: ${response}`}</div>
+
     </div>
   );
 };

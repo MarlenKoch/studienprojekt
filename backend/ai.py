@@ -1,6 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import ollama
+from ollama import chat
+
 
 app = FastAPI()
 
@@ -20,7 +22,7 @@ async def aiChat(request: ChatRequest):
     system_info = request.system_info
     system_prompt = f"You are an assistant specializing in: {system_info}"
     try:
-        response = ollama.aiChat(
+        response = chat(
             model="llama3.2",
             messages=[
                 {"role": "system", "content": system_prompt},
@@ -28,6 +30,7 @@ async def aiChat(request: ChatRequest):
             ],
         )
         model_response = response["message"]["content"]
+
         return ChatResponse(response=model_response)
     except Exception as e:
         raise HTTPException(
