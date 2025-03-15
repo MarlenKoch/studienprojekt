@@ -7,11 +7,13 @@ from pydantic import BaseModel
 
 class ProjectCreate(BaseModel):
     sources_json: str
+    title: str
 
 
 class ProjectResponse(BaseModel):
     id: int
     sources_json: str
+    title: str
 
 
 class ParagraphCreate(BaseModel):

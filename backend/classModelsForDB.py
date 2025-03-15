@@ -9,6 +9,7 @@ class Project(Base):
     __tablename__ = "projects"
     id = Column(Integer, primary_key=True, index=True)
     sources_json = Column(String, index=True)
+    title = Column(String, index=True)
     paragraphs = relationship("Paragraph", back_populates="project")
 
 
