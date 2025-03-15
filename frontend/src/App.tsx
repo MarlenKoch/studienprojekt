@@ -34,6 +34,8 @@ const App: React.FC = () => {
     console.log(userPrompt)
     console.log(systemInfo)
 
+
+
     try {
       const res = await axios.post<ChatResponse>('http://localhost:8000/aiChat', requestBody, {
         headers: {
@@ -47,6 +49,39 @@ const App: React.FC = () => {
     }
   };
 
+  const handleSaveChat = async () => {
+    if (response.trim() === '') {
+      alert('No response to save.');
+      return;
+    }
+
+    //Daten
+    const title = 'Cooler Titel';
+    const aiModel = 'llama3.2';
+    const paragraphId = 1;
+    //Object mit allen Daten, die gespeichert werden sollen
+    const chatData = {
+      title: title,
+      aiModel: aiModel,
+      content_json: JSON.stringify({
+        user_prompt: userPrompt,
+        response: response
+      }),
+      paragraph_id: paragraphId,
+    };
+
+    try {
+      await axios.post('http://localhost:8000/chats', chatData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      alert('Chat saved successfully!');
+    } catch (error) {
+      console.error('Error saving chat:', error);
+      alert('Error occurred while saving the chat.');
+    }
+  };
 
   return (
     <div style={{ padding: '20px' }}>
@@ -67,6 +102,7 @@ const App: React.FC = () => {
       />
       <button onClick={handleSend}>Send</button>
       <div style={{ marginTop: '20px' }}>{response && `AI Response: ${response}`}</div>
+      <button onClick={handleSaveChat}>Save answer</button>
 
     </div>
   );
