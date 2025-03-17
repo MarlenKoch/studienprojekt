@@ -85,7 +85,7 @@ const App: React.FC = () => {
 
   return (
     <div style={{ padding: '20px' }}>
-      <h1>komischer Schreibassistent</h1>
+      <h1>Schreibassistent-Prototyp</h1>
       <input
         type="text"
         value={userPrompt}
