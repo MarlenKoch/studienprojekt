@@ -5,10 +5,11 @@ from crud import (
     get_paragraphs,
     get_paragraph,
     create_paragraph,
+    update_paragraph,
     delete_paragraph,
     get_chats_for_paragraph,
 )
-from schemas import ParagraphCreate, ParagraphResponse, ChatResponse
+from schemas import ParagraphCreate, ParagraphResponse, ChatResponse, ParagraphUpdate
 
 router = APIRouter()
 
@@ -50,3 +51,14 @@ def delete_paragraph_endpoint(paragraph_id: int, db: Session = Depends(get_db)):
 def get_chats_for_paragraph_endpoint(paragraph_id: int, db: Session = Depends(get_db)):
     chats = get_chats_for_paragraph(db, paragraph_id)
     return chats
+
+
+# Endpoint zum Aktualisieren eines Absatzes nach ID
+@router.put("/{paragraph_id}", response_model=ParagraphResponse)
+def update_paragraph_endpoint(
+    paragraph_id: int, updated_data: ParagraphUpdate, db: Session = Depends(get_db)
+):
+    paragraph = update_paragraph(db, paragraph_id, updated_data)
+    if not paragraph:
+        raise HTTPException(status_code=404, detail="Paragraph not found")
+    return paragraph

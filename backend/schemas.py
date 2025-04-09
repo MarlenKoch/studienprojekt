@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
 # Definitionen der Pydantic Modelle
@@ -25,6 +26,11 @@ class ParagraphResponse(BaseModel):
     id: int
     project_id: int
     content_json: str
+
+
+class ParagraphUpdate(BaseModel):
+    project_id: Optional[int] = None
+    content_json: Optional[str] = None
 
 
 class ChatCreate(BaseModel):
