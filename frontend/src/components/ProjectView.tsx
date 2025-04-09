@@ -1,43 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-
-interface Project {
-  id: number;
-  title: string;
-  sources_json: string;
-}
-
-interface Paragraph {
-  id: number;
-  project_id: number;
-  content_json: string;
-}
-
-interface Chat {
-  id: number;
-  title: string;
-  aiModel: string;
-  content_json: string;
-  paragraph_id: number;
-}
-
-interface ContextInputs {
-  paragraph_content: string;
-  writing_style: string;
-  task: string;
-  user_context: string;
-}
-
-interface ChatRequest {
-  user_prompt: string;
-  ai_model: string;
-  context_inputs: ContextInputs;
-}
-
-interface ChatResponse {
-  response: string;
-}
+import { Project } from '../types/Project'
+import { Paragraph } from '../types/Paragraph'
+import { Chat } from '../types/Chat'
+import { ContextInputs } from "../types/ContextInputs";
+import { ChatRequest } from "../types/ChatRequest";
+import { ChatResponse } from "../types/ChatResponse";
 
 const ProjectView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -49,6 +18,7 @@ const ProjectView: React.FC = () => {
   );
   const [userPrompt, setUserPrompt] = useState("");
   const [systemInfo, setSystemInfo] = useState("");
+  const [chatTitle, setChatTitle] = useState("");
   const [response, setResponse] = useState("");
   const [chats, setChats] = useState<Chat[]>([]);
   const [editSources, setEditSources] = useState<string>("");
@@ -198,14 +168,19 @@ const ProjectView: React.FC = () => {
       return;
     }
 
+    if (chatTitle.trim() === "") {
+      alert("Please enter a title");
+      return;
+    }
+
     if (activeParagraphId === null) {
       alert("No paragraph selected.");
       return;
     }
 
     const chatData = {
-      title: "Cooler Titel", // Adjust title dynamically if necessary
-      aiModel: "llama3.2",
+      title: chatTitle,
+      aiModel: aiModel,
       content_json: JSON.stringify({
         user_prompt: userPrompt,
         response: response,
@@ -336,12 +311,22 @@ const ProjectView: React.FC = () => {
           <div style={{ marginTop: "20px" }}>
             {response && `AI Response: ${response}`}
           </div>
+
+          <input
+            type="text"
+            name="chatTitle"
+            value={chatTitle}
+            onChange={(e) => setChatTitle(e.target.value)}
+            placeholder="Enter title to save the chat"
+            style={{ marginRight: "10px" }}
+          />
           <button onClick={handleSaveChat}>Save answer</button>
 
           <h4>Saved Chats:</h4>
           <ul>
             {chats.map((chat) => (
               <li key={chat.id}>
+                <h6>{chat.title}</h6>
                 {JSON.parse(chat.content_json).user_prompt} -{" "}
                 {JSON.parse(chat.content_json).response}
               </li>
