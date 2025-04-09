@@ -18,12 +18,16 @@ Für das Projekt werden folgende Technologien verwendet:
 - **SQLite Datenbank**: Verwendet zur Speicherung von Daten, um einfache und schnelle Datenbankinteraktionen zu gewährleisten.
 - **SQLAlchemy**: Eingesetzt als ORM (Object-Relational Mapper), um die Datenbankverwaltung und Komplexitätsreduktion bei SQL-Abfragen zu unterstützen.
 
+### AI Modelle
+- **Ollama Modelle**: Verschiedene AI-Modelle von Ollama werden lokal eingesetzt, um fortschrittliche KI-Funktionalitäten bereitzustellen. Diese Modelle ermöglichen die Verarbeitung natürlicher Sprache und sind eine zentrale Voraussetzung für die Ausführung des Projekts.
+
 ## Setup und Installation
 
 ### Voraussetzungen
 
 - Node.js für die Ausführung von React-Anwendungen
 - Python 3.x für die Backend-Entwicklung
+- Lokale Installation von Ollama-Modellen
 
 ### Installation
 
