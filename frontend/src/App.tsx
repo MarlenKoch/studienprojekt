@@ -1,38 +1,53 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-interface ChatRequest {
-  user_prompt: string;
-  system_info: string;
-}
+
 
 interface ChatResponse {
   response: string;
+}
+
+interface ContextInputs {
+  paragraph_content: string;
+  writing_style: string;
+  task: string;
+  user_context: string;
+}
+
+interface ChatRequest {
+  user_prompt: string;
+  ai_model: string;
+  context_inputs: ContextInputs;
 }
 
 const App: React.FC = () => {
   const [userPrompt, setUserPrompt] = useState('');
   const [systemInfo, setSystemInfo] = useState('');
   const [response, setResponse] = useState('');
+  const [aiModel, setAiModel] = useState('');
+  const [contextInputs, setContextInputs] = useState<ContextInputs>({
+    paragraph_content: '',
+    writing_style: '',
+    task: '',
+    user_context: '',
+  });
+
 
   const handleSend = async () => {
-    if (userPrompt.trim() === '') {
-      alert('Please enter a question.');
-      return;
-    }
-
-    if (systemInfo.trim() === '') {
-      alert('Please enter some context');
+    if (userPrompt.trim() === '' || aiModel === '') {
+      alert('Please enter a question and choose a model.');
       return;
     }
 
     const requestBody: ChatRequest = {
       user_prompt: userPrompt,
-      system_info: systemInfo,
+      ai_model: aiModel,
+      context_inputs: contextInputs,
     };
 
     console.log(userPrompt)
     console.log(systemInfo)
+    console.log(aiModel)
 
 
 
@@ -49,6 +64,10 @@ const App: React.FC = () => {
     }
   };
 
+  const handleContextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setContextInputs({ ...contextInputs, [e.target.name]: e.target.value });
+  };
+
   const handleSaveChat = async () => {
     if (response.trim() === '') {
       alert('No response to save.');
@@ -57,7 +76,6 @@ const App: React.FC = () => {
 
     //Daten
     const title = 'Cooler Titel';
-    const aiModel = 'llama3.2';
     const paragraphId = 1;
     //Object mit allen Daten, die gespeichert werden sollen
     const chatData = {
@@ -93,13 +111,49 @@ const App: React.FC = () => {
         placeholder="Enter your question"
         style={{ marginRight: '10px' }}
       />
+
       <input
         type="text"
-        value={systemInfo}
-        onChange={(e) => setSystemInfo(e.target.value)}
-        placeholder="Enter context information"
+        value={aiModel}
+        onChange={(e) => setAiModel(e.target.value)}
+        placeholder="Choose a Model"
         style={{ marginRight: '10px' }}
       />
+
+      <input
+        type="text"
+        name="paragraph_content"
+        value={contextInputs.paragraph_content}
+        onChange={handleContextChange}
+        placeholder="Enter paragraph content"
+        style={{ marginRight: '10px' }}
+      />
+
+      <input
+        type="text"
+        name="writing_style"
+        value={contextInputs.writing_style}
+        onChange={handleContextChange}
+        placeholder="Enter writing style"
+        style={{ marginRight: '10px' }}
+      />
+      <input
+        type="text"
+        name="task"
+        value={contextInputs.task}
+        onChange={handleContextChange}
+        placeholder="Enter task"
+        style={{ marginRight: '10px' }}
+      />
+      <input
+        type="text"
+        name="user_context"
+        value={contextInputs.user_context}
+        onChange={handleContextChange}
+        placeholder="Enter user context"
+        style={{ marginRight: '10px' }}
+      />
+
       <button onClick={handleSend}>Send</button>
       <div style={{ marginTop: '20px' }}>{response && `AI Response: ${response}`}</div>
       <button onClick={handleSaveChat}>Save answer</button>
