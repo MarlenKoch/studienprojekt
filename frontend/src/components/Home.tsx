@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { Project } from '../types/Project'
 
-interface Project {
-  id: number;
-  title: string;
-  sources_json: string;
-}
 
 const Home: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
