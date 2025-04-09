@@ -22,9 +22,17 @@ interface Chat {
   paragraph_id: number;
 }
 
+interface ContextInputs {
+  paragraph_content: string;
+  writing_style: string;
+  task: string;
+  user_context: string;
+}
+
 interface ChatRequest {
   user_prompt: string;
-  system_info: string;
+  ai_model: string;
+  context_inputs: ContextInputs;
 }
 
 interface ChatResponse {
@@ -44,6 +52,13 @@ const ProjectView: React.FC = () => {
   const [response, setResponse] = useState("");
   const [chats, setChats] = useState<Chat[]>([]);
   const [editSources, setEditSources] = useState<string>("");
+  const [aiModel, setAiModel] = useState("");
+  const [contextInputs, setContextInputs] = useState<ContextInputs>({
+    paragraph_content: "",
+    writing_style: "",
+    task: "",
+    user_context: "",
+  });
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -141,20 +156,20 @@ const ProjectView: React.FC = () => {
   };
 
   const handleSend = async () => {
-    if (userPrompt.trim() === "") {
-      alert("Please enter a question.");
-      return;
-    }
-
-    if (systemInfo.trim() === "") {
-      alert("Please enter some context");
+    if (userPrompt.trim() === "" || aiModel === "") {
+      alert("Please enter a question and choose a model.");
       return;
     }
 
     const requestBody: ChatRequest = {
       user_prompt: userPrompt,
-      system_info: systemInfo,
+      ai_model: aiModel,
+      context_inputs: contextInputs,
     };
+
+    console.log(userPrompt);
+    console.log(systemInfo);
+    console.log(aiModel);
 
     try {
       const res = await axios.post<ChatResponse>(
@@ -171,6 +186,10 @@ const ProjectView: React.FC = () => {
       console.error("Error:", error);
       setResponse("Error occurred while fetching the response.");
     }
+  };
+
+  const handleContextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setContextInputs({ ...contextInputs, [e.target.name]: e.target.value });
   };
 
   const handleSaveChat = async () => {
@@ -272,6 +291,45 @@ const ProjectView: React.FC = () => {
             value={systemInfo}
             onChange={(e) => setSystemInfo(e.target.value)}
             placeholder="Enter context information"
+            style={{ marginRight: "10px" }}
+          />
+          <input
+            type="text"
+            value={aiModel}
+            onChange={(e) => setAiModel(e.target.value)}
+            placeholder="Choose a Model"
+            style={{ marginRight: "10px" }}
+          />
+          <input
+            type="text"
+            name="paragraph_content"
+            value={contextInputs.paragraph_content}
+            onChange={handleContextChange}
+            placeholder="Enter paragraph content"
+            style={{ marginRight: "10px" }}
+          />
+          <input
+            type="text"
+            name="writing_style"
+            value={contextInputs.writing_style}
+            onChange={handleContextChange}
+            placeholder="Enter writing style"
+            style={{ marginRight: "10px" }}
+          />
+          <input
+            type="text"
+            name="task"
+            value={contextInputs.task}
+            onChange={handleContextChange}
+            placeholder="Enter task"
+            style={{ marginRight: "10px" }}
+          />
+          <input
+            type="text"
+            name="user_context"
+            value={contextInputs.user_context}
+            onChange={handleContextChange}
+            placeholder="Enter user context"
             style={{ marginRight: "10px" }}
           />
           <button onClick={handleSend}>Send</button>
