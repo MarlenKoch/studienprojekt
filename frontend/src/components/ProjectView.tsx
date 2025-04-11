@@ -7,6 +7,7 @@ import { Chat } from '../types/Chat'
 import { ContextInputs } from "../types/ContextInputs";
 import { ChatRequest } from "../types/ChatRequest";
 import { ChatResponse } from "../types/ChatResponse";
+import { UserPromptInputs } from "../types/UserPromptInputs";
 
 const ProjectView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,7 +17,6 @@ const ProjectView: React.FC = () => {
   const [activeParagraphId, setActiveParagraphId] = useState<number | null>(
     null
   );
-  const [userPrompt, setUserPrompt] = useState("");
   const [systemInfo, setSystemInfo] = useState("");
   const [chatTitle, setChatTitle] = useState("");
   const [response, setResponse] = useState("");
@@ -26,8 +26,11 @@ const ProjectView: React.FC = () => {
   const [contextInputs, setContextInputs] = useState<ContextInputs>({
     paragraph_content: "",
     writing_style: "",
-    task: "",
     user_context: "",
+  });
+  const [UserPromptInputs, setUserPromptInputs] = useState<UserPromptInputs>({
+    task: "",
+    user_prompt: "",
   });
 
   useEffect(() => {
@@ -126,20 +129,20 @@ const ProjectView: React.FC = () => {
   };
 
   const handleSend = async () => {
-    if (userPrompt.trim() === "" || aiModel === "") {
+    if (aiModel === "") {
       alert("Please enter a question and choose a model.");
       return;
     }
 
     const requestBody: ChatRequest = {
-      user_prompt: userPrompt,
+      user_prompt: UserPromptInputs,
       ai_model: aiModel,
       context_inputs: contextInputs,
     };
 
-    console.log(userPrompt);
-    console.log(systemInfo);
-    console.log(aiModel);
+    console.log("UserPromptInputs: ", UserPromptInputs);
+    console.log("contextInputs: ", contextInputs);
+    console.log("aiModel: ", aiModel);
 
     try {
       const res = await axios.post<ChatResponse>(
@@ -162,6 +165,10 @@ const ProjectView: React.FC = () => {
     setContextInputs({ ...contextInputs, [e.target.name]: e.target.value });
   };
 
+  const handleUserPromptInputsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUserPromptInputs({ ...UserPromptInputs, [e.target.name]: e.target.value });
+  };
+
   const handleSaveChat = async () => {
     if (response.trim() === "") {
       alert("No response to save.");
@@ -182,7 +189,7 @@ const ProjectView: React.FC = () => {
       title: chatTitle,
       aiModel: aiModel,
       content_json: JSON.stringify({
-        user_prompt: userPrompt,
+        user_prompt: UserPromptInputs.user_prompt,
         response: response,
       }),
       paragraph_id: activeParagraphId,
@@ -256,8 +263,9 @@ const ProjectView: React.FC = () => {
           <h3>AI Chat for Paragraph ID: {activeParagraphId}</h3>
           <input
             type="text"
-            value={userPrompt}
-            onChange={(e) => setUserPrompt(e.target.value)}
+            name="user_prompt"
+            value={UserPromptInputs.user_prompt}
+            onChange={handleUserPromptInputsChange}
             placeholder="Enter your question"
             style={{ marginRight: "10px" }}
           />
@@ -294,8 +302,8 @@ const ProjectView: React.FC = () => {
           <input
             type="text"
             name="task"
-            value={contextInputs.task}
-            onChange={handleContextChange}
+            value={UserPromptInputs.task}
+            onChange={handleUserPromptInputsChange}
             placeholder="Enter task"
             style={{ marginRight: "10px" }}
           />
