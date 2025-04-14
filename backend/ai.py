@@ -58,6 +58,15 @@ async def aiChat(request: ChatRequest):
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
+            # options={"temperature": 1},
+            # format={
+            #     "type": "object",
+            #     "properties": {
+            #         "age": {"type": "integer"},
+            #         "available": {"type": "boolean"},
+            #     },
+            #     "required": ["age", "available"],
+            # },
         )
         model_response = response["message"]["content"]
 
