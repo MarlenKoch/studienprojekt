@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import { Project } from '../types/Project'
-import { Paragraph } from '../types/Paragraph'
-import { Chat } from '../types/Chat'
+import { Project } from "../types/Project";
+import { Paragraph } from "../types/Paragraph";
+import { Chat } from "../types/Chat";
 import { ContextInputs } from "../types/ContextInputs";
 import { ChatRequest } from "../types/ChatRequest";
 import { ChatResponse } from "../types/ChatResponse";
@@ -136,6 +136,17 @@ const ProjectView: React.FC = () => {
       ai_model: aiModel,
       context_inputs: contextInputs,
     };
+
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/paragraphs/${activeParagraphId}`
+      );
+      const paragraph = response.data;
+      console.log(paragraph);
+      contextInputs.paragraph_content = paragraph.content_json;
+    } catch (error) {
+      console.error("Error fetching the paragraph:", error);
+    }
 
     console.log(userPrompt);
     console.log(systemInfo);
@@ -275,14 +286,14 @@ const ProjectView: React.FC = () => {
             placeholder="Choose a Model"
             style={{ marginRight: "10px" }}
           />
-          <input
+          {/* <input
             type="text"
             name="paragraph_content"
             value={contextInputs.paragraph_content}
             onChange={handleContextChange}
             placeholder="Enter paragraph content"
             style={{ marginRight: "10px" }}
-          />
+          /> */}
           <input
             type="text"
             name="writing_style"
