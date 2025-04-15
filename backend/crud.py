@@ -102,3 +102,11 @@ def get_chats_for_paragraph(db: Session, paragraph_id: int):
 
 def get_paragraphs_for_project(db: Session, project_id: int):
     return db.query(Paragraph).filter(Paragraph.project_id == project_id).all()
+
+
+def get_chats_for_project(db: Session, project_id: int):
+    paragraphs = db.query(Paragraph).filter(Paragraph.project_id == project_id).all()
+    paragraph_ids = [paragraph.id for paragraph in paragraphs]
+    chats = db.query(Chat).filter(Chat.paragraph_id.in_(paragraph_ids)).all()
+
+    return chats
