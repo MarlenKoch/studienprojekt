@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from crud import get_chat, get_chats_for_project
 from db import get_db
-
+import json
 
 app = FastAPI()
 
@@ -39,9 +39,11 @@ def infoForOneChat(chatID: int, db: Session) -> Chat:
     if not chat:
         raise HTTPException(status_code=404, detail="Chat not found")
 
+    data = json.loads(chat.content_json)
+    user_prompt = data.get("user_prompt")
     return Chat(
         id=chatID,
-        content_json=chat.content_json,
+        content_json=user_prompt,
         aiModel=chat.aiModel,
     )
 
