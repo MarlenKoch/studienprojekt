@@ -32,6 +32,7 @@ const ProjectView: React.FC = () => {
     task: "",
     user_prompt: "",
   });
+  const [aiModelList, setaiModelList] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -94,30 +95,35 @@ const ProjectView: React.FC = () => {
     }
   };
 
-  const fetchOllamaModelNames = async (): Promise<string[]> => {
-    try {
-      const response = await fetch("http://localhost:8000/aimodels");
+  useEffect(() => {
+    const fetchOllamaModelNames = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/aimodels");
 
-      if (!response.ok) {
-        throw new Error(`Error fetching model names: ${response.statusText}`);
+        if (!response.ok) {
+          throw new Error(`Error fetching model names: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        const modelNames = data.models.map((model: { name: string }) => {
+          return model.name.endsWith(":latest")
+            ? model.name.substring(0, model.name.length - ":latest".length)
+            : model.name;
+        });
+        setaiModelList(modelNames);
+      } catch (error) {
+        console.error("Failed to fetch model names:", error);
+        return [];
       }
+    };
+    fetchOllamaModelNames();
+  }, [activeParagraphId]);
 
-      const data = await response.json();
-      const modelNames = data.models.map(
-        (model: { name: string }) => model.name
-      );
-      return modelNames;
-    } catch (error) {
-      console.error("Failed to fetch model names:", error);
-      return [];
-    }
-  };
-
-  const handleGetModels = () => {
-    fetchOllamaModelNames().then((modelNames) => {
-      console.log("Ollama Models:", modelNames);
-    });
-  };
+  // const handleGetModels = () => {
+  //   fetchOllamaModelNames().then((modelNames) => {
+  //     return modelNames;
+  //   });
+  // };
 
   const handleAddParagraph = async () => {
     if (newParagraphContent.trim() === "") {
@@ -190,8 +196,13 @@ const ProjectView: React.FC = () => {
     setContextInputs({ ...contextInputs, [e.target.name]: e.target.value });
   };
 
-  const handleUserPromptInputsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserPromptInputs({ ...UserPromptInputs, [e.target.name]: e.target.value });
+  const handleUserPromptInputsChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setUserPromptInputs({
+      ...UserPromptInputs,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const handleSaveChat = async () => {
@@ -301,13 +312,25 @@ const ProjectView: React.FC = () => {
             placeholder="Enter context information"
             style={{ marginRight: "10px" }}
           />
-          <input
+          {/* <input
             type="text"
             value={aiModel}
             onChange={(e) => setAiModel(e.target.value)}
             placeholder="Choose a Model"
             style={{ marginRight: "10px" }}
-          />
+          /> */}
+          <label>Choose a Model:</label>{" "}
+          <select
+            name="choose AI model"
+            value={aiModel}
+            onChange={(e) => setAiModel(e.target.value)}
+          >
+            {aiModelList.map((model) => (
+              <option key={model} value={model}>
+                {model}
+              </option>
+            ))}
+          </select>
           <input
             type="text"
             name="paragraph_content"
@@ -344,7 +367,6 @@ const ProjectView: React.FC = () => {
           <div style={{ marginTop: "20px" }}>
             {response && `AI Response: ${response}`}
           </div>
-
           <input
             type="text"
             name="chatTitle"
@@ -354,7 +376,6 @@ const ProjectView: React.FC = () => {
             style={{ marginRight: "10px" }}
           />
           <button onClick={handleSaveChat}>Save answer</button>
-
           <h4>Saved Chats:</h4>
           <ul>
             {chats.map((chat) => (
@@ -367,7 +388,6 @@ const ProjectView: React.FC = () => {
           </ul>
         </div>
       )}
-      <button onClick={handleGetModels}>Click here to get models</button>
     </div>
   );
 };
