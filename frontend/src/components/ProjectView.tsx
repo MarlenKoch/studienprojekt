@@ -171,6 +171,17 @@ const ProjectView: React.FC = () => {
       context_inputs: contextInputs,
     };
 
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/paragraphs/${activeParagraphId}`
+      );
+      const paragraph = response.data;
+      console.log(paragraph);
+      contextInputs.paragraph_content = paragraph.content_json;
+    } catch (error) {
+      console.error("Error fetching the paragraph:", error);
+    }
+
     console.log("UserPromptInputs: ", UserPromptInputs);
     console.log("contextInputs: ", contextInputs);
     console.log("aiModel: ", aiModel);
@@ -318,6 +329,8 @@ const ProjectView: React.FC = () => {
             onChange={(e) => setAiModel(e.target.value)}
             placeholder="Choose a Model"
             style={{ marginRight: "10px" }}
+          />
+          {/* <input
           /> */}
           <label>Choose a Model:</label>{" "}
           <select
@@ -338,7 +351,7 @@ const ProjectView: React.FC = () => {
             onChange={handleContextChange}
             placeholder="Enter paragraph content"
             style={{ marginRight: "10px" }}
-          />
+          /> */}
           <input
             type="text"
             name="writing_style"
