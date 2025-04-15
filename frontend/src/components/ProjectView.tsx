@@ -351,7 +351,7 @@ const ProjectView: React.FC = () => {
             onChange={handleContextChange}
             placeholder="Enter paragraph content"
             style={{ marginRight: "10px" }}
-          /> */}
+          />
           <input
             type="text"
             name="writing_style"
