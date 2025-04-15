@@ -46,30 +46,15 @@ def create_paragraph(db: Session, paragraph_data: ParagraphCreate):
     return db_paragraph
 
 
-# def update_paragraph(db: Session, paragraph_id: int, updated_data: ParagraphUpdate):
-#     paragraph = get_paragraph(db, paragraph_id)
-#     if paragraph:
-#         for key, value in updated_data.dict().items():
-#             setattr(paragraph, key, value)
-#             db.commit()
-#             db.refresh(paragraph)
-#             return paragraph
-#         return None
-
-
 def update_paragraph(db: Session, paragraph_id: int, updated_data: ParagraphUpdate):
     paragraph = get_paragraph(db, paragraph_id)
     if paragraph:
         update_fields = updated_data.dict(exclude_unset=True)
         if update_fields:
-            print(f"Update Fields: {update_fields}")
             for key, value in update_fields.items():
-                print(f"Updating {key} to {value}")
                 setattr(paragraph, key, value)
-                print(f"Content JSON before commit: {paragraph.content_json}")
                 db.commit()
                 db.refresh(paragraph)
-                print(f"After Commit: {paragraph.content_json}")
             return paragraph
         print("Paragraph not found or no fields to update.")
     return None
@@ -117,3 +102,11 @@ def get_chats_for_paragraph(db: Session, paragraph_id: int):
 
 def get_paragraphs_for_project(db: Session, project_id: int):
     return db.query(Paragraph).filter(Paragraph.project_id == project_id).all()
+
+
+def get_chats_for_project(db: Session, project_id: int):
+    paragraphs = db.query(Paragraph).filter(Paragraph.project_id == project_id).all()
+    paragraph_ids = [paragraph.id for paragraph in paragraphs]
+    chats = db.query(Chat).filter(Chat.paragraph_id.in_(paragraph_ids)).all()
+
+    return chats

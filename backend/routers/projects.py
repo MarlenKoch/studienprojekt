@@ -7,8 +7,9 @@ from crud import (
     create_project,
     delete_project,
     get_paragraphs_for_project,
+    get_chats_for_project,
 )
-from schemas import ProjectCreate, ProjectResponse, ParagraphResponse
+from schemas import ProjectCreate, ProjectResponse, ParagraphResponse, ChatResponse
 
 router = APIRouter()
 
@@ -48,3 +49,14 @@ def delete_project_endpoint(project_id: int, db: Session = Depends(get_db)):
 def get_paragraphs_for_project_endpoint(project_id: int, db: Session = Depends(get_db)):
     paragraphs = get_paragraphs_for_project(db, project_id)
     return paragraphs
+
+
+# Endpoint zum Abrufen aller Chats für ein bestimmtes Projekt
+@router.get("/projects/{project_id}/chats", response_model=list[ChatResponse])
+def get_chats_for_project_endpoint(project_id: int, db: Session = Depends(get_db)):
+    chats = get_chats_for_project(db, project_id)
+    if not chats:
+        raise HTTPException(
+            status_code=404, detail="Chats not found for the given project"
+        )
+    return chats

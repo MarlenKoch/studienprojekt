@@ -7,6 +7,7 @@ import { Chat } from "../types/Chat";
 import { ContextInputs } from "../types/ContextInputs";
 import { ChatRequest } from "../types/ChatRequest";
 import { ChatResponse } from "../types/ChatResponse";
+import { UserPromptInputs } from "../types/UserPromptInputs";
 
 const ProjectView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,7 +17,6 @@ const ProjectView: React.FC = () => {
   const [activeParagraphId, setActiveParagraphId] = useState<number | null>(
     null
   );
-  const [userPrompt, setUserPrompt] = useState("");
   const [systemInfo, setSystemInfo] = useState("");
   const [chatTitle, setChatTitle] = useState("");
   const [response, setResponse] = useState("");
@@ -26,9 +26,13 @@ const ProjectView: React.FC = () => {
   const [contextInputs, setContextInputs] = useState<ContextInputs>({
     paragraph_content: "",
     writing_style: "",
-    task: "",
     user_context: "",
   });
+  const [UserPromptInputs, setUserPromptInputs] = useState<UserPromptInputs>({
+    task: "",
+    user_prompt: "",
+  });
+  const [aiModelList, setaiModelList] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -91,6 +95,36 @@ const ProjectView: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchOllamaModelNames = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/aimodels");
+
+        if (!response.ok) {
+          throw new Error(`Error fetching model names: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        const modelNames = data.models.map((model: { name: string }) => {
+          return model.name.endsWith(":latest")
+            ? model.name.substring(0, model.name.length - ":latest".length)
+            : model.name;
+        });
+        setaiModelList(modelNames);
+      } catch (error) {
+        console.error("Failed to fetch model names:", error);
+        return [];
+      }
+    };
+    fetchOllamaModelNames();
+  }, [activeParagraphId]);
+
+  // const handleGetModels = () => {
+  //   fetchOllamaModelNames().then((modelNames) => {
+  //     return modelNames;
+  //   });
+  // };
+
   const handleAddParagraph = async () => {
     if (newParagraphContent.trim() === "") {
       alert("Please enter the paragraph content.");
@@ -126,13 +160,13 @@ const ProjectView: React.FC = () => {
   };
 
   const handleSend = async () => {
-    if (userPrompt.trim() === "" || aiModel === "") {
+    if (aiModel === "") {
       alert("Please enter a question and choose a model.");
       return;
     }
 
     const requestBody: ChatRequest = {
-      user_prompt: userPrompt,
+      user_prompt: UserPromptInputs,
       ai_model: aiModel,
       context_inputs: contextInputs,
     };
@@ -148,9 +182,9 @@ const ProjectView: React.FC = () => {
       console.error("Error fetching the paragraph:", error);
     }
 
-    console.log(userPrompt);
-    console.log(systemInfo);
-    console.log(aiModel);
+    console.log("UserPromptInputs: ", UserPromptInputs);
+    console.log("contextInputs: ", contextInputs);
+    console.log("aiModel: ", aiModel);
 
     try {
       const res = await axios.post<ChatResponse>(
@@ -173,6 +207,15 @@ const ProjectView: React.FC = () => {
     setContextInputs({ ...contextInputs, [e.target.name]: e.target.value });
   };
 
+  const handleUserPromptInputsChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setUserPromptInputs({
+      ...UserPromptInputs,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   const handleSaveChat = async () => {
     if (response.trim() === "") {
       alert("No response to save.");
@@ -193,7 +236,7 @@ const ProjectView: React.FC = () => {
       title: chatTitle,
       aiModel: aiModel,
       content_json: JSON.stringify({
-        user_prompt: userPrompt,
+        user_prompt: UserPromptInputs.user_prompt,
         response: response,
       }),
       paragraph_id: activeParagraphId,
@@ -267,8 +310,9 @@ const ProjectView: React.FC = () => {
           <h3>AI Chat for Paragraph ID: {activeParagraphId}</h3>
           <input
             type="text"
-            value={userPrompt}
-            onChange={(e) => setUserPrompt(e.target.value)}
+            name="user_prompt"
+            value={UserPromptInputs.user_prompt}
+            onChange={handleUserPromptInputsChange}
             placeholder="Enter your question"
             style={{ marginRight: "10px" }}
           />
@@ -279,7 +323,7 @@ const ProjectView: React.FC = () => {
             placeholder="Enter context information"
             style={{ marginRight: "10px" }}
           />
-          <input
+          {/* <input
             type="text"
             value={aiModel}
             onChange={(e) => setAiModel(e.target.value)}
@@ -287,6 +331,20 @@ const ProjectView: React.FC = () => {
             style={{ marginRight: "10px" }}
           />
           {/* <input
+          /> */}
+          <label>Choose a Model:</label>{" "}
+          <select
+            name="choose AI model"
+            value={aiModel}
+            onChange={(e) => setAiModel(e.target.value)}
+          >
+            {aiModelList.map((model) => (
+              <option key={model} value={model}>
+                {model}
+              </option>
+            ))}
+          </select>
+          <input
             type="text"
             name="paragraph_content"
             value={contextInputs.paragraph_content}
@@ -305,8 +363,8 @@ const ProjectView: React.FC = () => {
           <input
             type="text"
             name="task"
-            value={contextInputs.task}
-            onChange={handleContextChange}
+            value={UserPromptInputs.task}
+            onChange={handleUserPromptInputsChange}
             placeholder="Enter task"
             style={{ marginRight: "10px" }}
           />
@@ -322,7 +380,6 @@ const ProjectView: React.FC = () => {
           <div style={{ marginTop: "20px" }}>
             {response && `AI Response: ${response}`}
           </div>
-
           <input
             type="text"
             name="chatTitle"
@@ -332,7 +389,6 @@ const ProjectView: React.FC = () => {
             style={{ marginRight: "10px" }}
           />
           <button onClick={handleSaveChat}>Save answer</button>
-
           <h4>Saved Chats:</h4>
           <ul>
             {chats.map((chat) => (
