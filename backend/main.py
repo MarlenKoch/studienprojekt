@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from db import Base, engine
 from routers import chats, paragraphs, projects
-from ai import aiChat
+from ai import aiChat, get_models
 
 
 Base.metadata.create_all(bind=engine)
@@ -24,3 +24,4 @@ app.include_router(paragraphs.router, prefix="/paragraphs", tags=["paragraphs"])
 app.include_router(projects.router, prefix="/projects", tags=["projects"])
 
 app.add_api_route("/aiChat", aiChat, methods=["POST"], tags=["ai"])
+app.add_api_route("/aimodels", get_models, methods=["GET"], tags=["ai"])
