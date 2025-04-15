@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import { Project } from '../types/Project'
-import { Paragraph } from '../types/Paragraph'
-import { Chat } from '../types/Chat'
+import { Project } from "../types/Project";
+import { Paragraph } from "../types/Paragraph";
+import { Chat } from "../types/Chat";
 import { ContextInputs } from "../types/ContextInputs";
 import { ChatRequest } from "../types/ChatRequest";
 import { ChatResponse } from "../types/ChatResponse";
@@ -89,6 +89,31 @@ const ProjectView: React.FC = () => {
     } catch (error) {
       console.error("Error updating sources:", error);
     }
+  };
+
+  const fetchOllamaModelNames = async (): Promise<string[]> => {
+    try {
+      const response = await fetch("http://localhost:8000/aimodels");
+
+      if (!response.ok) {
+        throw new Error(`Error fetching model names: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const modelNames = data.models.map(
+        (model: { name: string }) => model.name
+      );
+      return modelNames;
+    } catch (error) {
+      console.error("Failed to fetch model names:", error);
+      return [];
+    }
+  };
+
+  const handleGetModels = () => {
+    fetchOllamaModelNames().then((modelNames) => {
+      console.log("Ollama Models:", modelNames);
+    });
   };
 
   const handleAddParagraph = async () => {
@@ -334,6 +359,7 @@ const ProjectView: React.FC = () => {
           </ul>
         </div>
       )}
+      <button onClick={handleGetModels}>Click here to get models</button>
     </div>
   );
 };
