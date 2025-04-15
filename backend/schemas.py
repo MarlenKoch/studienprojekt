@@ -36,6 +36,7 @@ class ParagraphUpdate(BaseModel):
 class ChatCreate(BaseModel):
     title: str
     aiModel: str
+    task: str
     content_json: str
     paragraph_id: int
 
@@ -44,5 +45,6 @@ class ChatResponse(BaseModel):
     id: int
     title: str
     aiModel: str
+    task: str
     content_json: str
     paragraph_id: int
