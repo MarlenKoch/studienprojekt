@@ -5,7 +5,6 @@ from db import Base, engine
 from routers import chats, paragraphs, projects
 from sourceDocument import generateSourceDocument
 from ai import aiChat, get_models
-from sourceDocument import generateSourceDocument
 
 
 Base.metadata.create_all(bind=engine)
