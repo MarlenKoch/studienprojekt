@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import jsPDF from "jspdf";
 import { useParams } from "react-router-dom";
 import { Project } from "../types/Project";
 import { Paragraph } from "../types/Paragraph";
@@ -8,6 +9,7 @@ import { ContextInputs } from "../types/ContextInputs";
 import { ChatRequest } from "../types/ChatRequest";
 import { ChatResponse } from "../types/ChatResponse";
 import { UserPromptInputs } from "../types/UserPromptInputs";
+import { SourceRequest } from "../types/SourceRequest";
 
 const ProjectView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -33,6 +35,9 @@ const ProjectView: React.FC = () => {
     user_prompt: "",
   });
   const [aiModelList, setaiModelList] = useState<string[]>([]);
+  const [promptsJson, setPrompsJson] = useState<string>("");
+  const [isCreatingPromptJson, setIsCreatingPromptJson] =
+    useState<boolean>(false);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -60,6 +65,35 @@ const ProjectView: React.FC = () => {
     fetchProject();
     fetchParagraphs();
   }, [id]);
+
+  useEffect(() => {
+    const getPromptsGeneratePDF = async () => {
+      if (project?.id !== undefined) {
+        const requestBody: SourceRequest = {
+          project_id: project.id,
+        };
+        try {
+          const response = await axios.get<string>(
+            `http://localhost:8000/promptverzeichnis/`,
+            { params: { project_id: requestBody.project_id } }
+          );
+          setPrompsJson(response.data);
+          console.log(promptsJson);
+          generatePDF(
+            JSON.stringify(response.data),
+            `promptverzeichnis_${project?.title}`
+          );
+        } catch (error) {
+          console.error("Error fetching chats:", error);
+        }
+      } else {
+        throw new Error("Project ID is undefined");
+        // Handle undefined case, or provide additional logic here
+      }
+    };
+    setIsCreatingPromptJson(false);
+    getPromptsGeneratePDF();
+  }, [isCreatingPromptJson]);
 
   useEffect(() => {
     const fetchChats = async () => {
@@ -256,6 +290,24 @@ const ProjectView: React.FC = () => {
     }
   };
 
+  function generatePDF(jsonString: string, fileName: string) {
+    // Create a new jsPDF instance
+    const doc = new jsPDF();
+
+    const json = JSON.parse(jsonString);
+
+    // Format the JSON with indentation
+    const formattedJson = JSON.stringify(json, null, 2);
+
+    // Split the formatted JSON into lines
+    const lines = doc.splitTextToSize(formattedJson, 180); // Maximum width for text (180 based on margins)
+
+    // Set starting coordinates and add text to the PDF
+    doc.text(lines, 10, 5);
+    // Save the generated PDF with the specified file name
+    doc.save(`${fileName}.pdf`);
+  }
+
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <h2>Project View for Project ID: {id}</h2>
@@ -345,14 +397,14 @@ const ProjectView: React.FC = () => {
               </option>
             ))}
           </select>
-          <input
+          {/* <input
             type="text"
             name="paragraph_content"
             value={contextInputs.paragraph_content}
             onChange={handleContextChange}
             placeholder="Enter paragraph content"
             style={{ marginRight: "10px" }}
-          />
+          /> */}
           <input
             type="text"
             name="writing_style"
@@ -402,6 +454,9 @@ const ProjectView: React.FC = () => {
           </ul>
         </div>
       )}
+      <button onClick={() => setIsCreatingPromptJson(true)}>
+        Generate PDF F f f
+      </button>
     </div>
   );
 };
