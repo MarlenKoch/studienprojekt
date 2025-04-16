@@ -9,18 +9,7 @@ import json
 app = FastAPI()
 
 
-class SourceRequest(BaseModel):
-    project_id: int
-
-
 class Chat(BaseModel):
-    id: int
-    content_json: str
-    aiModel: str
-    task: str
-
-
-class ChatResponse(BaseModel):
     id: int
     content_json: str
     aiModel: str
@@ -46,8 +35,6 @@ def infoForOneChat(chatID: int, db: Session) -> Chat:
     return Chat(
         id=chatID, content_json=user_prompt, aiModel=chat.aiModel, task=chat.task
     )
-
-    # TODO: Safe task to db!
 
 
 @app.get("/promptverzeichnis")
