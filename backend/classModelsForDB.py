@@ -30,6 +30,7 @@ class Chat(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
     aiModel = Column(String, index=True)
+    task = Column(String, index=True)
     content_json = Column(String, index=True)
     paragraph_id = Column(Integer, ForeignKey("paragraphs.id"), index=True)
 
