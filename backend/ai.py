@@ -76,6 +76,7 @@ async def aiChat(request: ChatRequest):
         raise HTTPException(
             status_code=500, detail="An error occurred while fetching the response."
         )
+            
         
 @app.get("/aimodels")
 async def get_models():
