@@ -235,6 +235,7 @@ const ProjectView: React.FC = () => {
     const chatData = {
       title: chatTitle,
       aiModel: aiModel,
+      task: UserPromptInputs.task,
       content_json: JSON.stringify({
         user_prompt: UserPromptInputs.user_prompt,
         response: response,
