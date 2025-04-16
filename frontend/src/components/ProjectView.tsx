@@ -9,7 +9,6 @@ import { ContextInputs } from "../types/ContextInputs";
 import { ChatRequest } from "../types/ChatRequest";
 import { ChatResponse } from "../types/ChatResponse";
 import { UserPromptInputs } from "../types/UserPromptInputs";
-import { SourceRequest } from "../types/SourceRequest";
 
 const ProjectView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -69,13 +68,10 @@ const ProjectView: React.FC = () => {
   useEffect(() => {
     const getPromptsGeneratePDF = async () => {
       if (project?.id !== undefined) {
-        const requestBody: SourceRequest = {
-          project_id: project.id,
-        };
         try {
           const response = await axios.get<string>(
             `http://localhost:8000/promptverzeichnis/`,
-            { params: { project_id: requestBody.project_id } }
+            { params: { project_id: project.id } }
           );
           setPrompsJson(response.data);
           console.log(promptsJson);
