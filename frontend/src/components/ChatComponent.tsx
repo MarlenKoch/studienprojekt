@@ -29,6 +29,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const [chats, setChats] = useState<Chat[]>([]);
   const [activeChat, setActiveChat] = useState<Chat | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [isNewChatActive, setIsNewChatActive] = useState(false);
 
   const fetchChats = async () => {
     if (paragraphId === null) return;
@@ -45,11 +46,36 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
 
   useEffect(() => {
     fetchChats();
+    setMessages([]);
   }, [paragraphId]);
 
+  const findChatMessagesById = (id: number) => {
+    fetchChats();
+    const chat = chats.find((chat) => chat.id === id);
+    if (chat) {
+      try {
+        const chatContent = JSON.parse(chat.content_json);
+        return chatContent.messages || [];
+      } catch (error) {
+        console.error("Error parsing chat content JSON:", error);
+        return [];
+      }
+    }
+    return [];
+  };
+
+  useEffect(() => {
+    if (activeChat) {
+      const activeMessages = findChatMessagesById(activeChat.id);
+      setMessages(activeMessages);
+    } else {
+      setMessages([]);
+    }
+  }, [activeChat]);
+
   const handleSend = async () => {
-    if (aiModel === "") {
-      alert("Please enter a question and choose a model.");
+    if (paragraphId === null) {
+      alert("paragraph ID is missing.");
       return;
     }
 
@@ -60,6 +86,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
         paragraph_content: "",
         writing_style: writingStyle,
         user_context: userContext,
+        previous_chat_json: JSON.stringify({ messages }),
       },
     };
 
@@ -91,7 +118,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       };
       setMessages((prevMessages) => [...prevMessages, newMessage]);
 
-      // Reset question input for next interaction
       setUserPrompt("");
     } catch (error) {
       console.error("Error:", error);
@@ -100,13 +126,11 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   };
 
   const handleSaveChat = async () => {
-    // Check for proper input values and existence of paragraphId
     if (messages.length === 0 || chatTitle.trim() === "" || !paragraphId) {
       alert("Please provide all necessary information.");
       return;
     }
 
-    // Prepare chat data object with current chat contents
     const chatData = {
       title: chatTitle,
       aiModel: aiModel,
@@ -117,7 +141,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
 
     try {
       if (activeChat) {
-        // If there's an active chat, update its content
         await axios.put(
           `http://localhost:8000/chats/${activeChat.id}`,
           chatData,
@@ -128,7 +151,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           }
         );
       } else {
-        // If no active chat, create a new chat entry
         await axios.post("http://localhost:8000/chats", chatData, {
           headers: {
             "Content-Type": "application/json",
@@ -136,10 +158,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
         });
       }
       alert("Chat saved successfully!");
-      setActiveChat(null); // Reset active chat state
-      setMessages([]); // Clear messages array
-      setChatTitle(""); // Reset chat title input
-      fetchChats(); // Refresh chat list to reflect changes
+      setIsNewChatActive(false);
+      fetchChats();
     } catch (error) {
       console.error("Error saving chat:", error);
       alert("Error occurred while saving the chat.");
@@ -163,6 +183,14 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     setUserPrompt("");
   };
 
+  const handleNewChat = () => {
+    setIsNewChatActive(true);
+    setActiveChat(null);
+    setMessages([]);
+    setChatTitle("");
+    setResponse("");
+  };
+
   return (
     <div
       style={{
@@ -174,62 +202,67 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     >
       <label>{response}</label>
       <h3>AI Chat for Paragraph ID: {paragraphId}</h3>
-      <input
-        type="text"
-        value={userPrompt}
-        onChange={(e) => setUserPrompt(e.target.value)}
-        placeholder="Enter your question"
-      />
-      <input
-        type="text"
-        value={systemInfo}
-        onChange={(e) => setSystemInfo(e.target.value)}
-        placeholder="Enter system information"
-      />
-      <label>Choose a Model:</label>
-      <select value={aiModel} onChange={(e) => setAiModel(e.target.value)}>
-        {aiModelList.map((model) => (
-          <option key={model} value={model}>
-            {model}
-          </option>
-        ))}
-      </select>
-      <input
-        type="text"
-        value={writingStyle}
-        onChange={(e) => setWritingStyle(e.target.value)}
-        placeholder="Enter writing style"
-      />
-      <input
-        type="text"
-        value={task}
-        onChange={(e) => setTask(e.target.value)}
-        placeholder="Enter task"
-      />
-      <input
-        type="text"
-        value={userContext}
-        onChange={(e) => setUserContext(e.target.value)}
-        placeholder="Enter user context"
-      />
-      <button onClick={handleSend}>Send</button>
-      <div>
-        {messages.map((msg, index) => (
-          <div key={index}>
-            <strong>User:</strong> {msg.user_prompt}
-            <br />
-            <strong>AI:</strong> {msg.response}
-            <br />
+      <button onClick={handleNewChat}>New Chat</button>
+      {(activeChat || isNewChatActive) && (
+        <>
+          <input
+            type="text"
+            value={userPrompt}
+            onChange={(e) => setUserPrompt(e.target.value)}
+            placeholder="Enter your question"
+          />
+          <input
+            type="text"
+            value={systemInfo}
+            onChange={(e) => setSystemInfo(e.target.value)}
+            placeholder="Enter system information"
+          />
+          <label>Choose a Model:</label>
+          <select value={aiModel} onChange={(e) => setAiModel(e.target.value)}>
+            {aiModelList.map((model) => (
+              <option key={model} value={model}>
+                {model}
+              </option>
+            ))}
+          </select>
+          <input
+            type="text"
+            value={writingStyle}
+            onChange={(e) => setWritingStyle(e.target.value)}
+            placeholder="Enter writing style"
+          />
+          <input
+            type="text"
+            value={task}
+            onChange={(e) => setTask(e.target.value)}
+            placeholder="Enter task"
+          />
+          <input
+            type="text"
+            value={userContext}
+            onChange={(e) => setUserContext(e.target.value)}
+            placeholder="Enter user context"
+          />
+          <button onClick={handleSend}>Send</button>
+          <div>
+            {messages.map((msg, index) => (
+              <div key={index}>
+                <strong>User:</strong> {msg.user_prompt}
+                <br />
+                <strong>AI:</strong> {msg.response}
+                <br />
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <input
-        type="text"
-        value={chatTitle}
-        onChange={(e) => setChatTitle(e.target.value)}
-        placeholder="Enter title to save the chat"
-      />
-      <button onClick={handleSaveChat}>Save Chat</button>
+          <input
+            type="text"
+            value={chatTitle}
+            onChange={(e) => setChatTitle(e.target.value)}
+            placeholder="Enter title to save the chat"
+          />
+          <button onClick={handleSaveChat}>Save Chat</button>
+        </>
+      )}
       <h4>Saved Chats:</h4>
       <ul>
         {chats.map((chat) => (
