@@ -110,3 +110,20 @@ def get_chats_for_project(db: Session, project_id: int):
     chats = db.query(Chat).filter(Chat.paragraph_id.in_(paragraph_ids)).all()
 
     return chats
+
+
+# Update chat function
+def update_chat(db: Session, chat_id: int, updated_data: ChatCreate):
+    chat = get_chat(db, chat_id)
+    if chat:
+        update_fields = updated_data.dict(exclude_unset=True)
+        if update_fields:
+            for key, value in update_fields.items():
+                setattr(chat, key, value)
+            db.commit()
+            db.refresh(chat)
+            return chat
+    else:
+        print("Chat not found or no fields to update.")
+    return None
+

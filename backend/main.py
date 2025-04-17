@@ -24,7 +24,7 @@ app.include_router(chats.router, prefix="/chats", tags=["chats"])
 app.include_router(paragraphs.router, prefix="/paragraphs", tags=["paragraphs"])
 app.include_router(projects.router, prefix="/projects", tags=["projects"])
 
-app.add_api_route("/aiChat", aiChat, methods=["POST"], tags=["ai"])
+app.add_api_route("/aiChat", aiChat, methods=["POST","PUT"], tags=["ai"])
 
 app.add_api_route("/aimodels", get_models, methods=["GET"], tags=["ai"])
 
