@@ -20,7 +20,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
 }) => {
   const [systemInfo, setSystemInfo] = useState("");
   const [chatTitle, setChatTitle] = useState("");
-  const [response, setResponse] = useState("");
+  //const [response, setResponse] = useState("");
   const [aiModel, setAiModel] = useState(aiModelList[0] || "");
   const [task, setTask] = useState("");
   const [userPrompt, setUserPrompt] = useState("");
@@ -110,7 +110,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           },
         }
       );
-      setResponse(aiResponse.data.response);
+      //setResponse(aiResponse.data.response);
 
       const newMessage: ChatMessage = {
         user_prompt: userPrompt,
@@ -121,7 +121,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       setUserPrompt("");
     } catch (error) {
       console.error("Error:", error);
-      setResponse("Error occurred while fetching the response.");
+      //setResponse("Error occurred while fetching the response.");
     }
   };
 
@@ -188,7 +188,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     setActiveChat(null);
     setMessages([]);
     setChatTitle("");
-    setResponse("");
+    //setResponse("");
   };
 
   return (
@@ -200,7 +200,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
         width: "300px",
       }}
     >
-      <label>{response}</label>
       <h3>AI Chat for Paragraph ID: {paragraphId}</h3>
       <button onClick={handleNewChat}>New Chat</button>
       {(activeChat || isNewChatActive) && (
