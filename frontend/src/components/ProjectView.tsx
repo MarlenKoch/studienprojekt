@@ -1,6 +1,10 @@
 // ProjectView.tsx
 import React, { useEffect, useState, useContext } from "react";
+
+
+
 import axios from "axios";
+
 import jsPDF from "jspdf";
 import { useParams } from "react-router-dom";
 import { Project } from "../types/Project";
@@ -18,7 +22,7 @@ const ProjectView: React.FC = () => {
   const [activeParagraphId, setActiveParagraphId] = useState<number | null>(
     null
   );
-  const [editSources, setEditSources] = useState<string>("");
+  // const [editSources, setEditSources] = useState<string>("");
   const [aiModelList, setaiModelList] = useState<string[]>([]);
   const [promptsJson, setPrompsJson] = useState<string>("");
   const [isCreatingPromptJson, setIsCreatingPromptJson] =
@@ -108,22 +112,22 @@ const ProjectView: React.FC = () => {
     fetchOllamaModelNames();
   }, [activeParagraphId]);
 
-  const updateSources = async () => {
-    if (!project) return;
+  // const updateSources = async () => {
+  //   if (!project) return;
 
-    try {
-      await axios.put(
-        `http://localhost:8000/projects/${project.id}`,
-        { sources_json: editSources },
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      alert("Sources updated successfully!");
-    } catch (error) {
-      console.error("Error updating sources:", error);
-    }
-  };
+  //   try {
+  //     await axios.put(
+  //       `http://localhost:8000/projects/${project.id}`,
+  //       { sources_json: editSources },
+  //       {
+  //         headers: { "Content-Type": "application/json" },
+  //       }
+  //     );
+  //     alert("Sources updated successfully!");
+  //   } catch (error) {
+  //     console.error("Error updating sources:", error);
+  //   }
+  // };
 
   const handleAddParagraph = async () => {
     if (newParagraphContent.trim() === "") {
@@ -194,21 +198,19 @@ const ProjectView: React.FC = () => {
     doc.text(lines, 10, 5);
     doc.save(`${fileName}.pdf`);
   }
-
-
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <h2>Project View for Project ID: {id}</h2>
       {project ? (
         <div>
           <h3>{project.title}</h3>
-          <textarea
+          {/* <textarea
             value={editSources}
             onChange={(e) => setEditSources(e.target.value)}
             style={{ width: "100%", height: "100px" }}
-          />
-          <button onClick={updateSources}>
-            Update Sources (Not functional, backend functionality missing)
+          /> */}
+          <button onClick={generateError}>
+            Click here to create error message
           </button>
         </div>
       ) : (
@@ -252,7 +254,9 @@ const ProjectView: React.FC = () => {
         />
         <button onClick={handleAddParagraph}>Add Paragraph</button>
       </div>
-
+      <button onClick={() => setIsCreatingPromptJson(true)}>
+        Generate PDF
+      </button>
       {activeParagraphId !== null && (
         <ChatComponent
           paragraphId={activeParagraphId}
@@ -267,9 +271,7 @@ const ProjectView: React.FC = () => {
         {isStudent ? <button>Klick hier</button> : <p>Du bist kein Schüler</p>}
       </div>
 
-    </div >
-
-
+    </div>
   );
 };
 
