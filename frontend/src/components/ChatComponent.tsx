@@ -204,6 +204,16 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       <button onClick={handleNewChat}>New Chat</button>
       {(activeChat || isNewChatActive) && (
         <>
+          <div>
+            {messages.map((msg, index) => (
+              <div key={index}>
+                <strong>User:</strong> {msg.user_prompt}
+                <br />
+                <strong>AI:</strong> {msg.response}
+                <br />
+              </div>
+            ))}
+          </div>
           <input
             type="text"
             value={userPrompt}
@@ -243,16 +253,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
             placeholder="Enter user context"
           />
           <button onClick={handleSend}>Send</button>
-          <div>
-            {messages.map((msg, index) => (
-              <div key={index}>
-                <strong>User:</strong> {msg.user_prompt}
-                <br />
-                <strong>AI:</strong> {msg.response}
-                <br />
-              </div>
-            ))}
-          </div>
+
           <input
             type="text"
             value={chatTitle}

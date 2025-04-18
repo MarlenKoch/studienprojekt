@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import jsPDF from "jspdf";
 import { useParams } from "react-router-dom";
 import { Project } from "../types/Project";
@@ -15,7 +15,7 @@ const ProjectView: React.FC = () => {
   const [activeParagraphId, setActiveParagraphId] = useState<number | null>(
     null
   );
-  const [editSources, setEditSources] = useState<string>("");
+  // const [editSources, setEditSources] = useState<string>("");
   const [aiModelList, setaiModelList] = useState<string[]>([]);
   const [promptsJson, setPrompsJson] = useState<string>("");
   const [isCreatingPromptJson, setIsCreatingPromptJson] =
@@ -98,22 +98,22 @@ const ProjectView: React.FC = () => {
     fetchOllamaModelNames();
   }, [activeParagraphId]);
 
-  const updateSources = async () => {
-    if (!project) return;
+  // const updateSources = async () => {
+  //   if (!project) return;
 
-    try {
-      await axios.put(
-        `http://localhost:8000/projects/${project.id}`,
-        { sources_json: editSources },
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      alert("Sources updated successfully!");
-    } catch (error) {
-      console.error("Error updating sources:", error);
-    }
-  };
+  //   try {
+  //     await axios.put(
+  //       `http://localhost:8000/projects/${project.id}`,
+  //       { sources_json: editSources },
+  //       {
+  //         headers: { "Content-Type": "application/json" },
+  //       }
+  //     );
+  //     alert("Sources updated successfully!");
+  //   } catch (error) {
+  //     console.error("Error updating sources:", error);
+  //   }
+  // };
 
   const handleAddParagraph = async () => {
     if (newParagraphContent.trim() === "") {
@@ -185,19 +185,30 @@ const ProjectView: React.FC = () => {
     doc.save(`${fileName}.pdf`);
   }
 
+  const generateError = () => {
+    alert("ERROR: (error 42069) you are stupid [and also a duck ts:836893}");
+    console.error("Error creating the error. Please try again later.");
+    console.error(
+      "ProjectView.tsx?t=1744887134856:116 Error updating sources: AxiosError {message: 'Request failed with status code 405', name: 'AxiosError', code: 'ERR_BAD_REQUEST', config: {…}, request: XMLHttpRequest, …}"
+    );
+    console.error("'Request failed with status code 666'");
+    console.error(AxiosError.ERR_BAD_RESPONSE);
+    console.error(axios.AxiosError);
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <h2>Project View for Project ID: {id}</h2>
       {project ? (
         <div>
           <h3>{project.title}</h3>
-          <textarea
+          {/* <textarea
             value={editSources}
             onChange={(e) => setEditSources(e.target.value)}
             style={{ width: "100%", height: "100px" }}
-          />
-          <button onClick={updateSources}>
-            Update Sources (Not functional, backend functionality missing)
+          /> */}
+          <button onClick={generateError}>
+            Click here to create error message
           </button>
         </div>
       ) : (
@@ -241,16 +252,15 @@ const ProjectView: React.FC = () => {
         />
         <button onClick={handleAddParagraph}>Add Paragraph</button>
       </div>
-
+      <button onClick={() => setIsCreatingPromptJson(true)}>
+        Generate PDF
+      </button>
       {activeParagraphId !== null && (
         <ChatComponent
           paragraphId={activeParagraphId}
           aiModelList={aiModelList}
         />
       )}
-      <button onClick={() => setIsCreatingPromptJson(true)}>
-        Generate PDF
-      </button>
     </div>
   );
 };
