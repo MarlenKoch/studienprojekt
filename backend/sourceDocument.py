@@ -30,7 +30,7 @@ def infoForOneChat(chatID: int, db: Session) -> Chat:
     if not chat:
         raise HTTPException(status_code=404, detail="Chat not found")
 
-    data = json.loads(chat.content_json)
+    # data = json.loads(chat.content_json)
     #user_prompt = data.get("user_prompt")
     parsed_data = json.loads(chat.content_json)
     # print(parsed_data)

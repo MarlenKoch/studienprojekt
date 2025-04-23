@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import React, { useEffect, useState, useContext } from "react";
 import jsPDF from "jspdf";
 import { useParams } from "react-router-dom";
 import { Project } from "../types/Project";
 import { Paragraph } from "../types/Paragraph";
 // Import ChatComponent at the top if it's defined in a different file
 import ChatComponent from "./ChatComponent";
+import { StudentContext } from "../context/StudentContext";
 
 const ProjectView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,11 +16,13 @@ const ProjectView: React.FC = () => {
   const [activeParagraphId, setActiveParagraphId] = useState<number | null>(
     null
   );
-  const [editSources, setEditSources] = useState<string>("");
+  // const [editSources, setEditSources] = useState<string>("");
   const [aiModelList, setaiModelList] = useState<string[]>([]);
   const [promptsJson, setPrompsJson] = useState<string>("");
   const [isCreatingPromptJson, setIsCreatingPromptJson] =
     useState<boolean>(false);
+
+  const isStudent = useContext(StudentContext);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -58,6 +61,10 @@ const ProjectView: React.FC = () => {
           );
           setPrompsJson(response.data);
           console.log(promptsJson);
+          if (isStudent) {
+            console.log("ja lol");
+          }
+
           generatePDF(
             JSON.stringify(response.data),
             `promptverzeichnis_${project?.title}`
@@ -98,22 +105,22 @@ const ProjectView: React.FC = () => {
     fetchOllamaModelNames();
   }, [activeParagraphId]);
 
-  const updateSources = async () => {
-    if (!project) return;
+  // const updateSources = async () => {
+  //   if (!project) return;
 
-    try {
-      await axios.put(
-        `http://localhost:8000/projects/${project.id}`,
-        { sources_json: editSources },
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      alert("Sources updated successfully!");
-    } catch (error) {
-      console.error("Error updating sources:", error);
-    }
-  };
+  //   try {
+  //     await axios.put(
+  //       `http://localhost:8000/projects/${project.id}`,
+  //       { sources_json: editSources },
+  //       {
+  //         headers: { "Content-Type": "application/json" },
+  //       }
+  //     );
+  //     alert("Sources updated successfully!");
+  //   } catch (error) {
+  //     console.error("Error updating sources:", error);
+  //   }
+  // };
 
   const handleAddParagraph = async () => {
     if (newParagraphContent.trim() === "") {
@@ -191,14 +198,14 @@ const ProjectView: React.FC = () => {
       {project ? (
         <div>
           <h3>{project.title}</h3>
-          <textarea
+          {/* <textarea
             value={editSources}
             onChange={(e) => setEditSources(e.target.value)}
             style={{ width: "100%", height: "100px" }}
-          />
-          <button onClick={updateSources}>
-            Update Sources (Not functional, backend functionality missing)
-          </button>
+          /> */}
+          {/* <button onClick={generateError}>
+            Click here to create error message
+          </button> */}
         </div>
       ) : (
         <p>Loading...</p>
@@ -241,7 +248,6 @@ const ProjectView: React.FC = () => {
         />
         <button onClick={handleAddParagraph}>Add Paragraph</button>
       </div>
-
       {activeParagraphId !== null && (
         <ChatComponent
           paragraphId={activeParagraphId}
@@ -251,6 +257,10 @@ const ProjectView: React.FC = () => {
       <button onClick={() => setIsCreatingPromptJson(true)}>
         Generate PDF
       </button>
+
+      <div>
+        {isStudent ? <button>Klick hier</button> : <p>Du bist kein Schüler</p>}
+      </div>
     </div>
   );
 };

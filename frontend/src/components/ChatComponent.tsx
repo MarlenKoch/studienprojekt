@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { Chat } from "../types/Chat";
 import { ChatRequest } from "../types/ChatRequest";
 import { ChatResponse } from "../types/ChatResponse";
+import { StudentContext } from "../context/StudentContext";
 
 interface ChatMessage {
   user_prompt: string;
@@ -30,6 +31,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const [activeChat, setActiveChat] = useState<Chat | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isNewChatActive, setIsNewChatActive] = useState(false);
+  const isStudent = useContext(StudentContext);
 
   const fetchChats = async () => {
     if (paragraphId === null) return;
@@ -110,24 +112,63 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           },
         }
       );
-      //setResponse(aiResponse.data.response);
 
       const newMessage: ChatMessage = {
         user_prompt: userPrompt,
         response: aiResponse.data.response,
       };
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+      // Aktualisiere den State hier und warte bis dies abgeschlossen ist
+      const updatedMessages = [...messages, newMessage];
+      setMessages(updatedMessages);
+
+      if (isStudent) {
+        const chatData = {
+          title: "Schüler-Chat",
+          aiModel: aiModel,
+          task,
+          content_json: JSON.stringify({ messages: updatedMessages }), // benutze aktualisierte Nachrichten
+          paragraph_id: paragraphId,
+        };
+
+        try {
+          if (activeChat) {
+            await axios.put(
+              `http://localhost:8000/chats/${activeChat.id}`,
+              chatData,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+            alert("Chat updtd successfully!");
+          } else {
+            await axios.post("http://localhost:8000/chats", chatData, {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+            alert("Chat saved successfully!");
+          }
+          setIsNewChatActive(false);
+          fetchChats();
+        } catch (error) {
+          console.error("Error saving chat:", error);
+          alert("Error occurred while saving the chat.");
+        }
+      }
 
       setUserPrompt("");
     } catch (error) {
       console.error("Error:", error);
-      //setResponse("Error occurred while fetching the response.");
     }
   };
 
   const handleSaveChat = async () => {
     if (messages.length === 0 || chatTitle.trim() === "" || !paragraphId) {
       alert("Please provide all necessary information.");
+      console.log(messages, chatTitle, paragraphId);
       return;
     }
 
@@ -187,7 +228,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     setIsNewChatActive(true);
     setActiveChat(null);
     setMessages([]);
-    setChatTitle("");
+    setChatTitle("blub test");
     //setResponse("");
   };
 
@@ -204,6 +245,16 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       <button onClick={handleNewChat}>New Chat</button>
       {(activeChat || isNewChatActive) && (
         <>
+          <div>
+            {messages.map((msg, index) => (
+              <div key={index}>
+                <strong>User:</strong> {msg.user_prompt}
+                <br />
+                <strong>AI:</strong> {msg.response}
+                <br />
+              </div>
+            ))}
+          </div>
           <input
             type="text"
             value={userPrompt}
@@ -243,16 +294,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
             placeholder="Enter user context"
           />
           <button onClick={handleSend}>Send</button>
-          <div>
-            {messages.map((msg, index) => (
-              <div key={index}>
-                <strong>User:</strong> {msg.user_prompt}
-                <br />
-                <strong>AI:</strong> {msg.response}
-                <br />
-              </div>
-            ))}
-          </div>
+
           <input
             type="text"
             value={chatTitle}
