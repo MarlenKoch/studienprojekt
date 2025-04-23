@@ -21,7 +21,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
 }) => {
   const [systemInfo, setSystemInfo] = useState("");
   const [chatTitle, setChatTitle] = useState("");
-  //const [response, setResponse] = useState("");
   const [aiModel, setAiModel] = useState(aiModelList[0] || "");
   const [task, setTask] = useState("");
   const [userPrompt, setUserPrompt] = useState("");

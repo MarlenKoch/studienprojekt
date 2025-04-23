@@ -32,7 +32,7 @@ const Home: React.FC = () => {
     try {
       const newProject = {
         title: newProjectTitle,
-        sources_json: "{}", // Default empty JSON
+        sources_json: "{}", // Default 
       };
 
       const response = await axios.post<Project>(

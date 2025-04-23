@@ -4,7 +4,6 @@ import jsPDF from "jspdf";
 import { useParams } from "react-router-dom";
 import { Project } from "../types/Project";
 import { Paragraph } from "../types/Paragraph";
-// Import ChatComponent at the top if it's defined in a different file
 import ChatComponent from "./ChatComponent";
 import { StudentContext } from "../context/StudentContext";
 
@@ -16,7 +15,6 @@ const ProjectView: React.FC = () => {
   const [activeParagraphId, setActiveParagraphId] = useState<number | null>(
     null
   );
-  // const [editSources, setEditSources] = useState<string>("");
   const [aiModelList, setaiModelList] = useState<string[]>([]);
   const [promptsJson, setPrompsJson] = useState<string>("");
   const [isCreatingPromptJson, setIsCreatingPromptJson] =
@@ -61,9 +59,6 @@ const ProjectView: React.FC = () => {
           );
           setPrompsJson(response.data);
           console.log(promptsJson);
-          if (isStudent) {
-            console.log("ja lol");
-          }
 
           generatePDF(
             JSON.stringify(response.data),
@@ -104,23 +99,6 @@ const ProjectView: React.FC = () => {
     };
     fetchOllamaModelNames();
   }, [activeParagraphId]);
-
-  // const updateSources = async () => {
-  //   if (!project) return;
-
-  //   try {
-  //     await axios.put(
-  //       `http://localhost:8000/projects/${project.id}`,
-  //       { sources_json: editSources },
-  //       {
-  //         headers: { "Content-Type": "application/json" },
-  //       }
-  //     );
-  //     alert("Sources updated successfully!");
-  //   } catch (error) {
-  //     console.error("Error updating sources:", error);
-  //   }
-  // };
 
   const handleAddParagraph = async () => {
     if (newParagraphContent.trim() === "") {
@@ -259,7 +237,7 @@ const ProjectView: React.FC = () => {
       </button>
 
       <div>
-        {isStudent ? <button>Klick hier</button> : <p>Du bist kein Schüler</p>}
+        {isStudent ? <p>Im Schülermodus</p> : <p>Du bist kein Schüler</p>}
       </div>
     </div>
   );
