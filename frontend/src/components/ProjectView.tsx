@@ -1,5 +1,5 @@
 // ProjectView.tsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
 import { useParams } from "react-router-dom";
@@ -7,6 +7,8 @@ import { Project } from "../types/Project";
 import { Paragraph } from "../types/Paragraph";
 //import { SourceRequest } from "../types/SourceRequest";
 import ChatComponent from "./ChatComponent";
+import { StudentContext } from "../context/StudentContext";
+
 
 const ProjectView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,6 +23,9 @@ const ProjectView: React.FC = () => {
   const [promptsJson, setPrompsJson] = useState<string>("");
   const [isCreatingPromptJson, setIsCreatingPromptJson] =
     useState<boolean>(false);
+
+
+  const isStudent = useContext(StudentContext);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -59,6 +64,10 @@ const ProjectView: React.FC = () => {
           );
           setPrompsJson(response.data);
           console.log(promptsJson);
+          if (isStudent) {
+            console.log("ja lol")
+          }
+
           generatePDF(
             JSON.stringify(response.data),
             `promptverzeichnis_${project?.title}`
@@ -164,6 +173,7 @@ const ProjectView: React.FC = () => {
     doc.save(`${fileName}.pdf`);
   }
 
+
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <h2>Project View for Project ID: {id}</h2>
@@ -216,7 +226,14 @@ const ProjectView: React.FC = () => {
       <button onClick={() => setIsCreatingPromptJson(true)}>
         Generate PDF
       </button>
-    </div>
+
+      <div>
+        {isStudent ? <button>Klick hier</button> : <p>Du bist kein Schüler</p>}
+      </div>
+
+    </div >
+
+
   );
 };
 

@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { Chat } from "../types/Chat";
 import { ChatRequest } from "../types/ChatRequest";
 import { ChatResponse } from "../types/ChatResponse";
+import { StudentContext } from "../context/StudentContext";
+
 
 interface ChatMessage {
   user_prompt: string;
@@ -30,6 +32,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const [activeChat, setActiveChat] = useState<Chat | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isNewChatActive, setIsNewChatActive] = useState(false);
+  const isStudent = useContext(StudentContext);
+
 
   const fetchChats = async () => {
     if (paragraphId === null) return;
@@ -90,6 +94,14 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       },
     };
 
+    const chatData = {
+      title: "SchülerModus",
+      aiModel: aiModel,
+      task,
+      content_json: JSON.stringify({ messages }),
+      paragraph_id: paragraphId,
+    };
+
     try {
       const paragraphResponse = await axios.get(
         `http://localhost:8000/paragraphs/${paragraphId}`
@@ -111,6 +123,15 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
         }
       );
       //setResponse(aiResponse.data.response);
+
+      if (isStudent) {
+        console.log("jetzt schreibt ein Schüler");
+        await axios.post("http://localhost:8000/chats", chatData, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      }
 
       const newMessage: ChatMessage = {
         user_prompt: userPrompt,
