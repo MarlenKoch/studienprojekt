@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
+import React, { useEffect, useState, useContext } from "react";
 import jsPDF from "jspdf";
 import { useParams } from "react-router-dom";
 import { Project } from "../types/Project";
 import { Paragraph } from "../types/Paragraph";
 // Import ChatComponent at the top if it's defined in a different file
 import ChatComponent from "./ChatComponent";
+import { StudentContext } from "../context/StudentContext";
 
 const ProjectView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,6 +21,8 @@ const ProjectView: React.FC = () => {
   const [promptsJson, setPrompsJson] = useState<string>("");
   const [isCreatingPromptJson, setIsCreatingPromptJson] =
     useState<boolean>(false);
+
+  const isStudent = useContext(StudentContext);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -58,6 +61,10 @@ const ProjectView: React.FC = () => {
           );
           setPrompsJson(response.data);
           console.log(promptsJson);
+          if (isStudent) {
+            console.log("ja lol");
+          }
+
           generatePDF(
             JSON.stringify(response.data),
             `promptverzeichnis_${project?.title}`
@@ -185,17 +192,6 @@ const ProjectView: React.FC = () => {
     doc.save(`${fileName}.pdf`);
   }
 
-  const generateError = () => {
-    alert("ERROR: (error 42069) you are stupid [and also a duck ts:836893}");
-    console.error("Error creating the error. Please try again later.");
-    console.error(
-      "ProjectView.tsx?t=1744887134856:116 Error updating sources: AxiosError {message: 'Request failed with status code 405', name: 'AxiosError', code: 'ERR_BAD_REQUEST', config: {…}, request: XMLHttpRequest, …}"
-    );
-    console.error("'Request failed with status code 666'");
-    console.error(AxiosError.ERR_BAD_RESPONSE);
-    console.error(axios.AxiosError);
-  };
-
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <h2>Project View for Project ID: {id}</h2>
@@ -207,9 +203,9 @@ const ProjectView: React.FC = () => {
             onChange={(e) => setEditSources(e.target.value)}
             style={{ width: "100%", height: "100px" }}
           /> */}
-          <button onClick={generateError}>
+          {/* <button onClick={generateError}>
             Click here to create error message
-          </button>
+          </button> */}
         </div>
       ) : (
         <p>Loading...</p>
@@ -261,6 +257,13 @@ const ProjectView: React.FC = () => {
           aiModelList={aiModelList}
         />
       )}
+      <button onClick={() => setIsCreatingPromptJson(true)}>
+        Generate PDF
+      </button>
+
+      <div>
+        {isStudent ? <button>Klick hier</button> : <p>Du bist kein Schüler</p>}
+      </div>
     </div>
   );
 };

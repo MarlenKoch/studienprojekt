@@ -12,7 +12,7 @@ class ContextInputs(BaseModel):
     paragraph_content: str  # vielleicht nicht als ein string übergeben
     writing_style: str  # aus Dropdown, also definitiv ein bestimmter String
     user_context: str  # für zusätzliche Angaben, sollte auch '' sein können, wird am ende einfach rangehangen
-    previous_chat_json: str # das was davor im chat angegeben wurde, einfach alles rein pasten und die KI machen lassen
+    previous_chat_json: str  # das was davor im chat angegeben wurde, einfach alles rein pasten und die KI machen lassen
 
 
 class UserPromptInputs(BaseModel):
@@ -61,15 +61,6 @@ async def aiChat(request: ChatRequest):
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
-            # options={"temperature": 1},
-            # format={
-            #     "type": "object",
-            #     "properties": {
-            #         "age": {"type": "integer"},
-            #         "available": {"type": "boolean"},
-            #     },
-            #     "required": ["age", "available"],
-            # },
         )
         model_response = response["message"]["content"]
 
@@ -78,8 +69,8 @@ async def aiChat(request: ChatRequest):
         raise HTTPException(
             status_code=500, detail="An error occurred while fetching the response."
         )
-            
-        
+
+
 @app.get("/aimodels")
 async def get_models():
     try:
@@ -91,7 +82,10 @@ async def get_models():
         return data
     except httpx.HTTPStatusError as http_exc:
         # Handle HTTP errors
-        raise HTTPException(status_code=http_exc.response.status_code, detail="Failed to retrieve model tags")
+        raise HTTPException(
+            status_code=http_exc.response.status_code,
+            detail="Failed to retrieve model tags",
+        )
     except Exception as exc:
         # Handle any other exceptions
         raise HTTPException(status_code=500, detail=str(exc))
