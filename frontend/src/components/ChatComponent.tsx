@@ -5,7 +5,6 @@ import { ChatRequest } from "../types/ChatRequest";
 import { ChatResponse } from "../types/ChatResponse";
 import { StudentContext } from "../context/StudentContext";
 
-
 interface ChatMessage {
   user_prompt: string;
   response: string;
@@ -33,7 +32,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isNewChatActive, setIsNewChatActive] = useState(false);
   const isStudent = useContext(StudentContext);
-
 
   const fetchChats = async () => {
     if (paragraphId === null) return;
@@ -94,14 +92,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       },
     };
 
-    const chatData = {
-      title: "SchülerModus",
-      aiModel: aiModel,
-      task,
-      content_json: JSON.stringify({ messages }),
-      paragraph_id: paragraphId,
-    };
-
     try {
       const paragraphResponse = await axios.get(
         `http://localhost:8000/paragraphs/${paragraphId}`
@@ -122,22 +112,61 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           },
         }
       );
+      console.log(aiResponse);
       //setResponse(aiResponse.data.response);
-
-      if (isStudent) {
-        console.log("jetzt schreibt ein Schüler");
-        await axios.post("http://localhost:8000/chats", chatData, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-      }
 
       const newMessage: ChatMessage = {
         user_prompt: userPrompt,
         response: aiResponse.data.response,
       };
+      //await handleMessagesUpdate(newMessage);
+      console.log("new:: ", newMessage);
+
       setMessages((prevMessages) => [...prevMessages, newMessage]);
+      console.log(messages);
+
+      if (isStudent) {
+        // console.log("jetzt schreibt ein Schüler");
+        // await axios.post("http://localhost:8000/chats", chatData, {
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        // });
+        try {
+          const chatData = {
+            title: "Schüler-Chat",
+            aiModel: aiModel,
+            task,
+            content_json: JSON.stringify({ messages }),
+            paragraph_id: paragraphId,
+          };
+          console.log(chatData);
+          if (activeChat) {
+            await axios.put(
+              `http://localhost:8000/chats/${activeChat.id}`,
+              chatData,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+            alert("Chat updtd successfully!");
+          } else {
+            await axios.post("http://localhost:8000/chats", chatData, {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+            alert("Chat saved successfully!");
+          }
+          setIsNewChatActive(false);
+          fetchChats();
+        } catch (error) {
+          console.error("Error saving chat:", error);
+          alert("Error occurred while saving the chat.");
+        }
+      }
 
       setUserPrompt("");
     } catch (error) {
@@ -149,6 +178,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const handleSaveChat = async () => {
     if (messages.length === 0 || chatTitle.trim() === "" || !paragraphId) {
       alert("Please provide all necessary information.");
+      console.log(messages, chatTitle, paragraphId);
       return;
     }
 
@@ -208,7 +238,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     setIsNewChatActive(true);
     setActiveChat(null);
     setMessages([]);
-    setChatTitle("");
+    setChatTitle("blub test");
     //setResponse("");
   };
 
