@@ -248,9 +248,6 @@ const ProjectView: React.FC = () => {
         />
         <button onClick={handleAddParagraph}>Add Paragraph</button>
       </div>
-      <button onClick={() => setIsCreatingPromptJson(true)}>
-        Generate PDF
-      </button>
       {activeParagraphId !== null && (
         <ChatComponent
           paragraphId={activeParagraphId}
