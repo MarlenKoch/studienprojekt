@@ -112,35 +112,26 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           },
         }
       );
-      console.log(aiResponse);
-      //setResponse(aiResponse.data.response);
 
       const newMessage: ChatMessage = {
         user_prompt: userPrompt,
         response: aiResponse.data.response,
       };
-      //await handleMessagesUpdate(newMessage);
-      console.log("new:: ", newMessage);
 
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-      console.log(messages);
+      // Aktualisiere den State hier und warte bis dies abgeschlossen ist
+      const updatedMessages = [...messages, newMessage];
+      setMessages(updatedMessages);
 
       if (isStudent) {
-        // console.log("jetzt schreibt ein Schüler");
-        // await axios.post("http://localhost:8000/chats", chatData, {
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        // });
+        const chatData = {
+          title: "Schüler-Chat",
+          aiModel: aiModel,
+          task,
+          content_json: JSON.stringify({ messages: updatedMessages }), // benutze aktualisierte Nachrichten
+          paragraph_id: paragraphId,
+        };
+
         try {
-          const chatData = {
-            title: "Schüler-Chat",
-            aiModel: aiModel,
-            task,
-            content_json: JSON.stringify({ messages }),
-            paragraph_id: paragraphId,
-          };
-          console.log(chatData);
           if (activeChat) {
             await axios.put(
               `http://localhost:8000/chats/${activeChat.id}`,
@@ -171,7 +162,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       setUserPrompt("");
     } catch (error) {
       console.error("Error:", error);
-      //setResponse("Error occurred while fetching the response.");
     }
   };
 
