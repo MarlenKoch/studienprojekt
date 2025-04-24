@@ -176,14 +176,7 @@ const ProjectView: React.FC = () => {
       {project ? (
         <div>
           <h3>{project.title}</h3>
-          {/* <textarea
-            value={editSources}
-            onChange={(e) => setEditSources(e.target.value)}
-            style={{ width: "100%", height: "100px" }}
-          /> */}
-          {/* <button onClick={generateError}>
-            Click here to create error message
-          </button> */}
+
         </div>
       ) : (
         <p>Loading...</p>
