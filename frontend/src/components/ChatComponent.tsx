@@ -4,6 +4,7 @@ import { Chat } from "../types/Chat";
 import { ChatRequest } from "../types/ChatRequest";
 import { ChatResponse } from "../types/ChatResponse";
 import { StudentContext } from "../context/StudentContext";
+import ReactMarkdown from "react-markdown";
 
 interface ChatMessage {
   user_prompt: string;
@@ -21,7 +22,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
 }) => {
   const [systemInfo, setSystemInfo] = useState("");
   const [chatTitle, setChatTitle] = useState("");
-  //const [response, setResponse] = useState("");
   const [aiModel, setAiModel] = useState(aiModelList[0] || "");
   const [task, setTask] = useState("");
   const [userPrompt, setUserPrompt] = useState("");
@@ -250,7 +250,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
               <div key={index}>
                 <strong>User:</strong> {msg.user_prompt}
                 <br />
-                <strong>AI:</strong> {msg.response}
+                <strong>AI:</strong>
+                <ReactMarkdown>{msg.response}</ReactMarkdown>
                 <br />
               </div>
             ))}

@@ -19,13 +19,13 @@ const App: React.FC = () => {
             setIsStudent(e.target.checked);
           }}
         />
-        kekse
+        Schülermodus
       </label>
       <hr />
       <Router>
         <div style={{ padding: "20px" }}>
           <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
-            <h1>Komischer Schreibassistent</h1>
+            <h1>Schreibassistent</h1>
           </Link>
           <Routes>
             <Route path="/" element={<Home />} />

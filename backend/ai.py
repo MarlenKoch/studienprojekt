@@ -74,18 +74,15 @@ async def aiChat(request: ChatRequest):
 @app.get("/aimodels")
 async def get_models():
     try:
-        # Use httpx to send a GET request to the Ollama endpoint
         async with httpx.AsyncClient() as client:
             response = await client.get("http://localhost:11434/api/tags")
             response.raise_for_status()
         data = response.json()
         return data
     except httpx.HTTPStatusError as http_exc:
-        # Handle HTTP errors
         raise HTTPException(
             status_code=http_exc.response.status_code,
             detail="Failed to retrieve model tags",
         )
     except Exception as exc:
-        # Handle any other exceptions
         raise HTTPException(status_code=500, detail=str(exc))

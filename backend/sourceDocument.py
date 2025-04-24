@@ -29,18 +29,15 @@ def infoForOneChat(chatID: int, db: Session) -> Chat:
     chat = get_chat(db, chatID)
     if not chat:
         raise HTTPException(status_code=404, detail="Chat not found")
-
-    # data = json.loads(chat.content_json)
-    #user_prompt = data.get("user_prompt")
     parsed_data = json.loads(chat.content_json)
-    # print(parsed_data)
     prompts = [message["user_prompt"] for message in parsed_data["messages"]]
-    # for message in parsed_data["messages"]:
-    #     print(message)
     print(prompts)
-    prompts_string_with_comma = ', '.join(prompts)
+    prompts_string_with_comma = ", ".join(prompts)
     return Chat(
-        id=chatID, content_json=prompts_string_with_comma, aiModel=chat.aiModel, task=chat.task
+        id=chatID,
+        content_json=prompts_string_with_comma,
+        aiModel=chat.aiModel,
+        task=chat.task,
     )
 
 
