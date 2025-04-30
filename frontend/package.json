@@ -10,8 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@syncfusion/ej2": "^29.1.40",
+    "@syncfusion/ej2-angular-grids": "^29.1.40",
+    "@syncfusion/ej2-angular-inputs": "^29.1.39",
     "axios": "^1.8.3",
     "jspdf": "^3.0.1",
+    "primereact": "^10.9.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-markdown": "^10.1.0",

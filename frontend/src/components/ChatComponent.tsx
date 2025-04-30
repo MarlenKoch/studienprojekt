@@ -303,6 +303,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
             placeholder="Enter title to save the chat"
           />
           <button onClick={handleSaveChat}>Save Chat</button>
+          <button ejs-button="blub2">Button</button>
         </>
       )}
       <h4>Saved Chats:</h4>
