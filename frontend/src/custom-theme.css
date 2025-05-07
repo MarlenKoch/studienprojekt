@@ -1,0 +1,75 @@
+:root {
+  /* Farbdefinitionen */
+  --primary-color: #182766; /* Orange */
+  --secondary-color: #366a40; /* Braun */
+  --background-color: #142f74; /* Grau */
+  --success-color: #4caf50; /* Grün */
+  --info-color: #e8b4eb; /* Blaugrau */
+  --highlight-color: #d83232; /* Helllila */
+
+  /* Textfarben */
+  --text-color: #f0ff22;
+  --text-secondary-color: #19ce1c;
+
+  /* Grenzen und Hintergründe */
+  --border-color: #548591;
+  --card-background-color: #ebc9f7;
+  --input-background-color: #a9a9a9;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.p-card {
+  background-color: var(--card-background-color);
+  border: 1px solid var(--border-color);
+}
+
+.p-button {
+  background-color: var(--primary-color);
+  border: none;
+  color: white;
+}
+
+.p-inputtext {
+  background-color: var(--input-background-color);
+  border: 1px solid var(--border-color);
+}
+
+.p-panel {
+  border: 1px solid var(--border-color);
+  background-color: var(--card-background-color);
+  color: var(--text-color);
+}
+
+.p-tabview .p-tabview-nav {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.p-datatable th,
+.p-datatable td {
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+.p-message-success {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.p-message-info {
+  background-color: var(--info-color);
+  color: white;
+}
+
+.p-highlight {
+  background-color: var(--highlight-color);
+  color: white;
+}
+
+.p-splitter-panel {
+  background-color: var(--card-background-color);
+}

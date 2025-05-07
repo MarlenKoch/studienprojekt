@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { Project } from "../types/Project";
-import { Card } from "primereact/card";
 
-const Home: React.FC = () => {
+const Home_Old: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [newProjectTitle, setNewProjectTitle] = useState("");
 
@@ -61,21 +60,15 @@ const Home: React.FC = () => {
       <h3>Existing Projects:</h3>
       <ul>
         {projects.map((project) => (
-          <Link
-            to={`/project/${project.id}`}
-            style={{ textDecoration: "none" }}
-            key={project.id}
-          >
-            <Card
-              title={project.title}
-              subTitle="Card subtitle"
-              className="md:w-25rem"
-            ></Card>
-          </Link>
+          <li key={project.id}>
+            <Link to={`/project/${project.id}`}>
+              {project.title} - {project.sources_json}
+            </Link>
+          </li>
         ))}
       </ul>
     </div>
   );
 };
 
-export default Home;
+export default Home_Old;

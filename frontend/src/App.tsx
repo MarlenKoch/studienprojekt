@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import Home from "./components/Home";
+import Home from "./components/Home_Old";
 import ProjectView from "./components/ProjectView";
 import { StudentContext } from "./context/StudentContext";
 
@@ -9,13 +9,12 @@ const App: React.FC = () => {
   const studentBool = isStudent ? true : false;
 
   return (
-
     <StudentContext value={studentBool}>
       <label>
         <input
           type="checkbox"
           checked={isStudent}
-          onChange={e => {
+          onChange={(e) => {
             setIsStudent(e.target.checked);
           }}
         />

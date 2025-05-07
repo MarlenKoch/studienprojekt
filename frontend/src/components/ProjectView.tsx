@@ -6,6 +6,9 @@ import { Project } from "../types/Project";
 import { Paragraph } from "../types/Paragraph";
 import ChatComponent from "./ChatComponent";
 import { StudentContext } from "../context/StudentContext";
+import { Splitter, SplitterPanel } from "primereact/splitter";
+// import { Card } from "primereact/card";
+import { Button } from "primereact/button";
 
 const ProjectView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -171,71 +174,74 @@ const ProjectView: React.FC = () => {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column" }}>
-      <h2>Project View for Project ID: {id}</h2>
-      {project ? (
-        <div>
-          <h3>{project.title}</h3>
-          {/* <textarea
-            value={editSources}
-            onChange={(e) => setEditSources(e.target.value)}
-            style={{ width: "100%", height: "100px" }}
-          /> */}
-          {/* <button onClick={generateError}>
-            Click here to create error message
-          </button> */}
-        </div>
-      ) : (
-        <p>Loading...</p>
-      )}
+    <div>
+      <h5>Project View for Project ID: {id}</h5>
+      {project ? <h3>{project.title}</h3> : <p>Loading...</p>}
 
-      <h3>Paragraphs</h3>
-      <ul>
-        {paragraphs.map((paragraph) => (
-          <li key={paragraph.id}>
-            <textarea
-              value={paragraph.content_json}
-              onChange={(e) =>
-                handleParagraphChange(paragraph.id, e.target.value)
-              }
-              placeholder="Edit paragraph content"
-              style={{
-                width: "100%",
-                height: "auto",
-                minHeight: "60px",
-                overflow: "hidden",
-                resize: "none",
-              }}
-              onClick={() => handleParagraphClick(paragraph.id)}
+      <Splitter style={{ height: "500px" }}>
+        {/* Scrollable Panel for Paragraphs */}
+        <SplitterPanel
+          size={30}
+          style={{ overflow: "auto" }}
+          className="flex align-items-center justify-content-center"
+        >
+          <ul>
+            {paragraphs.map((paragraph) => (
+              <li key={paragraph.id}>
+                <textarea
+                  value={paragraph.content_json}
+                  onChange={(e) =>
+                    handleParagraphChange(paragraph.id, e.target.value)
+                  }
+                  placeholder="Edit paragraph content"
+                  style={{
+                    width: "100%",
+                    height: "auto",
+                    minHeight: "60px",
+                    overflow: "hidden",
+                    resize: "none",
+                  }}
+                  onClick={() => handleParagraphClick(paragraph.id)}
+                />
+                <Button
+                  label="Save"
+                  onClick={() => handleSaveParagraph(paragraph.id)}
+                />
+              </li>
+            ))}
+          </ul>
+          <div>
+            <input
+              type="text"
+              value={newParagraphContent}
+              onChange={(e) => setNewParagraphContent(e.target.value)}
+              placeholder="Enter paragraph content"
+              style={{ marginRight: "10px" }}
             />
-            <button onClick={() => handleSaveParagraph(paragraph.id)}>
-              Save
-            </button>
-          </li>
-        ))}
-      </ul>
+            <Button label="Add Paragraph" onClick={handleAddParagraph} />
+          </div>
+        </SplitterPanel>
 
-      <div>
-        <h3>Add New Paragraph</h3>
-        <input
-          type="text"
-          value={newParagraphContent}
-          onChange={(e) => setNewParagraphContent(e.target.value)}
-          placeholder="Enter paragraph content"
-          style={{ marginRight: "10px" }}
-        />
-        <button onClick={handleAddParagraph}>Add Paragraph</button>
-      </div>
-      {activeParagraphId !== null && (
-        <ChatComponent
-          paragraphId={activeParagraphId}
-          aiModelList={aiModelList}
-        />
-      )}
-      <button onClick={() => setIsCreatingPromptJson(true)}>
-        Generate PDF
-      </button>
+        {/* Scrollable Panel for Saved Chats */}
+        <SplitterPanel size={30} style={{ overflow: "auto" }}>
+          <p>List of saved chats will appear here.</p>
+        </SplitterPanel>
 
+        {/* Scrollable Panel for Current Chat */}
+        <SplitterPanel size={40} style={{ overflow: "auto" }}>
+          {activeParagraphId !== null && (
+            <ChatComponent
+              paragraphId={activeParagraphId}
+              aiModelList={aiModelList}
+            />
+          )}
+        </SplitterPanel>
+      </Splitter>
+
+      <Button
+        label="Generate PDF"
+        onClick={() => setIsCreatingPromptJson(true)}
+      />
       <div>
         {isStudent ? <p>Im Schülermodus</p> : <p>Du bist kein Schüler</p>}
       </div>
