@@ -7,14 +7,14 @@ from typing import Optional
 
 
 class ProjectCreate(BaseModel):
-    sources_json: str
     title: str
+    mode: int
 
 
 class ProjectResponse(BaseModel):
     id: int
-    sources_json: str
     title: str
+    mode: int
 
 
 class ParagraphCreate(BaseModel):

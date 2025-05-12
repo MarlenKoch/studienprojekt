@@ -31,8 +31,7 @@ const Home: React.FC = () => {
 
     try {
       const newProject = {
-        title: newProjectTitle,
-        sources_json: "{}", // Default 
+        title: newProjectTitle
       };
 
       const response = await axios.post<Project>(
@@ -63,7 +62,7 @@ const Home: React.FC = () => {
         {projects.map((project) => (
           <li key={project.id}>
             <Link to={`/project/${project.id}`}>
-              {project.title} - {project.sources_json}
+              {project.title}
             </Link>
           </li>
         ))}
