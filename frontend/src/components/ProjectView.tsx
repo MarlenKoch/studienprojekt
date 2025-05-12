@@ -170,18 +170,47 @@ const ProjectView: React.FC = () => {
     doc.save(`${fileName}.pdf`);
   }
 
+  const handleFocus = () => {
+    console.log("Das Fenster hat den Fokus erhalten.");
+    // Hier kannst du weitere Logik implementieren, z.B. Status aktualisieren
+  };
+
+  // Funktion, die aufgerufen wird, wenn das Fenster den Fokus verliert
+  const handleBlur = () => {
+    console.log("Das Fenster hat den Fokus verloren.");
+    // Hier kannst du Entscheidungen treffen, z.B. den Nutzer benachrichtigen
+  };
+  window.addEventListener("focus", handleFocus);
+  window.addEventListener("blur", handleBlur);
+
+  // Variable für die Timer-Dauer in Millisekunden (hier: 10 Sekunden)
+  const timerDuration = 10000;
+
+  // Referenz auf den Start-Button
+  const startTimerBtn = document.getElementById("startTimerBtn");
+
+  // Funktion zum Starten des Timers
+  const startTimer = () => {
+    console.log("Timer gestartet. Countdown beginnt...");
+    setTimeout(() => {
+      console.log("Der Timer ist abgelaufen.");
+      // Hier kannst du zusätzliche Logik nach Ablauf des Timers hinzufügen
+    }, timerDuration);
+  };
+
+  // Ereignis-Listener für den Button, um den Timer zu starten
+  startTimerBtn.addEventListener("click", startTimer);
+
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <h2>Project View for Project ID: {id}</h2>
       {project ? (
         <div>
           <h3>{project.title}</h3>
-
         </div>
       ) : (
         <p>Loading...</p>
       )}
-
       <h3>Paragraphs</h3>
       <ul>
         {paragraphs.map((paragraph) => (
@@ -207,7 +236,6 @@ const ProjectView: React.FC = () => {
           </li>
         ))}
       </ul>
-
       <div>
         <h3>Add New Paragraph</h3>
         <input
@@ -228,7 +256,6 @@ const ProjectView: React.FC = () => {
       <button onClick={() => setIsCreatingPromptJson(true)}>
         Generate PDF
       </button>
-
       <div>
         {isStudent ? <p>Im Schülermodus</p> : <p>Du bist kein Schüler</p>}
       </div>
