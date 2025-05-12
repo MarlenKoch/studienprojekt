@@ -7,6 +7,11 @@ from typing import Optional
 
 
 class ProjectCreate(BaseModel):
+    title: Optional[str] = None
+    mode: Optional[int] = None
+
+
+class ProjectUpdate(BaseModel):
     title: str
     mode: int
 
