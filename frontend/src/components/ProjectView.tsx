@@ -21,6 +21,8 @@ const ProjectView: React.FC = () => {
     useState<boolean>(false);
 
   const isStudent = useContext(StudentContext);
+  const timerDuration = 20; // Set to required duration
+  const [timeLeft, setTimeLeft] = useState<number | null>(null); // Store remaining time for timer
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -29,6 +31,11 @@ const ProjectView: React.FC = () => {
           `http://localhost:8000/projects/${id}`
         );
         setProject(response.data);
+
+        // Start timer if project mode is 2
+        if (response.data.mode === 2) {
+          startTimer(timerDuration);
+        }
       } catch (error) {
         console.error("Error fetching project:", error);
       }
@@ -47,7 +54,22 @@ const ProjectView: React.FC = () => {
 
     fetchProject();
     fetchParagraphs();
-  }, [id]);
+
+    window.addEventListener("focus", handleFocus);
+    window.addEventListener("blur", handleBlur);
+
+    // Cleanup on unmount
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("blur", handleBlur);
+    };
+  }, [id]); // Re-run when project `id` changes, handles switching projects
+
+  useEffect(() => {
+    if (project?.mode === 2 && timeLeft === null) {
+      startTimer(timerDuration);
+    }
+  }, [project?.mode]);
 
   useEffect(() => {
     const getPromptsGeneratePDF = async () => {
@@ -172,32 +194,57 @@ const ProjectView: React.FC = () => {
 
   const handleFocus = () => {
     console.log("Das Fenster hat den Fokus erhalten.");
-    // Hier kannst du weitere Logik implementieren, z.B. Status aktualisieren
   };
 
-  // Funktion, die aufgerufen wird, wenn das Fenster den Fokus verliert
-  const handleBlur = () => {
+  const handleBlur = async () => {
     console.log("Das Fenster hat den Fokus verloren.");
-    // Hier kannst du Entscheidungen treffen, z.B. den Nutzer benachrichtigen
+    await updateProjectMode(3);
   };
-  window.addEventListener("focus", handleFocus);
-  window.addEventListener("blur", handleBlur);
 
-  // Variable für die Timer-Dauer in Millisekunden (hier: 10 Sekunden)
-  const timerDuration = 10000;
+  const updateProjectMode = async (newMode: number) => {
+    if (!project) return;
+    try {
+      await axios.put(`http://localhost:8000/projects/${project.id}`, {
+        mode: newMode,
+      });
+      setProject({ ...project, mode: newMode });
+      console.log(`Projektmodus wurde auf ${newMode} gesetzt.`);
+    } catch (error) {
+      console.error("Error updating project mode:", error);
+    }
+  };
 
-  // Funktion zum Starten des Timers
-  const startTimer = () => {
-    console.log("Timer gestartet. Countdown beginnt...");
-    setTimeout(() => {
-      console.log("Der Timer ist abgelaufen.");
-      // Hier kannst du zusätzliche Logik nach Ablauf des Timers hinzufügen
-    }, timerDuration);
+  const startTimer = (duration: number) => {
+    const endTime = Date.now() + duration * 1000; // Calculate end time based on duration
+
+    const timerInterval = setInterval(() => {
+      const currentTime = Date.now();
+      const newTimeLeft = Math.max(
+        Math.round((endTime - currentTime) / 1000),
+        0
+      );
+
+      console.log(newTimeLeft);
+
+      if (newTimeLeft <= 0) {
+        clearInterval(timerInterval);
+        console.log("ende");
+        updateProjectMode(3); // Update project mode when the timer ends
+      }
+
+      setTimeLeft(newTimeLeft);
+    }, 1000); // Update the timer every second
+
+    // Clear the interval when the component unmounts to prevent memory leaks
+    return () => clearInterval(timerInterval);
   };
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
-      <button onClick={startTimer}>Timer starten</button>
+      <h3>
+        Remaining Time:{" "}
+        {timeLeft !== null ? `${timeLeft} seconds` : "Not Applicable"}
+      </h3>{" "}
       <h2>Project View for Project ID: {id}</h2>
       {project ? (
         <div>

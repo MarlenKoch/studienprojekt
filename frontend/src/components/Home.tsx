@@ -32,7 +32,7 @@ const Home: React.FC = () => {
     try {
       const newProject = {
         title: newProjectTitle,
-        mode: newProjectMode, // Mode wird jetzt übergeben
+        mode: newProjectMode,
       };
 
       const response = await axios.post<Project>(
@@ -40,9 +40,10 @@ const Home: React.FC = () => {
         newProject,
         { headers: { "Content-Type": "application/json" } }
       );
+
       setProjects([...projects, response.data]);
       setNewProjectTitle("");
-      setNewProjectMode(0); // Zurücksetzen des Mode-Auswahl-Dropdowns
+      setNewProjectMode(0);
     } catch (error) {
       console.error("Error creating project:", error);
     }
