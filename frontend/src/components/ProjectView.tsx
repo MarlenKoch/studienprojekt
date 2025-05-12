@@ -186,9 +186,6 @@ const ProjectView: React.FC = () => {
   // Variable für die Timer-Dauer in Millisekunden (hier: 10 Sekunden)
   const timerDuration = 10000;
 
-  // Referenz auf den Start-Button
-  const startTimerBtn = document.getElementById("startTimerBtn");
-
   // Funktion zum Starten des Timers
   const startTimer = () => {
     console.log("Timer gestartet. Countdown beginnt...");
@@ -198,11 +195,9 @@ const ProjectView: React.FC = () => {
     }, timerDuration);
   };
 
-  // Ereignis-Listener für den Button, um den Timer zu starten
-  startTimerBtn.addEventListener("click", startTimer);
-
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
+      <button onClick={startTimer}>Timer starten</button>
       <h2>Project View for Project ID: {id}</h2>
       {project ? (
         <div>
