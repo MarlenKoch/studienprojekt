@@ -11,6 +11,10 @@ class ProjectCreate(BaseModel):
     mode: int
 
 
+class ProjectUpdate(BaseModel):
+    mode: Optional[int] = None
+
+
 class ProjectResponse(BaseModel):
     id: int
     title: str

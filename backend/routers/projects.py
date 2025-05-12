@@ -5,11 +5,18 @@ from crud import (
     get_projects,
     get_project,
     create_project,
+    update_project,
     delete_project,
     get_paragraphs_for_project,
     get_chats_for_project,
 )
-from schemas import ProjectCreate, ProjectResponse, ParagraphResponse, ChatResponse
+from schemas import (
+    ProjectCreate,
+    ProjectResponse,
+    ParagraphResponse,
+    ChatResponse,
+    ProjectUpdate,
+)
 
 router = APIRouter()
 
@@ -18,6 +25,17 @@ router = APIRouter()
 @router.post("/", response_model=ProjectResponse)
 def create_project_endpoint(project: ProjectCreate, db: Session = Depends(get_db)):
     return create_project(db, project)
+
+
+# Endpoint zum Updaten eines Projektes nach ID
+@router.put("/{project_id}", response_model=ProjectResponse)
+def update_project_endpoint(
+    project_id: int, updated_data: ProjectUpdate, db: Session = Depends(get_db)
+):
+    project = update_project(db, project_id, updated_data)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return project
 
 
 # Endpoint zum Abrufen aller Projekte

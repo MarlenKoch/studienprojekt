@@ -1,6 +1,12 @@
 from sqlalchemy.orm import Session
 from classModelsForDB import Project, Paragraph, Chat
-from schemas import ProjectCreate, ParagraphCreate, ChatCreate, ParagraphUpdate
+from schemas import (
+    ProjectCreate,
+    ParagraphCreate,
+    ChatCreate,
+    ParagraphUpdate,
+    ProjectUpdate,
+)
 
 
 # CRUD for Projects
@@ -18,6 +24,17 @@ def create_project(db: Session, project_data: ProjectCreate):
     db.commit()
     db.refresh(db_project)
     return db_project
+
+
+def update_project(db: Session, project_id: int, project_data: ProjectUpdate):
+    project = get_project(db, project_id)
+    if not project:
+        return None
+    for key, value in project_data.dict().items():
+        setattr(project, key, value)
+    db.commit()
+    db.refresh(project)
+    return project
 
 
 def delete_project(db: Session, project_id: int):
@@ -126,4 +143,3 @@ def update_chat(db: Session, chat_id: int, updated_data: ChatCreate):
     else:
         print("Chat not found or no fields to update.")
     return None
-
