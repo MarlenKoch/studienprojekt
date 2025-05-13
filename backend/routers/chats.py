@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from db import get_db
-from crud import create_chat, get_chats, get_chat, update_chat
-from schemas import ChatResponse, ChatCreate
+from crud import create_chat, get_chats, get_chat, update_chat, get_answers_for_chat
+from schemas import ChatResponse, ChatCreate, AnswerResponse
 
 
 router = APIRouter()
 
 
-# Endpoint zum erstellen eines Chats
+# Endpoint zum Erstellen eines Chats
 @router.post("/", response_model=ChatResponse)
 def create_chat_endpoint(chat: ChatCreate, db: Session = Depends(get_db)):
     return create_chat(db, chat)
@@ -29,9 +29,21 @@ def get_chat_endpoint(chat_id: int, db: Session = Depends(get_db)):
     return chat
 
 
-@router.put("/{chat_id}", response_model=ChatCreate)
-def update_chat_endpoint(chat_id: int, chat_update: ChatCreate, db: Session = Depends(get_db)):
+# Endpoint zum Updaten eines Chats
+@router.put("/{chat_id}", response_model=ChatResponse)
+def update_chat_endpoint(
+    chat_id: int,
+    chat_update: ChatCreate,
+    db: Session = Depends(get_db),  # hier ChatUpdate statt Create einfügen
+):
     updated_chat = update_chat(db, chat_id, chat_update)
     if not updated_chat:
         raise HTTPException(status_code=404, detail="Chat not found")
     return updated_chat
+
+
+# Endpoint zum Abrufen aller Answers für einen bestimmten Chat
+@router.get("/{chat_id}/answers/", response_model=list[AnswerResponse])
+def get_answers_for_chat_endpoint(chat_id: int, db: Session = Depends(get_db)):
+    answers = get_answers_for_chat(db, chat_id)
+    return answers

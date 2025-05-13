@@ -33,5 +33,19 @@ class Chat(Base):
     task = Column(String, index=True)
     content_json = Column(String, index=True)
     paragraph_id = Column(Integer, ForeignKey("paragraphs.id"), index=True)
+    answers = relationship("Answer", back_populates="chats")
 
     paragraph = relationship("Paragraph", back_populates="chats")
+
+
+# Speichern der einzelnen KI-Antworten
+class Answer(Base):
+    __tablename__ = "answers"
+
+    id = Column(Integer, primary_key=True, index=True)
+    task = Column(String, index=True)
+    ai_answer = Column(String, index=True)
+    user_note = Column(String, index=True)
+    chat_id = Column(Integer, ForeignKey("chats.id"), index=True)
+
+    chats = relationship("Chat", back_populates="answers")

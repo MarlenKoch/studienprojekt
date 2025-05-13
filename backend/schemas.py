@@ -6,6 +6,7 @@ from typing import Optional
 # kontrolliert, ob die alle Werte die required sind gesetzt werden und den richtigen Typ haben
 
 
+# Project
 class ProjectCreate(BaseModel):
     title: str
     mode: int
@@ -21,6 +22,7 @@ class ProjectResponse(BaseModel):
     mode: int
 
 
+# Paragraph
 class ParagraphCreate(BaseModel):
     project_id: int
     content_json: str
@@ -37,6 +39,7 @@ class ParagraphUpdate(BaseModel):
     content_json: Optional[str] = None
 
 
+# Chat
 class ChatCreate(BaseModel):
     title: str
     aiModel: str
@@ -52,3 +55,26 @@ class ChatResponse(BaseModel):
     task: str
     content_json: str
     paragraph_id: int
+
+
+# Answer
+class AnswerCreate(BaseModel):
+    task: str
+    ai_answer: str
+    user_note: str
+    chat_id: int
+
+
+class AnswerResponse(BaseModel):
+    id: int
+    task: str
+    ai_answer: str
+    user_note: str
+    chat_id: int
+
+
+class AnswerUpdate(BaseModel):
+    task: Optional[str] = None
+    task: Optional[str] = None
+    task: Optional[str] = None
+    chatId: Optional[int] = None
