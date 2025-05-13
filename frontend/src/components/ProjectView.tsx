@@ -75,6 +75,10 @@ const ProjectView: React.FC = () => {
   }, [id]); // Re-run when project `id` changes, handles switching projects
 
   useEffect(() => {
+    console.log("ues effect: ", project);
+  }, [project]);
+
+  useEffect(() => {
     if (project?.mode === 2 && timeLeft === null) {
       startTimer(timerDuration);
     }
