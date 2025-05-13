@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import jsPDF from "jspdf";
 import { useParams } from "react-router-dom";
 import { Project } from "../types/Project";
@@ -16,24 +16,33 @@ const ProjectView: React.FC = () => {
     null
   );
   const [aiModelList, setaiModelList] = useState<string[]>([]);
-  const [promptsJson, setPrompsJson] = useState<string>("");
+  const [promptsJson, setPromptsJson] = useState<string>("");
   const [isCreatingPromptJson, setIsCreatingPromptJson] =
     useState<boolean>(false);
 
   const isStudent = useContext(StudentContext);
   const timerDuration = 20; // Set to required duration
   const [timeLeft, setTimeLeft] = useState<number | null>(null); // Store remaining time for timer
+  const timerIntervalRef = useRef<number | null>(null);
 
   useEffect(() => {
     const fetchProject = async () => {
       try {
+        console.log("id ist: ", id);
         const response = await axios.get<Project>(
           `http://localhost:8000/projects/${id}`
         );
-        setProject(response.data);
+        console.log(response.data);
+        //setProject(response.data);
+        setProject({
+          id: 0,
+          title: "fluub",
+          mode: 0,
+        });
 
         // Start timer if project mode is 2
         if (response.data.mode === 2) {
+          console.log("start timer with: ", project, project?.title);
           startTimer(timerDuration);
         }
       } catch (error) {
@@ -79,7 +88,7 @@ const ProjectView: React.FC = () => {
             `http://localhost:8000/promptverzeichnis/`,
             { params: { project_id: project.id } }
           );
-          setPrompsJson(response.data);
+          setPromptsJson(response.data);
           console.log(promptsJson);
 
           generatePDF(
@@ -198,11 +207,16 @@ const ProjectView: React.FC = () => {
 
   const handleBlur = async () => {
     console.log("Das Fenster hat den Fokus verloren.");
-    await updateProjectMode(3);
+    stopTimer(); // Stop the timer
+    await updateProjectMode(3); // Immediately update the project mode
+    console.log(project);
   };
 
   const updateProjectMode = async (newMode: number) => {
-    if (!project) return;
+    console.log("function called: ", project, project?.title);
+    if (!project) {
+      return;
+    }
     try {
       await axios.put(`http://localhost:8000/projects/${project.id}`, {
         mode: newMode,
@@ -215,28 +229,33 @@ const ProjectView: React.FC = () => {
   };
 
   const startTimer = (duration: number) => {
-    const endTime = Date.now() + duration * 1000; // Calculate end time based on duration
+    const endTime = Date.now() + duration * 1000;
 
-    const timerInterval = setInterval(() => {
-      const currentTime = Date.now();
-      const newTimeLeft = Math.max(
-        Math.round((endTime - currentTime) / 1000),
-        0
-      );
+    if (!timerIntervalRef.current) {
+      timerIntervalRef.current = window.setInterval(() => {
+        const currentTime = Date.now();
+        const newTimeLeft = Math.max(
+          Math.round((endTime - currentTime) / 1000),
+          0
+        );
 
-      console.log(newTimeLeft);
+        setTimeLeft(newTimeLeft);
 
-      if (newTimeLeft <= 0) {
-        clearInterval(timerInterval);
-        console.log("ende");
-        updateProjectMode(3); // Update project mode when the timer ends
-      }
+        if (newTimeLeft <= 0 && timerIntervalRef.current) {
+          stopTimer();
+          console.log("ende");
+          console.log("vor dem updaten: ", project, project?.title);
+          updateProjectMode(3);
+        }
+      }, 1000);
+    }
+  };
 
-      setTimeLeft(newTimeLeft);
-    }, 1000); // Update the timer every second
-
-    // Clear the interval when the component unmounts to prevent memory leaks
-    return () => clearInterval(timerInterval);
+  const stopTimer = () => {
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null; // Reset interval reference
+    }
   };
 
   return (
@@ -245,7 +264,9 @@ const ProjectView: React.FC = () => {
         Remaining Time:{" "}
         {timeLeft !== null ? `${timeLeft} seconds` : "Not Applicable"}
       </h3>{" "}
-      <h2>Project View for Project ID: {id}</h2>
+      <h2>
+        Project View for Project ID: {id}, {project?.id}
+      </h2>
       {project ? (
         <div>
           <h3>{project.title}</h3>
