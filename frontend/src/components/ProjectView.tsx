@@ -295,6 +295,72 @@ const ProjectView: React.FC = () => {
     }
   };
 
+  // return (
+  //   <div style={{ display: "flex", flexDirection: "column" }}>
+  //     <h3>
+  //       Remaining Time:{" "}
+  //       {timeLeft !== null ? `${timeLeft} seconds` : "Not Applicable"}
+  //     </h3>{" "}
+  //     <h2>
+  //       Project View for Project ID: {id}, {project?.id}
+  //     </h2>
+  //     {project ? (
+  //       <div>
+  //         <h3>{project.title}</h3>
+  //       </div>
+  //     ) : (
+  //       <p>Loading...</p>
+  //     )}
+  //     <h3>Paragraphs</h3>
+  //     <ul>
+  //       {paragraphs.map((paragraph) => (
+  //         <li key={paragraph.id}>
+  //           <textarea
+  //             value={paragraph.content_json}
+  //             onChange={(e) =>
+  //               handleParagraphChange(paragraph.id, e.target.value)
+  //             }
+  //             placeholder="Edit paragraph content"
+  //             style={{
+  //               width: "100%",
+  //               height: "auto",
+  //               minHeight: "60px",
+  //               overflow: "hidden",
+  //               resize: "none",
+  //             }}
+  //             onClick={() => handleParagraphClick(paragraph.id)}
+  //           />
+  //           <button onClick={() => handleSaveParagraph(paragraph.id)}>
+  //             Save
+  //           </button>
+  //         </li>
+  //       ))}
+  //     </ul>
+  //     <div>
+  //       <h3>Add New Paragraph</h3>
+  //       <input
+  //         type="text"
+  //         value={newParagraphContent}
+  //         onChange={(e) => setNewParagraphContent(e.target.value)}
+  //         placeholder="Enter paragraph content"
+  //         style={{ marginRight: "10px" }}
+  //       />
+  //       <button onClick={handleAddParagraph}>Add Paragraph</button>
+  //     </div>
+  //     {activeParagraphId !== null && (
+  //       <ChatComponent
+  //         paragraphId={activeParagraphId}
+  //         aiModelList={aiModelList}
+  //       />
+  //     )}
+  //     <button onClick={() => setIsCreatingPromptJson(true)}>
+  //       Generate PDF
+  //     </button>
+  //     <div>
+  //       {isStudent ? <p>Im Schülermodus</p> : <p>Du bist kein Schüler</p>}
+  //     </div>
+  //   </div>
+  // );
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <h3>
@@ -318,7 +384,9 @@ const ProjectView: React.FC = () => {
             <textarea
               value={paragraph.content_json}
               onChange={(e) =>
-                handleParagraphChange(paragraph.id, e.target.value)
+                project?.mode !== 4
+                  ? handleParagraphChange(paragraph.id, e.target.value)
+                  : undefined
               }
               placeholder="Edit paragraph content"
               style={{
@@ -328,26 +396,35 @@ const ProjectView: React.FC = () => {
                 overflow: "hidden",
                 resize: "none",
               }}
-              onClick={() => handleParagraphClick(paragraph.id)}
+              onClick={
+                project?.mode !== 4
+                  ? () => handleParagraphClick(paragraph.id)
+                  : undefined
+              }
+              readOnly={project?.mode === 4}
             />
-            <button onClick={() => handleSaveParagraph(paragraph.id)}>
-              Save
-            </button>
+            {project?.mode !== 4 && (
+              <button onClick={() => handleSaveParagraph(paragraph.id)}>
+                Save
+              </button>
+            )}
           </li>
         ))}
       </ul>
-      <div>
-        <h3>Add New Paragraph</h3>
-        <input
-          type="text"
-          value={newParagraphContent}
-          onChange={(e) => setNewParagraphContent(e.target.value)}
-          placeholder="Enter paragraph content"
-          style={{ marginRight: "10px" }}
-        />
-        <button onClick={handleAddParagraph}>Add Paragraph</button>
-      </div>
-      {activeParagraphId !== null && (
+      {project?.mode !== 4 && (
+        <div>
+          <h3>Add New Paragraph</h3>
+          <input
+            type="text"
+            value={newParagraphContent}
+            onChange={(e) => setNewParagraphContent(e.target.value)}
+            placeholder="Enter paragraph content"
+            style={{ marginRight: "10px" }}
+          />
+          <button onClick={handleAddParagraph}>Add Paragraph</button>
+        </div>
+      )}
+      {project?.mode !== 4 && activeParagraphId !== null && (
         <ChatComponent
           paragraphId={activeParagraphId}
           aiModelList={aiModelList}
