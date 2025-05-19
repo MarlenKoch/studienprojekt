@@ -35,6 +35,13 @@ const ProjectView: React.FC = () => {
         );
         console.log(response.data);
         setProject(response.data);
+        if (response.data.mode === 2) {
+          //updateProjectMode(3);
+          setIsChangingMode(true);
+        } else if (response.data.mode === 3) {
+          //updateProjectMode(4);
+          setIsChangingMode(true);
+        }
         // setProject({
         //   id: 0,
         //   title: "fluub",
@@ -80,14 +87,21 @@ const ProjectView: React.FC = () => {
     console.log("ftüü: ", project);
     if (project?.mode === 2 && timeLeft === null) {
       console.log("start timer with: ", project, project?.title);
+      //updateProjectMode(3);
+      setIsChangingMode(true);
       startTimer(timerDuration);
+    } else if (project?.mode === 3) {
+      stopTimer();
+      //updateProjectMode(4);
+      setIsChangingMode(true);
     }
   }, [project?.id]);
 
   useEffect(() => {
     console.log("ues effect: ", project);
-    console.log("ftüü: ", project);
-    updateProjectMode(3);
+    if (project?.mode === 2) updateProjectMode(3);
+    else if (project?.mode === 3) updateProjectMode(4);
+    setIsChangingMode(false);
   }, [isChangingMode]);
 
   // useEffect(() => {
@@ -225,13 +239,18 @@ const ProjectView: React.FC = () => {
     console.log("Das Fenster hat den Fokus verloren.");
     stopTimer(); // Stop the timer
     setIsChangingMode(true);
-    await updateProjectMode(3); // Immediately update the project mode
+    // if (project?.mode === 3) {
+    //   setIsChangingMode(true);
+    //   console.log("plumps");
+    // }
+    console.log("modus:  ", project?.mode);
     console.log(project);
   };
 
   const updateProjectMode = async (newMode: number) => {
     console.log("function called: ", project, project?.title);
     if (!project) {
+      console.log("no project");
       return;
     }
     try {
