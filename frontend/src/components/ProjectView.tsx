@@ -24,6 +24,7 @@ const ProjectView: React.FC = () => {
   const timerDuration = 20; // Set to required duration
   const [timeLeft, setTimeLeft] = useState<number | null>(null); // Store remaining time for timer
   const timerIntervalRef = useRef<number | null>(null);
+  const [isChangingMode, setIsChangingMode] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -33,18 +34,18 @@ const ProjectView: React.FC = () => {
           `http://localhost:8000/projects/${id}`
         );
         console.log(response.data);
-        //setProject(response.data);
-        setProject({
-          id: 0,
-          title: "fluub",
-          mode: 0,
-        });
+        setProject(response.data);
+        // setProject({
+        //   id: 0,
+        //   title: "fluub",
+        //   mode: 0,
+        // });
 
         // Start timer if project mode is 2
-        if (response.data.mode === 2) {
-          console.log("start timer with: ", project, project?.title);
-          startTimer(timerDuration);
-        }
+        // if (response.data.mode === 2) {
+        //   console.log("start timer with: ", project, project?.title);
+        //   startTimer(timerDuration);
+        // }
       } catch (error) {
         console.error("Error fetching project:", error);
       }
@@ -76,13 +77,24 @@ const ProjectView: React.FC = () => {
 
   useEffect(() => {
     console.log("ues effect: ", project);
-  }, [project]);
-
-  useEffect(() => {
+    console.log("ftüü: ", project);
     if (project?.mode === 2 && timeLeft === null) {
+      console.log("start timer with: ", project, project?.title);
       startTimer(timerDuration);
     }
-  }, [project?.mode]);
+  }, [project?.id]);
+
+  useEffect(() => {
+    console.log("ues effect: ", project);
+    console.log("ftüü: ", project);
+    updateProjectMode(3);
+  }, [isChangingMode]);
+
+  // useEffect(() => {
+  //   if (project?.mode === 2 && timeLeft === null) {
+  //     startTimer(timerDuration);
+  //   }
+  // }, [project?.mode]);
 
   useEffect(() => {
     const getPromptsGeneratePDF = async () => {
@@ -212,6 +224,7 @@ const ProjectView: React.FC = () => {
   const handleBlur = async () => {
     console.log("Das Fenster hat den Fokus verloren.");
     stopTimer(); // Stop the timer
+    setIsChangingMode(true);
     await updateProjectMode(3); // Immediately update the project mode
     console.log(project);
   };
@@ -249,7 +262,8 @@ const ProjectView: React.FC = () => {
           stopTimer();
           console.log("ende");
           console.log("vor dem updaten: ", project, project?.title);
-          updateProjectMode(3);
+          setIsChangingMode(true);
+          console.log("So jetze aberr");
         }
       }, 1000);
     }
