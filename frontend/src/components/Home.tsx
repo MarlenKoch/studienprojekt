@@ -30,7 +30,7 @@ const Home: React.FC = () => {
 
     const cleanUpContext = async () => {
       if (currentMode === 2) await setProjectMode(currentProjectId, 3);
-      //setCurrentProjectId(null);
+      setCurrentProjectId(null);
       stopTimer();
       console.log("kwenvgwo");
     };
