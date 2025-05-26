@@ -1,11 +1,12 @@
 import axios from "axios";
-import React, { useEffect, useState, useContext, useRef } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import jsPDF from "jspdf";
 import { useParams } from "react-router-dom";
 import { Project } from "../types/Project";
 import { Paragraph } from "../types/Paragraph";
 import ChatComponent from "./ChatComponent";
 import { StudentContext } from "../context/StudentContext";
+import { useProjectTimer } from "../context/ProjectTimerContext";
 
 const ProjectView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -22,9 +23,10 @@ const ProjectView: React.FC = () => {
 
   const isStudent = useContext(StudentContext);
   const timerDuration = 20; // Set to required duration
-  const [timeLeft, setTimeLeft] = useState<number | null>(null); // Store remaining time for timer
-  const timerIntervalRef = useRef<number | null>(null);
+  //const [timeLeft, setTimeLeft] = useState<number | null>(null); // Store remaining time for timer
+  //const timerIntervalRef = useRef<number | null>(null);
   const [isChangingMode, setIsChangingMode] = useState<boolean>(false);
+  const { timeLeft, startTimer, stopTimer, setOnTimeout } = useProjectTimer();
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -35,13 +37,13 @@ const ProjectView: React.FC = () => {
         );
         console.log(response.data);
         setProject(response.data);
-        if (response.data.mode === 2) {
-          //updateProjectMode(3);
-          setIsChangingMode(true);
-        } else if (response.data.mode === 3) {
-          //updateProjectMode(4);
-          setIsChangingMode(true);
-        }
+        // if (response.data.mode === 2) {
+        //   //updateProjectMode(3);
+        //   setIsChangingMode(true);
+        // } else if (response.data.mode === 3) {
+        //   //updateProjectMode(4);
+        //   setIsChangingMode(true);
+        // }
         // setProject({
         //   id: 0,
         //   title: "fluub",
@@ -49,10 +51,15 @@ const ProjectView: React.FC = () => {
         // });
 
         // Start timer if project mode is 2
-        // if (response.data.mode === 2) {
-        //   console.log("start timer with: ", project, project?.title);
-        //   startTimer(timerDuration);
-        // }
+        if (response.data.mode === 2) {
+          console.log(
+            "start timer with: ",
+            project,
+            project?.title,
+            response.data
+          );
+          startTimer(timerDuration);
+        }
       } catch (error) {
         console.error("Error fetching project:", error);
       }
@@ -83,25 +90,34 @@ const ProjectView: React.FC = () => {
   }, [id]); // Re-run when project `id` changes, handles switching projects
 
   useEffect(() => {
-    console.log("ues effect: ", project);
-    console.log("ftüü: ", project);
-    if (project?.mode === 2 && timeLeft === null) {
-      console.log("start timer with: ", project, project?.title);
-      //updateProjectMode(3);
+    setOnTimeout(() => {
+      alert("Timer finished!");
+      // You can put any other code here
       setIsChangingMode(true);
-      startTimer(timerDuration);
-    } else if (project?.mode === 3) {
-      stopTimer();
-      //updateProjectMode(4);
-      setIsChangingMode(true);
-    }
-  }, [project?.id]);
+    });
+  }, [setOnTimeout]);
+
+  // useEffect(() => {
+  //   console.log("ues effect: ", project);
+  //   console.log("ftüü: ", project);
+  //   if (project?.mode === 2 && timeLeft === null) {
+  //     console.log("start timer with: ", project, project?.title);
+  //     //updateProjectMode(3);
+  //     //setIsChangingMode(true);
+  //     //startTimer(timerDuration);
+  //   } else if (project?.mode === 3) {
+  //     stopTimer();
+  //     //updateProjectMode(4);
+  //     //setIsChangingMode(true);
+  //   }
+  // }, [project?.id]);
 
   useEffect(() => {
-    console.log("ues effect: ", project);
-    if (project?.mode === 2) updateProjectMode(3);
-    else if (project?.mode === 3) updateProjectMode(4);
-    setIsChangingMode(false);
+    if (isChangingMode === true) {
+      console.log("ues effect: ", project);
+      if (project?.mode === 2) updateProjectMode(3);
+      setIsChangingMode(false);
+    }
   }, [isChangingMode]);
 
   // useEffect(() => {
@@ -264,103 +280,6 @@ const ProjectView: React.FC = () => {
     }
   };
 
-  const startTimer = (duration: number) => {
-    const endTime = Date.now() + duration * 1000;
-
-    if (!timerIntervalRef.current) {
-      timerIntervalRef.current = window.setInterval(() => {
-        const currentTime = Date.now();
-        const newTimeLeft = Math.max(
-          Math.round((endTime - currentTime) / 1000),
-          0
-        );
-
-        setTimeLeft(newTimeLeft);
-
-        if (newTimeLeft <= 0 && timerIntervalRef.current) {
-          stopTimer();
-          console.log("ende");
-          console.log("vor dem updaten: ", project, project?.title);
-          setIsChangingMode(true);
-          console.log("So jetze aberr");
-        }
-      }, 1000);
-    }
-  };
-
-  const stopTimer = () => {
-    if (timerIntervalRef.current) {
-      clearInterval(timerIntervalRef.current);
-      timerIntervalRef.current = null; // Reset interval reference
-    }
-  };
-
-  // return (
-  //   <div style={{ display: "flex", flexDirection: "column" }}>
-  //     <h3>
-  //       Remaining Time:{" "}
-  //       {timeLeft !== null ? `${timeLeft} seconds` : "Not Applicable"}
-  //     </h3>{" "}
-  //     <h2>
-  //       Project View for Project ID: {id}, {project?.id}
-  //     </h2>
-  //     {project ? (
-  //       <div>
-  //         <h3>{project.title}</h3>
-  //       </div>
-  //     ) : (
-  //       <p>Loading...</p>
-  //     )}
-  //     <h3>Paragraphs</h3>
-  //     <ul>
-  //       {paragraphs.map((paragraph) => (
-  //         <li key={paragraph.id}>
-  //           <textarea
-  //             value={paragraph.content_json}
-  //             onChange={(e) =>
-  //               handleParagraphChange(paragraph.id, e.target.value)
-  //             }
-  //             placeholder="Edit paragraph content"
-  //             style={{
-  //               width: "100%",
-  //               height: "auto",
-  //               minHeight: "60px",
-  //               overflow: "hidden",
-  //               resize: "none",
-  //             }}
-  //             onClick={() => handleParagraphClick(paragraph.id)}
-  //           />
-  //           <button onClick={() => handleSaveParagraph(paragraph.id)}>
-  //             Save
-  //           </button>
-  //         </li>
-  //       ))}
-  //     </ul>
-  //     <div>
-  //       <h3>Add New Paragraph</h3>
-  //       <input
-  //         type="text"
-  //         value={newParagraphContent}
-  //         onChange={(e) => setNewParagraphContent(e.target.value)}
-  //         placeholder="Enter paragraph content"
-  //         style={{ marginRight: "10px" }}
-  //       />
-  //       <button onClick={handleAddParagraph}>Add Paragraph</button>
-  //     </div>
-  //     {activeParagraphId !== null && (
-  //       <ChatComponent
-  //         paragraphId={activeParagraphId}
-  //         aiModelList={aiModelList}
-  //       />
-  //     )}
-  //     <button onClick={() => setIsCreatingPromptJson(true)}>
-  //       Generate PDF
-  //     </button>
-  //     <div>
-  //       {isStudent ? <p>Im Schülermodus</p> : <p>Du bist kein Schüler</p>}
-  //     </div>
-  //   </div>
-  // );
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <h3>
