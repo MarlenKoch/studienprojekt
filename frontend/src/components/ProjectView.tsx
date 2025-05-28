@@ -1,12 +1,15 @@
 import axios from "axios";
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import jsPDF from "jspdf";
 import { useParams } from "react-router-dom";
 import { Project } from "../types/Project";
 import { Paragraph } from "../types/Paragraph";
 import ChatComponent from "./ChatComponent";
-import { StudentContext } from "../context/StudentContext";
 import { useProjectTimer } from "../context/ProjectTimerContext";
+
+// 1. Toastify import
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ProjectView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,50 +20,34 @@ const ProjectView: React.FC = () => {
     null
   );
   const [aiModelList, setaiModelList] = useState<string[]>([]);
-  const [promptsJson, setPromptsJson] = useState<string>("");
+  //const [promptsJson, setPromptsJson] = useState<string>("");
   const [isCreatingPromptJson, setIsCreatingPromptJson] =
     useState<boolean>(false);
 
-  const isStudent = useContext(StudentContext);
-  const timerDuration = 20; // Set to required duration
-  //const [timeLeft, setTimeLeft] = useState<number | null>(null); // Store remaining time for timer
-  //const timerIntervalRef = useRef<number | null>(null);
+  // Timer Popup
+  const [showTimerPopup, setShowTimerPopup] = useState(false);
+  const [timerHours, setTimerHours] = useState(0);
+  const [timerMinutes, setTimerMinutes] = useState(20);
+  const [timerSeconds, setTimerSeconds] = useState(0);
+
   const [isChangingMode, setIsChangingMode] = useState<boolean>(false);
   const { timeLeft, startTimer, stopTimer, setOnTimeout } = useProjectTimer();
 
+  // Fetches project and paragraph data
   useEffect(() => {
     const fetchProject = async () => {
       try {
-        console.log("id ist: ", id);
         const response = await axios.get<Project>(
           `http://localhost:8000/projects/${id}`
         );
-        console.log(response.data);
         setProject(response.data);
-        // if (response.data.mode === 2) {
-        //   //updateProjectMode(3);
-        //   setIsChangingMode(true);
-        // } else if (response.data.mode === 3) {
-        //   //updateProjectMode(4);
-        //   setIsChangingMode(true);
-        // }
-        // setProject({
-        //   id: 0,
-        //   title: "fluub",
-        //   mode: 0,
-        // });
 
-        // Start timer if project mode is 2
         if (response.data.mode === 2) {
-          console.log(
-            "start timer with: ",
-            project,
-            project?.title,
-            response.data
-          );
-          startTimer(timerDuration);
+          setShowTimerPopup(true); // Show timer popup
         }
       } catch (error) {
+        // 2. Use toast for error
+        toast.error("Error fetching project");
         console.error("Error fetching project:", error);
       }
     };
@@ -72,6 +59,7 @@ const ProjectView: React.FC = () => {
         );
         setParagraphs(response.data);
       } catch (error) {
+        toast.error("Error fetching paragraphs");
         console.error("Error fetching paragraphs:", error);
       }
     };
@@ -82,50 +70,40 @@ const ProjectView: React.FC = () => {
     window.addEventListener("focus", handleFocus);
     window.addEventListener("blur", handleBlur);
 
-    // Cleanup on unmount
     return () => {
       window.removeEventListener("focus", handleFocus);
       window.removeEventListener("blur", handleBlur);
     };
-  }, [id]); // Re-run when project `id` changes, handles switching projects
+  }, [id]);
 
+  // Timer starten, wenn Popup bestätigt wird
+  const handleStartTimerFromPopup = () => {
+    const totalSeconds =
+      Number(timerHours) * 3600 +
+      Number(timerMinutes) * 60 +
+      Number(timerSeconds);
+    startTimer(totalSeconds);
+    setShowTimerPopup(false);
+    toast.success("Timer started!");
+  };
+
+  // Sets a callback for when the timer runs out.
   useEffect(() => {
     setOnTimeout(() => {
-      alert("Timer finished!");
-      // You can put any other code here
+      toast.info("Timer finished!");
       setIsChangingMode(true);
     });
   }, [setOnTimeout]);
 
-  // useEffect(() => {
-  //   console.log("ues effect: ", project);
-  //   console.log("ftüü: ", project);
-  //   if (project?.mode === 2 && timeLeft === null) {
-  //     console.log("start timer with: ", project, project?.title);
-  //     //updateProjectMode(3);
-  //     //setIsChangingMode(true);
-  //     //startTimer(timerDuration);
-  //   } else if (project?.mode === 3) {
-  //     stopTimer();
-  //     //updateProjectMode(4);
-  //     //setIsChangingMode(true);
-  //   }
-  // }, [project?.id]);
-
+  // Handles changing project mode when triggered by timer or blur.
   useEffect(() => {
     if (isChangingMode === true) {
-      console.log("ues effect: ", project);
       if (project?.mode === 2) updateProjectMode(3);
       setIsChangingMode(false);
     }
   }, [isChangingMode]);
 
-  // useEffect(() => {
-  //   if (project?.mode === 2 && timeLeft === null) {
-  //     startTimer(timerDuration);
-  //   }
-  // }, [project?.mode]);
-
+  // Fetches prompts and generates PDF when requested.
   useEffect(() => {
     const getPromptsGeneratePDF = async () => {
       if (project?.id !== undefined) {
@@ -134,19 +112,20 @@ const ProjectView: React.FC = () => {
             `http://localhost:8000/promptverzeichnis/`,
             { params: { project_id: project.id } }
           );
-          setPromptsJson(response.data);
-          console.log(promptsJson);
+          //setPromptsJson(response.data);
 
           generatePDF(
             JSON.stringify(response.data),
             `promptverzeichnis_${project?.title}`
           );
+          toast.success("PDF generated and downloaded!");
         } catch (error) {
+          toast.error("Error fetching chats for PDF");
           console.error("Error fetching chats:", error);
         }
       } else {
         if (isCreatingPromptJson === true) {
-          throw new Error("Project ID is undefined");
+          toast.error("Project ID is undefined");
         }
       }
     };
@@ -154,6 +133,7 @@ const ProjectView: React.FC = () => {
     getPromptsGeneratePDF();
   }, [isCreatingPromptJson]);
 
+  // Fetches the available AI model names
   useEffect(() => {
     const fetchOllamaModelNames = async () => {
       try {
@@ -171,20 +151,22 @@ const ProjectView: React.FC = () => {
         });
         setaiModelList(modelNames);
       } catch (error) {
+        toast.error("Failed to fetch model names");
         console.error("Failed to fetch model names:", error);
       }
     };
     fetchOllamaModelNames();
   }, [activeParagraphId]);
 
+  // Handles adding a new paragraph
   const handleAddParagraph = async () => {
     if (newParagraphContent.trim() === "") {
-      alert("Please enter the paragraph content.");
+      toast.warn("Please enter the paragraph content.");
       return;
     }
 
     if (!id) {
-      console.error("Project ID is undefined.");
+      toast.error("Project ID is undefined.");
       return;
     }
 
@@ -202,15 +184,19 @@ const ProjectView: React.FC = () => {
 
       setParagraphs([...paragraphs, response.data]);
       setNewParagraphContent("");
+      toast.success("Paragraph added!");
     } catch (error) {
+      toast.error("Error creating paragraph.");
       console.error("Error creating paragraph:", error);
     }
   };
 
+  // Sets active paragraph
   const handleParagraphClick = (paragraphId: number) => {
     setActiveParagraphId(paragraphId);
   };
 
+  // Updates content locally
   const handleParagraphChange = (paragraphId: number, newContent: string) => {
     setParagraphs(
       paragraphs.map((paragraph) =>
@@ -221,6 +207,7 @@ const ProjectView: React.FC = () => {
     );
   };
 
+  // Save paragraph
   const handleSaveParagraph = async (paragraphId: number) => {
     const paragraph = paragraphs.find((p) => p.id === paragraphId);
     if (!paragraph) return;
@@ -229,12 +216,14 @@ const ProjectView: React.FC = () => {
       await axios.put(`http://localhost:8000/paragraphs/${paragraphId}`, {
         content_json: paragraph.content_json,
       });
-      alert("Paragraph saved successfully!");
+      toast.success("Paragraph saved!");
     } catch (error) {
+      toast.error("Error saving paragraph.");
       console.error("Error saving paragraph:", error);
     }
   };
 
+  // PDF Generator
   function generatePDF(jsonString: string, fileName: string) {
     const doc = new jsPDF();
 
@@ -247,26 +236,22 @@ const ProjectView: React.FC = () => {
     doc.save(`${fileName}.pdf`);
   }
 
+  // Window focus/blur
   const handleFocus = () => {
-    console.log("Das Fenster hat den Fokus erhalten.");
+    // You may use toast if you want to inform user on focus gain/loss.
+    // toast.info("Das Fenster hat den Fokus erhalten.");
   };
 
   const handleBlur = async () => {
-    console.log("Das Fenster hat den Fokus verloren.");
-    stopTimer(); // Stop the timer
+    stopTimer();
     setIsChangingMode(true);
-    // if (project?.mode === 3) {
-    //   setIsChangingMode(true);
-    //   console.log("plumps");
-    // }
-    console.log("modus:  ", project?.mode);
-    console.log(project);
+    // toast.info("Das Fenster hat den Fokus verloren. Timer stopped, mode changed.");
   };
 
+  // Update mode
   const updateProjectMode = async (newMode: number) => {
-    console.log("function called: ", project, project?.title);
     if (!project) {
-      console.log("no project");
+      toast.warn("No project loaded.");
       return;
     }
     try {
@@ -274,18 +259,20 @@ const ProjectView: React.FC = () => {
         mode: newMode,
       });
       setProject({ ...project, mode: newMode });
-      console.log(`Projektmodus wurde auf ${newMode} gesetzt.`);
+      toast.success(`Project mode set to ${newMode}.`);
     } catch (error) {
+      toast.error("Error updating project mode.");
       console.error("Error updating project mode:", error);
     }
   };
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
+      <ToastContainer position="top-center" autoClose={2400} />
       <h3>
         Remaining Time:{" "}
         {timeLeft !== null ? `${timeLeft} seconds` : "Not Applicable"}
-      </h3>{" "}
+      </h3>
       <h2>
         Project View for Project ID: {id}, {project?.id}
       </h2>
@@ -303,7 +290,7 @@ const ProjectView: React.FC = () => {
             <textarea
               value={paragraph.content_json}
               onChange={(e) =>
-                project?.mode !== 4
+                project?.mode !== 3
                   ? handleParagraphChange(paragraph.id, e.target.value)
                   : undefined
               }
@@ -315,14 +302,10 @@ const ProjectView: React.FC = () => {
                 overflow: "hidden",
                 resize: "none",
               }}
-              onClick={
-                project?.mode !== 4
-                  ? () => handleParagraphClick(paragraph.id)
-                  : undefined
-              }
-              readOnly={project?.mode === 4}
+              onClick={() => handleParagraphClick(paragraph.id)}
+              readOnly={project?.mode === 3}
             />
-            {project?.mode !== 4 && (
+            {project?.mode !== 3 && (
               <button onClick={() => handleSaveParagraph(paragraph.id)}>
                 Save
               </button>
@@ -330,7 +313,7 @@ const ProjectView: React.FC = () => {
           </li>
         ))}
       </ul>
-      {project?.mode !== 4 && (
+      {(project?.mode === 0 || project?.mode === 1 || project?.mode === 2) && (
         <div>
           <h3>Add New Paragraph</h3>
           <input
@@ -343,18 +326,84 @@ const ProjectView: React.FC = () => {
           <button onClick={handleAddParagraph}>Add Paragraph</button>
         </div>
       )}
-      {project?.mode !== 4 && activeParagraphId !== null && (
+      {activeParagraphId !== null && (
         <ChatComponent
           paragraphId={activeParagraphId}
           aiModelList={aiModelList}
+          // mode={project?.mode}
         />
       )}
       <button onClick={() => setIsCreatingPromptJson(true)}>
         Generate PDF
       </button>
       <div>
-        {isStudent ? <p>Im Schülermodus</p> : <p>Du bist kein Schüler</p>}
+        {project?.mode === 1 || project?.mode === 2 ? (
+          <p>Im Schülermodus</p>
+        ) : (
+          <p>Du bist kein Schüler</p>
+        )}
       </div>
+      {/* TIMER POPUP für Modus 2 */}
+      {showTimerPopup && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0,0,0,0.4)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 10000,
+          }}
+        >
+          <div
+            style={{
+              background: "#fff",
+              padding: 20,
+              borderRadius: 8,
+              minWidth: 300,
+              display: "flex",
+              flexDirection: "column",
+              gap: 10,
+            }}
+          >
+            <h3>Timer einstellen</h3>
+            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+              <input
+                type="number"
+                min={0}
+                max={23}
+                value={timerHours}
+                onChange={(e) => setTimerHours(Number(e.target.value))}
+                style={{ width: 50 }}
+              />{" "}
+              Stunden
+              <input
+                type="number"
+                min={0}
+                max={59}
+                value={timerMinutes}
+                onChange={(e) => setTimerMinutes(Number(e.target.value))}
+                style={{ width: 50 }}
+              />{" "}
+              Minuten
+              <input
+                type="number"
+                min={0}
+                max={59}
+                value={timerSeconds}
+                onChange={(e) => setTimerSeconds(Number(e.target.value))}
+                style={{ width: 50 }}
+              />{" "}
+              Sekunden
+            </div>
+            <button onClick={handleStartTimerFromPopup}>Starten</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
