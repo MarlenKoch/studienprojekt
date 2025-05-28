@@ -44,7 +44,6 @@ class ChatCreate(BaseModel):
     title: str
     aiModel: str
     task: str
-    content_json: str
     paragraph_id: int
 
 
@@ -53,7 +52,6 @@ class ChatResponse(BaseModel):
     title: str
     aiModel: str
     task: str
-    content_json: str
     paragraph_id: int
 
 
@@ -74,7 +72,5 @@ class AnswerResponse(BaseModel):
 
 
 class AnswerUpdate(BaseModel):
-    task: Optional[str] = None
-    task: Optional[str] = None
     task: Optional[str] = None
     chatId: Optional[int] = None

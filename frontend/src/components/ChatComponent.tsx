@@ -197,7 +197,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           aiModel: aiModel,
           task,
           paragraph_id: paragraphId,
-          content_json: "", // Wird noch gebraucht...
+          //content_json: "", // Wird noch gebraucht...
         };
         const saveResp = await axios.post<Chat>(
           "http://localhost:8000/chats",
@@ -220,7 +220,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           aiModel: aiModel,
           task,
           paragraph_id: paragraphId,
-          content_json: "",
+          //content_json: "",
         };
         await axios.put(`http://localhost:8000/chats/${chatId}`, chatData, {
           headers: { "Content-Type": "application/json" },
