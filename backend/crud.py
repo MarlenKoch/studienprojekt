@@ -1,11 +1,14 @@
 from sqlalchemy.orm import Session
-from classModelsForDB import Project, Paragraph, Chat
+from classModelsForDB import Project, Paragraph, Chat, Answer
 from schemas import (
     ProjectCreate,
     ParagraphCreate,
     ChatCreate,
     ParagraphUpdate,
     ProjectUpdate,
+    AnswerCreate,
+    AnswerResponse,
+    AnswerUpdate,
 )
 
 
@@ -112,6 +115,59 @@ def delete_chat(db: Session, chat_id: int):
     return None
 
 
+# Update chat function
+def update_chat(db: Session, chat_id: int, updated_data: ChatCreate):
+    chat = get_chat(db, chat_id)
+    if chat:
+        update_fields = updated_data.dict(exclude_unset=True)
+        if update_fields:
+            for key, value in update_fields.items():
+                setattr(chat, key, value)
+            db.commit()
+            db.refresh(chat)
+            return chat
+    else:
+        print("Chat not found or no fields to update.")
+    return None
+
+
+# CRUD für Answers
+def get_answers(db: Session):
+    return db.query(Answer).all()
+
+
+def get_answer(db: Session, answer_id: int):
+    return db.query(Answer).filter(Answer.id == answer_id).first()
+
+
+def create_answer(db: Session, answer_data: AnswerCreate):
+    db_answer = Answer(**answer_data.dict())
+    db.add(db_answer)
+    db.commit()
+    db.refresh(db_answer)
+    return db_answer
+
+
+def delete_answer(db: Session, answer_id: int):
+    answer = get_answer(db, answer_id)
+    if answer:
+        db.delete(answer)
+        db.commit()
+        return answer
+    return None
+
+
+def update_answer(db: Session, answer_id: int, answer_data: AnswerUpdate):
+    answer = get_answer(db, answer_id)
+    if not answer:
+        return None
+    for key, value in answer_data.dict().items():
+        setattr(answer, key, value)
+    db.commit()
+    db.refresh(answer)
+    return answer
+
+
 # Relationship specific queries
 def get_chats_for_paragraph(db: Session, paragraph_id: int):
     return db.query(Chat).filter(Chat.paragraph_id == paragraph_id).all()
@@ -129,17 +185,5 @@ def get_chats_for_project(db: Session, project_id: int):
     return chats
 
 
-# Update chat function
-def update_chat(db: Session, chat_id: int, updated_data: ChatCreate):
-    chat = get_chat(db, chat_id)
-    if chat:
-        update_fields = updated_data.dict(exclude_unset=True)
-        if update_fields:
-            for key, value in update_fields.items():
-                setattr(chat, key, value)
-            db.commit()
-            db.refresh(chat)
-            return chat
-    else:
-        print("Chat not found or no fields to update.")
-    return None
+def get_answers_for_chat(db: Session, chat_id: int):
+    return db.query(Answer).filter(Answer.chat_id == chat_id).all()
