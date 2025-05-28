@@ -31,7 +31,8 @@ const ProjectView: React.FC = () => {
   const [timerSeconds, setTimerSeconds] = useState(0);
 
   const [isChangingMode, setIsChangingMode] = useState<boolean>(false);
-  const { timeLeft, startTimer, stopTimer, setOnTimeout } = useProjectTimer();
+  const { timeLeft, startTimer, stopTimer, setOnTimeout, setProjectMode } =
+    useProjectTimer();
 
   // Fetches project and paragraph data
   useEffect(() => {
@@ -255,10 +256,11 @@ const ProjectView: React.FC = () => {
       return;
     }
     try {
-      await axios.put(`http://localhost:8000/projects/${project.id}`, {
-        mode: newMode,
-      });
+      // await axios.put(`http://localhost:8000/projects/${project.id}`, {
+      //   mode: newMode,
+      // });
       setProject({ ...project, mode: newMode });
+      setProjectMode(project.id, 3);
       toast.success(`Project mode set to ${newMode}.`);
     } catch (error) {
       toast.error("Error updating project mode.");

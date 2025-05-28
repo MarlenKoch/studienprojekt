@@ -3,14 +3,17 @@ import axios from "axios";
 import { Chat } from "../types/Chat";
 import { ChatRequest } from "../types/ChatRequest";
 import { ChatResponse } from "../types/ChatResponse";
-//import { StudentContext } from "../context/StudentContext";
 import ReactMarkdown from "react-markdown";
-
 import { useProjectTimer } from "../context/ProjectTimerContext";
 
-interface ChatMessage {
-  user_prompt: string;
-  response: string;
+// Das Backend liefert/konsumiert diese Felder!
+interface Answer {
+  id?: number;
+  chat_id?: number;
+  task: string; // User-Eingabe
+  ai_answer: string; // AI-Antwort
+  user_note: string; // (optional)
+  created_at?: string;
 }
 
 interface ChatComponentProps {
@@ -32,14 +35,14 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const [userContext, setUserContext] = useState("");
   const [chats, setChats] = useState<Chat[]>([]);
   const [activeChat, setActiveChat] = useState<Chat | null>(null);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [answers, setAnswers] = useState<Answer[]>([]);
   const [isNewChatActive, setIsNewChatActive] = useState(false);
-  //const isStudent = useContext(StudentContext);
   const { currentMode } = useProjectTimer();
+
+  // ========== Chat/Answers laden ==========
 
   const fetchChats = async () => {
     if (paragraphId === null) return;
-
     try {
       const response = await axios.get<Chat[]>(
         `http://localhost:8000/paragraphs/${paragraphId}/chats`
@@ -50,41 +53,74 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     }
   };
 
-  useEffect(() => {
-    fetchChats();
-    setMessages([]);
-  }, [paragraphId]);
-
-  const findChatMessagesById = (id: number) => {
-    fetchChats();
-    const chat = chats.find((chat) => chat.id === id);
-    if (chat) {
-      try {
-        const chatContent = JSON.parse(chat.content_json);
-        return chatContent.messages || [];
-      } catch (error) {
-        console.error("Error parsing chat content JSON:", error);
-        return [];
-      }
+  const fetchAnswers = async (chatId: number) => {
+    try {
+      const resp = await axios.get<Answer[]>(
+        `http://localhost:8000/chats/${chatId}/answers/`
+      );
+      setAnswers(
+        resp.data.sort(
+          (a, b) =>
+            new Date(a.created_at || "").getTime() -
+            new Date(b.created_at || "").getTime()
+        )
+      );
+    } catch (err) {
+      console.error(err);
+      setAnswers([]);
     }
-    return [];
   };
 
+  // ========== Lifecycle Effekt: Paragraph wechseln oder Modus switchen ==========
+
   useEffect(() => {
-    if (activeChat) {
-      const activeMessages = findChatMessagesById(activeChat.id);
-      setMessages(activeMessages);
-    } else {
-      setMessages([]);
+    fetchChats();
+    setAnswers([]);
+    setActiveChat(null);
+    setIsNewChatActive(false);
+    setChatTitle("");
+    setAiModel(aiModelList[0] || "");
+    setTask("");
+    setWritingStyle("");
+    setUserContext("");
+    setUserPrompt("");
+  }, [paragraphId]);
+
+  // Sofort auf "readonly" schalten, wenn Modus 3 (auch im laufenden Betrieb!)
+  useEffect(() => {
+    if (currentMode === 3) {
+      setUserPrompt("");
     }
-  }, [activeChat]);
+  }, [currentMode]);
+
+  useEffect(() => {
+    if (activeChat && activeChat.id) {
+      fetchAnswers(activeChat.id);
+    } else if (!isNewChatActive) {
+      setAnswers([]);
+    }
+  }, [activeChat, isNewChatActive]);
+
+  // ========== Hauptfunktionen ==========
 
   const handleSend = async () => {
+    if (currentMode === 3) return; // Sicherheit
     if (paragraphId === null) {
       alert("paragraph ID is missing.");
       return;
     }
+    if (!userPrompt.trim()) {
+      alert("Bitte gib eine Frage ein.");
+      return;
+    }
 
+    const newAnswer: Answer = {
+      task: userPrompt,
+      ai_answer: "",
+      user_note: "",
+    };
+
+    // AI request bauen
     const requestBody: ChatRequest = {
       user_prompt: { task, user_prompt: userPrompt },
       ai_model: aiModel,
@@ -92,7 +128,13 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
         paragraph_content: "",
         writing_style: writingStyle,
         user_context: userContext,
-        previous_chat_json: JSON.stringify({ messages }),
+        previous_chat_json: JSON.stringify({
+          answers: answers.map((ans) => ({
+            task: ans.task,
+            ai_answer: ans.ai_answer,
+            user_note: ans.user_note,
+          })),
+        }),
       },
     };
 
@@ -110,131 +152,138 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       const aiResponse = await axios.post<ChatResponse>(
         "http://localhost:8000/aiChat",
         requestBody,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        { headers: { "Content-Type": "application/json" } }
       );
 
-      const newMessage: ChatMessage = {
-        user_prompt: userPrompt,
-        response: aiResponse.data.response,
+      const answerWithResponse: Answer = {
+        ...newAnswer,
+        ai_answer: aiResponse.data.response,
       };
 
-      // Aktualisiere den State hier und warte bis dies abgeschlossen ist
-      const updatedMessages = [...messages, newMessage];
-      setMessages(updatedMessages);
+      // "messages" analog: Zeigt direkt in der UI
+      const updatedAnswers = [...answers, answerWithResponse];
+      setAnswers(updatedAnswers);
 
+      // ----- AUTO-SAVE im Schülermodus -----
       if (currentMode === 1 || currentMode === 2) {
-        const chatData = {
-          title: "Schüler-Chat",
-          aiModel: aiModel,
-          task,
-          content_json: JSON.stringify({ messages: updatedMessages }), // benutze aktualisierte Nachrichten
-          paragraph_id: paragraphId,
-        };
-
-        try {
-          if (activeChat) {
-            await axios.put(
-              `http://localhost:8000/chats/${activeChat.id}`,
-              chatData,
-              {
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              }
-            );
-            alert("Chat updtd successfully!");
-          } else {
-            await axios.post("http://localhost:8000/chats", chatData, {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            });
-            alert("Chat saved successfully!");
-          }
-          setIsNewChatActive(false);
-          fetchChats();
-        } catch (error) {
-          console.error("Error saving chat:", error);
-          alert("Error occurred while saving the chat.");
-        }
+        await saveChatWithAnswers(updatedAnswers);
       }
 
       setUserPrompt("");
     } catch (error) {
       console.error("Error:", error);
+      alert("Error occurred while getting AI response.");
     }
   };
 
-  const handleSaveChat = async () => {
-    if (messages.length === 0 || chatTitle.trim() === "" || !paragraphId) {
+  // ========== SPEICHERN Chat + Answers ==========
+  // Hilfsfunktion, da für auto-save & Button benötigt!
+  const saveChatWithAnswers = async (answersToSave?: Answer[]) => {
+    const _answers = answersToSave || answers;
+
+    if (_answers.length === 0 || chatTitle.trim() === "" || !paragraphId) {
       alert("Please provide all necessary information.");
-      console.log(messages, chatTitle, paragraphId);
       return;
     }
 
-    const chatData = {
-      title: chatTitle,
-      aiModel: aiModel,
-      task,
-      content_json: JSON.stringify({ messages }),
-      paragraph_id: paragraphId,
-    };
+    // Chat speichern (neu oder update)
+    let chatId: number | undefined = activeChat?.id;
+    let chatResp: Chat | null = null;
 
-    try {
-      if (activeChat) {
-        await axios.put(
-          `http://localhost:8000/chats/${activeChat.id}`,
+    if (!activeChat) {
+      try {
+        const chatData = {
+          title: chatTitle || "Schüler-Chat",
+          aiModel: aiModel,
+          task,
+          paragraph_id: paragraphId,
+          content_json: "", // Wird noch gebraucht...
+        };
+        const saveResp = await axios.post<Chat>(
+          "http://localhost:8000/chats",
           chatData,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
+          { headers: { "Content-Type": "application/json" } }
         );
-      } else {
-        await axios.post("http://localhost:8000/chats", chatData, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        chatResp = saveResp.data;
+        chatId = chatResp.id;
+        setActiveChat(chatResp);
+      } catch (error) {
+        console.error("Fehler beim Speichern des Chats", error);
+        alert("Fehler beim Speichern des Chats");
+        return;
       }
-      alert("Chat saved successfully!");
-      setIsNewChatActive(false);
-      fetchChats();
-    } catch (error) {
-      console.error("Error saving chat:", error);
-      alert("Error occurred while saving the chat.");
+    } else {
+      chatId = activeChat.id;
+      try {
+        const chatData = {
+          title: chatTitle || "Schüler-Chat",
+          aiModel: aiModel,
+          task,
+          paragraph_id: paragraphId,
+          content_json: "",
+        };
+        await axios.put(`http://localhost:8000/chats/${chatId}`, chatData, {
+          headers: { "Content-Type": "application/json" },
+        });
+      } catch (error) {
+        console.error("Fehler beim Aktualisieren des Chats", error);
+      }
     }
+
+    // Answers speichern
+    if (chatId) {
+      let changed = false;
+      for (const answer of _answers) {
+        if (!answer.id) {
+          try {
+            await axios.post("http://localhost:8000/answers/", {
+              chat_id: chatId,
+              task: answer.task,
+              ai_answer: answer.ai_answer,
+              user_note: answer.user_note,
+            });
+            changed = true;
+          } catch (error) {
+            console.error("Fehler beim Abspeichern einer Answer:", error);
+          }
+        }
+      }
+      if (changed) await fetchAnswers(chatId);
+      fetchChats();
+      if (!answersToSave) alert("Chat und Antworten gespeichert!");
+    }
+    setIsNewChatActive(false);
   };
+
+  // ========== Nutzeraktionen für Ansicht & Button ==========
+
+  const handleSaveChat = () => saveChatWithAnswers();
 
   const handleChatTitleClick = (chat: Chat) => {
     setActiveChat(chat);
-
-    try {
-      const chatContent = JSON.parse(chat.content_json);
-      setMessages(chatContent.messages || []);
-    } catch (error) {
-      console.error("Error parsing chat content JSON:", error);
-      setMessages([]);
-    }
-
+    setIsNewChatActive(false);
     setChatTitle(chat.title);
     setAiModel(chat.aiModel);
     setTask(chat.task);
+    setWritingStyle("");
+    setUserContext("");
     setUserPrompt("");
+    fetchAnswers(chat.id);
   };
 
   const handleNewChat = () => {
     setIsNewChatActive(true);
     setActiveChat(null);
-    setMessages([]);
+    setAnswers([]);
     setChatTitle("blub test");
-    //setResponse("");
+    setAiModel(aiModelList[0] || "");
+    setTask("");
+    setWritingStyle("");
+    setUserContext("");
+    setUserPrompt("");
   };
+
+  // ========== RENDER ==========
 
   return (
     <div
@@ -246,7 +295,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       }}
     >
       <h3>AI Chat for Paragraph ID: {paragraphId}</h3>
-      {/* Button nur in den Modi 0,1,2 */}
+
       {(currentMode === 0 || currentMode === 1 || currentMode === 2) && (
         <button onClick={handleNewChat}>New Chat</button>
       )}
@@ -254,17 +303,22 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       {(activeChat || isNewChatActive) && (
         <>
           <div>
-            {messages.map((msg, index) => (
-              <div key={index}>
-                <strong>User:</strong> {msg.user_prompt}
+            {answers.map((ans, index) => (
+              <div key={ans.id ?? `local-${index}`}>
+                <strong>User:</strong> {ans.task}
                 <br />
                 <strong>AI:</strong>
-                <ReactMarkdown>{msg.response}</ReactMarkdown>
+                <ReactMarkdown>{ans.ai_answer}</ReactMarkdown>
                 <br />
+                {ans.user_note && (
+                  <>
+                    <strong>Kommentar:</strong> {ans.user_note}
+                  </>
+                )}
               </div>
             ))}
           </div>
-          {/* Wenn Modus 3: alles readonly/disabled, keine Felder */}
+          {/* Felder nur wenn nicht Modus 3 */}
           {currentMode !== 3 && (
             <>
               <input
@@ -272,17 +326,20 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                 value={userPrompt}
                 onChange={(e) => setUserPrompt(e.target.value)}
                 placeholder="Enter your question"
+                disabled={currentMode === 3}
               />
               <input
                 type="text"
                 value={systemInfo}
                 onChange={(e) => setSystemInfo(e.target.value)}
                 placeholder="Enter system information"
+                disabled
               />
               <label>Choose a Model:</label>
               <select
                 value={aiModel}
                 onChange={(e) => setAiModel(e.target.value)}
+                disabled={currentMode === 3}
               >
                 {aiModelList.map((model) => (
                   <option key={model} value={model}>
@@ -295,27 +352,35 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                 value={writingStyle}
                 onChange={(e) => setWritingStyle(e.target.value)}
                 placeholder="Enter writing style"
+                disabled={currentMode === 3}
               />
               <input
                 type="text"
                 value={task}
                 onChange={(e) => setTask(e.target.value)}
                 placeholder="Enter task"
+                disabled={currentMode === 3}
               />
               <input
                 type="text"
                 value={userContext}
                 onChange={(e) => setUserContext(e.target.value)}
                 placeholder="Enter user context"
+                disabled={currentMode === 3}
               />
-              <button onClick={handleSend}>Send</button>
+              <button onClick={handleSend} disabled={currentMode === 3}>
+                Send
+              </button>
               <input
                 type="text"
                 value={chatTitle}
                 onChange={(e) => setChatTitle(e.target.value)}
                 placeholder="Enter title to save the chat"
+                disabled={currentMode === 3}
               />
-              <button onClick={handleSaveChat}>Save Chat</button>
+              <button onClick={handleSaveChat} disabled={currentMode === 3}>
+                Save Chat
+              </button>
             </>
           )}
         </>
