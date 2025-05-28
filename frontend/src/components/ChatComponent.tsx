@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Chat } from "../types/Chat";
 import { AiRequest } from "../types/AiRequest";
 import { AiResponse } from "../types/AiResponse";
-import { StudentContext } from "../context/StudentContext";
+//import { StudentContext } from "../context/StudentContext";
 import ReactMarkdown from "react-markdown";
+
+import { useProjectTimer } from "../context/ProjectTimerContext";
 
 interface ChatMessage {
   userPrompt: string;
@@ -14,6 +16,7 @@ interface ChatMessage {
 interface ChatComponentProps {
   paragraphId: number | null;
   aiModelList: string[];
+  mode?: number;
 }
 
 const ChatComponent: React.FC<ChatComponentProps> = ({
@@ -31,7 +34,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const [activeChat, setActiveChat] = useState<Chat | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isNewChatActive, setIsNewChatActive] = useState(false);
-  const isStudent = useContext(StudentContext);
+  //const isStudent = useContext(StudentContext);
+  const { currentMode } = useProjectTimer();
 
   const fetchChats = async () => {
     if (paragraphId === null) return;
@@ -122,7 +126,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       const updatedMessages = [...messages, newMessage];
       setMessages(updatedMessages);
 
-      if (isStudent) {
+      if (currentMode === 1 || currentMode === 2) {
         const chatData = {
           title: "Schüler-Chat",
           aiModel: aiModel,
@@ -242,7 +246,11 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       }}
     >
       <h3>AI Chat for Paragraph ID: {paragraphId}</h3>
-      <button onClick={handleNewChat}>New Chat</button>
+      {/* Button nur in den Modi 0,1,2 */}
+      {(currentMode === 0 || currentMode === 1 || currentMode === 2) && (
+        <button onClick={handleNewChat}>New Chat</button>
+      )}
+
       {(activeChat || isNewChatActive) && (
         <>
           <div>
@@ -256,59 +264,72 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
               </div>
             ))}
           </div>
-          <input
-            type="text"
-            value={userPrompt}
-            onChange={(e) => setUserPrompt(e.target.value)}
-            placeholder="Enter your question"
-          />
-          <input
-            type="text"
-            value={systemInfo}
-            onChange={(e) => setSystemInfo(e.target.value)}
-            placeholder="Enter system information"
-          />
-          <label>Choose a Model:</label>
-          <select value={aiModel} onChange={(e) => setAiModel(e.target.value)}>
-            {aiModelList.map((model) => (
-              <option key={model} value={model}>
-                {model}
-              </option>
-            ))}
-          </select>
-          <input
-            type="text"
-            value={writingStyle}
-            onChange={(e) => setWritingStyle(e.target.value)}
-            placeholder="Enter writing style"
-          />
-          <input
-            type="text"
-            value={task}
-            onChange={(e) => setTask(e.target.value)}
-            placeholder="Enter task"
-          />
-          <input
-            type="text"
-            value={userContext}
-            onChange={(e) => setUserContext(e.target.value)}
-            placeholder="Enter user context"
-          />
-          <button onClick={handleSend}>Send</button>
-
-          <input
-            type="text"
-            value={chatTitle}
-            onChange={(e) => setChatTitle(e.target.value)}
-            placeholder="Enter title to save the chat"
-          />
-          <button onClick={handleSaveChat}>Save Chat</button>
+          {/* Wenn Modus 3: alles readonly/disabled, keine Felder */}
+          {currentMode !== 3 && (
+            <>
+              <input
+                type="text"
+                value={userPrompt}
+                onChange={(e) => setUserPrompt(e.target.value)}
+                placeholder="Enter your question"
+              />
+              <input
+                type="text"
+                value={systemInfo}
+                onChange={(e) => setSystemInfo(e.target.value)}
+                placeholder="Enter system information"
+              />
+              <label>Choose a Model:</label>
+              <select
+                value={aiModel}
+                onChange={(e) => setAiModel(e.target.value)}
+              >
+                {aiModelList.map((model) => (
+                  <option key={model} value={model}>
+                    {model}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="text"
+                value={writingStyle}
+                onChange={(e) => setWritingStyle(e.target.value)}
+                placeholder="Enter writing style"
+              />
+              <input
+                type="text"
+                value={task}
+                onChange={(e) => setTask(e.target.value)}
+                placeholder="Enter task"
+              />
+              <input
+                type="text"
+                value={userContext}
+                onChange={(e) => setUserContext(e.target.value)}
+                placeholder="Enter user context"
+              />
+              <button onClick={handleSend}>Send</button>
+              <input
+                type="text"
+                value={chatTitle}
+                onChange={(e) => setChatTitle(e.target.value)}
+                placeholder="Enter title to save the chat"
+              />
+              <button onClick={handleSaveChat}>Save Chat</button>
+            </>
+          )}
         </>
       )}
       <h4>Saved Chats:</h4>
       <ul>
         {chats.map((chat) => (
-          <li key={chat.id} onClick={() => handleChatTitleClick(chat)}>
+          <li
+            key={chat.id}
+            onClick={() => handleChatTitleClick(chat)}
+            style={{
+              cursor: "pointer",
+            }}
+          >
             <h6>{chat.title}</h6>
           </li>
         ))}
