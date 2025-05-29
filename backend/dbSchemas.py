@@ -66,6 +66,7 @@ class AnswerCreate(BaseModel):
     task: str
     ai_answer: str
     user_note: str
+    # user_note_enabled: bool
     chat_id: int
 
 
@@ -74,10 +75,11 @@ class AnswerResponse(BaseModel):
     task: str
     ai_answer: str
     user_note: str
+    # user_note_enabled: bool
     chat_id: int
 
 
 class AnswerUpdate(BaseModel):
     task: Optional[str] = None
     chatId: Optional[int] = None
-
+    user_note: Optional[str] = None
