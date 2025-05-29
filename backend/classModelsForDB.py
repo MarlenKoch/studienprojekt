@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from db import Base
 
@@ -48,6 +48,7 @@ class Answer(Base):
     task = Column(String, index=True)
     ai_answer = Column(String, index=True)
     user_note = Column(String, index=True)
+    user_note_enabled = Column(Boolean)
     chat_id = Column(Integer, ForeignKey("chats.id"), index=True)
 
     chats = relationship("Chat", back_populates="answers")
