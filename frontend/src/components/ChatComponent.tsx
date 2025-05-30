@@ -111,7 +111,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       alert("paragraph ID is missing.");
       return;
     }
-    if (!userPrompt.trim()) {
+    if (!task.trim()) {
       alert("Bitte gib eine Frage ein.");
       return;
     }
