@@ -10,6 +10,8 @@ class Project(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
     mode = Column(Integer, index=True)
+    starttime = Column(Integer, index=True)
+    duration = Column(Integer, index=True)
     paragraphs = relationship("Paragraph", back_populates="project")
 
 
