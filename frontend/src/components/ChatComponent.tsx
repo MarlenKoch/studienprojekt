@@ -48,9 +48,9 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const [userNoteEnabledDraft, setUserNoteEnabledDraft] = useState(false); // <-- NEU
   const [isSavingNote, setIsSavingNote] = useState(false);
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-  };
+  // const copyToClipboard = (text: string) => {
+  //   navigator.clipboard.writeText(text);
+  // };
   // ========== Chat/Answers laden ==========
 
   const fetchChats = async () => {
@@ -331,15 +331,15 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                     currentMode !== 3 ? "Kommentar hinzufügen/bearbeiten" : ""
                   }
                 >
-                  <ReactMarkdown>{ans.ai_answer}</ReactMarkdown>
                   <button
                     onClick={(e) => {
                       e.stopPropagation(); // So button doesn't trigger parent click
-                      copyToClipboard(ans.ai_answer || "");
+                      navigator.clipboard.writeText(ans.ai_answer || "");
                     }}
                   >
                     📋
                   </button>
+                  <ReactMarkdown>{ans.ai_answer}</ReactMarkdown>
                 </span>
                 {/* <br />
                 {ans.user_note && (
