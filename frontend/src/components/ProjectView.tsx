@@ -307,6 +307,14 @@ const ProjectView: React.FC = () => {
               onClick={() => handleParagraphClick(paragraph.id)}
               readOnly={project?.mode === 3}
             />
+            <button
+              onClick={(e) => {
+                e.stopPropagation(); // So button doesn't trigger parent click
+                navigator.clipboard.writeText(paragraph.content_json || "");
+              }}
+            >
+              📋
+            </button>
             {project?.mode !== 3 && (
               <button onClick={() => handleSaveParagraph(paragraph.id)}>
                 Save
