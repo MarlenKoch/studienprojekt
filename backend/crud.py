@@ -22,7 +22,7 @@ def get_project(db: Session, project_id: int):
 
 
 def create_project(db: Session, project_data: ProjectCreate):
-    db_project = Project(**project_data.dict())
+    db_project = Project(**project_data.dict(exclude_unset=True))
     db.add(db_project)
     db.commit()
     db.refresh(db_project)
@@ -33,7 +33,8 @@ def update_project(db: Session, project_id: int, project_data: ProjectUpdate):
     project = get_project(db, project_id)
     if not project:
         return None
-    for key, value in project_data.dict().items():
+    updated_fields = project_data.dict(exclude_unset=True)  #bei patch für optionale Felder
+    for key, value in updated_fields.items():
         setattr(project, key, value)
     db.commit()
     db.refresh(project)

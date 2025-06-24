@@ -10,16 +10,22 @@ from typing import Optional
 class ProjectCreate(BaseModel):
     title: str
     mode: int
+    starttime: Optional[int] = None
+    duration: Optional[int] = None
 
 
 class ProjectUpdate(BaseModel):
     mode: Optional[int] = None
+    starttime: Optional[int] = None
+    duration: Optional[int] = None
 
 
 class ProjectResponse(BaseModel):
     id: int
     title: str
     mode: int
+    starttime: int
+    duration: int
 
 
 # Paragraph
