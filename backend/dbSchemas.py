@@ -24,8 +24,8 @@ class ProjectResponse(BaseModel):
     id: int
     title: str
     mode: int
-    starttime: int
-    duration: int
+    starttime: Optional[int] = None
+    duration: Optional[int] = None
 
 
 # Paragraph

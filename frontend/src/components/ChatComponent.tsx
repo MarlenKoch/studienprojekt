@@ -305,6 +305,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       {(currentMode === 0 || currentMode === 1 || currentMode === 2) && (
         <button onClick={handleNewChat}>New Chat</button>
       )}
+      <p>{currentMode}</p>
 
       {(activeChat || isNewChatActive) && (
         <>

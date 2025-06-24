@@ -44,7 +44,16 @@ const ProjectView: React.FC = () => {
         setProject(response.data);
 
         if (response.data.mode === 2) {
-          setShowTimerPopup(true); // Show timer popup
+          if (response.data.starttime && response.data.duration) {
+            startTimer(
+              response.data.starttime +
+                response.data.duration -
+                Math.floor(Date.now() / 1000)
+            );
+            setProjectMode(response.data.id, response.data.mode);
+          } else {
+            setShowTimerPopup(true); // Show timer popup
+          }
         }
       } catch (error) {
         // 2. Use toast for error
@@ -78,11 +87,16 @@ const ProjectView: React.FC = () => {
   }, [id]);
 
   // Timer starten, wenn Popup bestätigt wird
-  const handleStartTimerFromPopup = () => {
+  const handleStartTimerFromPopUp = () => {
     const totalSeconds =
       Number(timerHours) * 3600 +
       Number(timerMinutes) * 60 +
       Number(timerSeconds);
+    console.log(project?.id);
+    axios.put(`http://localhost:8000/projects/${project?.id}`, {
+      starttime: Math.floor(Date.now() / 1000),
+      duration: totalSeconds,
+    });
     startTimer(totalSeconds);
     setShowTimerPopup(false);
     toast.success("Timer started!");
@@ -410,7 +424,7 @@ const ProjectView: React.FC = () => {
               />{" "}
               Sekunden
             </div>
-            <button onClick={handleStartTimerFromPopup}>Starten</button>
+            <button onClick={handleStartTimerFromPopUp}>Starten</button>
           </div>
         </div>
       )}
