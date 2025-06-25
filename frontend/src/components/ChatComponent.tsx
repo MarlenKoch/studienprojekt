@@ -128,7 +128,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           aiModel: aiModel,
           task,
           content_json: JSON.stringify({ messages: updatedMessages }), // benutze aktualisierte Nachrichten
-          paragraph_id: paragraphId,
+          paragraphId: paragraphId,
         };
 
         try {
@@ -177,7 +177,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       aiModel: aiModel,
       task,
       content_json: JSON.stringify({ messages }),
-      paragraph_id: paragraphId,
+      paragraphId: paragraphId,
     };
 
     try {

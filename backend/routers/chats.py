@@ -21,29 +21,29 @@ def get_chats_endpoint(db: Session = Depends(get_db)):
 
 
 # Endpoint zum Abrufen eines Chats nach ID
-@router.get("/{chat_id}", response_model=ChatResponse)
-def get_chat_endpoint(chat_id: int, db: Session = Depends(get_db)):
-    chat = get_chat(db, chat_id)
+@router.get("/{chatId}", response_model=ChatResponse)
+def get_chat_endpoint(chatId: int, db: Session = Depends(get_db)):
+    chat = get_chat(db, chatId)
     if not chat:
         raise HTTPException(status_code=404, detail="Chat not found")
     return chat
 
 
 # Endpoint zum Updaten eines Chats
-@router.put("/{chat_id}", response_model=ChatResponse)
+@router.put("/{chatId}", response_model=ChatResponse)
 def update_chat_endpoint(
-    chat_id: int,
+    chatId: int,
     chat_update: ChatCreate,
     db: Session = Depends(get_db),  # hier ChatUpdate statt Create einfügen
 ):
-    updated_chat = update_chat(db, chat_id, chat_update)
+    updated_chat = update_chat(db, chatId, chat_update)
     if not updated_chat:
         raise HTTPException(status_code=404, detail="Chat not found")
     return updated_chat
 
 
 # Endpoint zum Abrufen aller Answers für einen bestimmten Chat
-@router.get("/{chat_id}/answers/", response_model=list[AnswerResponse])
-def get_answers_for_chat_endpoint(chat_id: int, db: Session = Depends(get_db)):
-    answers = get_answers_for_chat(db, chat_id)
+@router.get("/{chatId}/answers/", response_model=list[AnswerResponse])
+def get_answers_for_chat_endpoint(chatId: int, db: Session = Depends(get_db)):
+    answers = get_answers_for_chat(db, chatId)
     return answers

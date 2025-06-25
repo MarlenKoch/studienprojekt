@@ -30,57 +30,54 @@ class ProjectResponse(BaseModel):
 
 # Paragraph
 class ParagraphCreate(BaseModel):
-    project_id: int
-    content_json: str
+    projectId: int
+    content: str
 
 
 class ParagraphResponse(BaseModel):
     id: int
-    project_id: int
-    content_json: str
+    projectId: int
+    content: str
 
 
-class ParagraphUpdate(BaseModel):
-    project_id: Optional[int] = None
-    content_json: Optional[str] = None
+class ParagraphUpdate(BaseModel): #brauchen wir das überhaupt? brauchen wir die update schemata? kann das weg? ist das müll?
+    content: Optional[str] = None
 
 
 # Chat
 class ChatCreate(BaseModel):
     title: str
     aiModel: str
-    task: str
-    content_json: str
-    paragraph_id: int
+    paragraphId: int
 
 
 class ChatResponse(BaseModel):
     id: int
     title: str
     aiModel: str
-    task: str
-    content_json: str
-    paragraph_id: int
+    paragraphId: int
 
 
 # Answer
 class AnswerCreate(BaseModel):
     task: str
-    ai_answer: str
-    user_note: str
-    chat_id: int
+    userPrompt: Optional[str] = None
+    timestamp: int
+    aiAnswer: str
+    userNote: Optional[str] = None
+    chatId: int
 
 
 class AnswerResponse(BaseModel):
     id: int
     task: str
-    ai_answer: str
-    user_note: str
-    chat_id: int
+    userPrompt: Optional[str] = None
+    timestamp: int
+    aiAnswer: str
+    userNote: Optional[str] = None
+    chatId: int
 
 
 class AnswerUpdate(BaseModel):
-    task: Optional[str] = None
-    task: Optional[str] = None
-    task: Optional[str] = None
-    chatId: Optional[int] = None
+    userPrompt: Optional[str] = None
+    userNote: Optional[str] = None

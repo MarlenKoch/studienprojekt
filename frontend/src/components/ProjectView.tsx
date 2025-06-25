@@ -55,7 +55,7 @@ const ProjectView: React.FC = () => {
         try {
           const response = await axios.get<string>(
             `http://localhost:8000/promptverzeichnis/`,
-            { params: { project_id: project.id } }
+            { params: { projectId: project.id } }
           );
           setPrompsJson(response.data);
           console.log(promptsJson);
@@ -113,7 +113,7 @@ const ProjectView: React.FC = () => {
 
     try {
       const newParagraph = {
-        project_id: parseInt(id, 10),
+        projectId: parseInt(id, 10),
         content_json: newParagraphContent,
       };
 
