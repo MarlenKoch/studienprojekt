@@ -324,10 +324,10 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                   onClick={
                     currentMode !== 3
                       ? () => {
-                          setOpenNoteAnswerIndex(index);
-                          setNoteDraft(ans.user_note || "");
-                          setUserNoteEnabledDraft(ans.user_note_enabled);
-                        }
+                        setOpenNoteAnswerIndex(index);
+                        setNoteDraft(ans.user_note || "");
+                        setUserNoteEnabledDraft(ans.user_note_enabled);
+                      }
                       : undefined
                   }
                   title={

@@ -3,6 +3,6 @@ export interface Chat {
   title: string;
   aiModel: string;
   content_json: string;
-  paragraph_id: number;
+  paragraphId: number;
   task: string;
 }

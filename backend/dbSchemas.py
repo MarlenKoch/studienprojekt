@@ -30,57 +30,54 @@ class ProjectResponse(BaseModel):
 
 # Paragraph
 class ParagraphCreate(BaseModel):
-    project_id: int
-    content_json: str
+    projectId: int
+    content: str
 
 
 class ParagraphResponse(BaseModel):
     id: int
-    project_id: int
-    content_json: str
+    projectId: int
+    content: str
 
 
-class ParagraphUpdate(BaseModel):
-    project_id: Optional[int] = None
-    content_json: Optional[str] = None
+class ParagraphUpdate(BaseModel): #brauchen wir das überhaupt? brauchen wir die update schemata? kann das weg? ist das müll?
+    content: Optional[str] = None
 
 
 # Chat
 class ChatCreate(BaseModel):
     title: str
     aiModel: str
-    task: str
-    paragraph_id: int
+    paragraphId: int
 
 
 class ChatResponse(BaseModel):
     id: int
     title: str
     aiModel: str
-    task: str
-    paragraph_id: int
+    paragraphId: int
 
 
 # Answer
 class AnswerCreate(BaseModel):
     task: str
-    ai_answer: str
-    user_note: str
-    user_note_enabled: bool
-    chat_id: int
+    userPrompt: Optional[str] = None
+    timestamp: int
+    aiAnswer: str
+    userNote: Optional[str] = None
+    chatId: int
 
 
 class AnswerResponse(BaseModel):
     id: int
     task: str
-    ai_answer: str
-    user_note: str
-    user_note_enabled: bool
-    chat_id: int
+    userPrompt: Optional[str] = None
+    timestamp: int
+    aiAnswer: str
+    userNote: Optional[str] = None
+    chatId: int
 
 
 class AnswerUpdate(BaseModel):
-    task: Optional[str] = None
-    chatId: Optional[int] = None
-    user_note: Optional[str] = None
-    user_note_enabled: Optional[bool] = None
+    userPrompt: Optional[str] = None
+    userNote: Optional[str] = None

@@ -11,13 +11,12 @@ app = FastAPI()
 
 class Chat(BaseModel):
     id: int
-    content_json: str
     aiModel: str
     task: str
 
 
-def allChatIDsForProject(project_id: int, db: Session) -> List[int]:
-    chats = get_chats_for_project(db, project_id)
+def allChatIDsForProject(projectId: int, db: Session) -> List[int]:
+    chats = get_chats_for_project(db, projectId)
     if not chats:
         raise HTTPException(
             status_code=404, detail="Chats not found for the given project"
@@ -42,9 +41,9 @@ def infoForOneChat(chatID: int, db: Session) -> Chat:
 
 
 @app.get("/promptverzeichnis")
-async def generateSourceDocument(project_id, db: Session = Depends(get_db)):
-    chat_ids = allChatIDsForProject(project_id, db)
-    chats_info = [infoForOneChat(chat_id, db) for chat_id in chat_ids]
+async def generateSourceDocument(projectId, db: Session = Depends(get_db)):
+    chatIds = allChatIDsForProject(projectId, db)
+    chats_info = [infoForOneChat(chatId, db) for chatId in chatIds]
     result = [
         {
             "id": chat.id,
