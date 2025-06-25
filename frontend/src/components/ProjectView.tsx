@@ -42,7 +42,7 @@ const ProjectView: React.FC = () => {
           `http://localhost:8000/projects/${id}`
         );
         setProject(response.data);
-
+        setProjectMode(response.data.id, response.data.mode);
         if (response.data.mode === 2) {
           if (response.data.starttime && response.data.duration) {
             startTimer(
@@ -50,7 +50,6 @@ const ProjectView: React.FC = () => {
                 response.data.duration -
                 Math.floor(Date.now() / 1000)
             );
-            setProjectMode(response.data.id, response.data.mode);
           } else {
             setShowTimerPopup(true); // Show timer popup
           }
