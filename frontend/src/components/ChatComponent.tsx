@@ -47,6 +47,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const [noteDraft, setNoteDraft] = useState("");
   const [userNoteEnabledDraft, setUserNoteEnabledDraft] = useState(false); // <-- NEU
   const [isSavingNote, setIsSavingNote] = useState(false);
+  const [isInfoPopUpOpen, setIsInfoPopUpOpen] = useState(false);
 
   // const copyToClipboard = (text: string) => {
   //   navigator.clipboard.writeText(text);
@@ -488,6 +489,9 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                 placeholder="Enter user context"
               />
               <button onClick={handleSend}>Send</button>
+              <button onClick={() => setIsInfoPopUpOpen(true)}>
+                Open Popup
+              </button>
               <input
                 type="text"
                 value={chatTitle}
@@ -513,6 +517,40 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           </li>
         ))}
       </ul>
+      {isInfoPopUpOpen && (
+        <>
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.15)",
+              zIndex: 9000,
+            }}
+            onClick={() => setIsInfoPopUpOpen(false)}
+          />
+          <div
+            style={{
+              position: "fixed",
+              top: "40%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              background: "red",
+              padding: 24,
+              border: "2px solid #333",
+              borderRadius: 10,
+              zIndex: 9999,
+              minWidth: 200,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p>
+              AI Warnung: AI kann falsche Informationen geben und Haluzinieren.
+              Überprüfe Informationen. PÜ.
+            </p>
+            <button onClick={() => setIsInfoPopUpOpen(false)}>Close</button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
