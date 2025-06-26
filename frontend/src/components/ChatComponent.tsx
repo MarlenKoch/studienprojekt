@@ -3,20 +3,10 @@ import axios from "axios";
 import { Chat } from "../types/Chat";
 import { AiRequest } from "../types/AiRequest";
 import { AiResponse } from "../types/AiResponse";
-//import { StudentContext } from "../context/StudentContext";
+import { Answer } from "../types/Answer";
 import ReactMarkdown from "react-markdown";
 import { useProjectTimer } from "../context/ProjectTimerContext";
 import Switch from "react-switch";
-
-interface Answer {
-  id?: number;
-  chat_id?: number;
-  task: string; // User-Eingabe
-  ai_answer: string; // AI-Antwort
-  user_note: string; // (optional)
-  user_note_enabled: boolean;
-  created_at?: string;
-}
 
 interface ChatComponentProps {
   paragraphId: number | null;
@@ -50,11 +40,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const [isSavingNote, setIsSavingNote] = useState(false);
   const [isInfoPopUpOpen, setIsInfoPopUpOpen] = useState(false);
 
-  // const copyToClipboard = (text: string) => {
-  //   navigator.clipboard.writeText(text);
-  // };
-  // ========== Chat/Answers laden ==========
-
   const fetchChats = async () => {
     if (paragraphId === null) return;
     try {
@@ -75,8 +60,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       setAnswers(
         resp.data.sort(
           (a, b) =>
-            new Date(a.created_at || "").getTime() -
-            new Date(b.created_at || "").getTime()
+            new Date(a.timestamp || "").getTime() -
+            new Date(b.timestamp || "").getTime()
         )
       );
     } catch (err) {
@@ -122,10 +107,13 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     }
 
     const newAnswer: Answer = {
-      task: userPrompt,
-      ai_answer: "",
-      user_note: "",
-      user_note_enabled: false,
+      task: task,
+      aiAnswer: "",
+      userNote: "",
+      userNoteEnabled: false,
+      aiModel: aiModel,
+      userPrompt: userPrompt,
+      timestamp: Date.now(),
     };
 
     // AI request bauen
@@ -139,8 +127,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
         previous_chat_json: JSON.stringify({
           answers: answers.map((ans) => ({
             task: ans.task,
-            ai_answer: ans.ai_answer,
-            user_note: ans.user_note_enabled ? ans.user_note : "", //TODO nur übergebn wenn... (erledigt)
+            aiAnswer: ans.aiAnswer,
+            userNote: ans.userNoteEnabled ? ans.userNote : "", //TODO nur übergebn wenn... (erledigt)
           })),
         }),
       },
@@ -151,7 +139,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
         `http://localhost:8000/paragraphs/${paragraphId}`
       );
       requestBody.context.paragraphContent =
-        paragraphResponse.data.content_json;
+        paragraphResponse.data.content;
     } catch (error) {
       console.error("Error fetching the paragraph:", error);
     }
@@ -165,10 +153,9 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
 
       const answerWithResponse: Answer = {
         ...newAnswer,
-        ai_answer: aiResponse.data.response,
+        aiAnswer: aiResponse.data.response,
       };
 
-      // "messages" analog: Zeigt direkt in der UI
       const updatedAnswers = [...answers, answerWithResponse];
       setAnswers(updatedAnswers);
 
@@ -204,7 +191,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           title: chatTitle || "Schüler-Chat",
           aiModel: aiModel,
           task,
-          paragraph_id: paragraphId,
+          paragraphId: paragraphId,
         };
         const saveResp = await axios.post<Chat>(
           "http://localhost:8000/chats",
@@ -226,7 +213,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           title: chatTitle || "Schüler-Chat",
           aiModel: aiModel,
           task,
-          paragraph_id: paragraphId,
+          paragraphId: paragraphId,
         };
         await axios.put(`http://localhost:8000/chats/${chatId}`, chatData, {
           headers: { "Content-Type": "application/json" },
@@ -243,11 +230,13 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
         if (!answer.id) {
           try {
             await axios.post("http://localhost:8000/answers/", {
-              chat_id: chatId,
+              chatId: chatId,
               task: answer.task,
-              ai_answer: answer.ai_answer,
-              user_note: answer.user_note,
-              user_note_enabled: answer.user_note_enabled,
+              aiAnswer: answer.aiAnswer,
+              userNote: answer.userNote,
+              userNoteEnabled: answer.userNoteEnabled,
+              aiModel: answer.aiModel,
+              timestamp: answer.timestamp,
             });
             changed = true;
           } catch (error) {
@@ -325,8 +314,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                     currentMode !== 3
                       ? () => {
                         setOpenNoteAnswerIndex(index);
-                        setNoteDraft(ans.user_note || "");
-                        setUserNoteEnabledDraft(ans.user_note_enabled);
+                        setNoteDraft(ans.userNote || "");
+                        setUserNoteEnabledDraft(ans.userNoteEnabled);
                       }
                       : undefined
                   }
@@ -337,12 +326,12 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                   <button
                     onClick={(e) => {
                       e.stopPropagation(); // So button doesn't trigger parent click
-                      navigator.clipboard.writeText(ans.ai_answer || "");
+                      navigator.clipboard.writeText(ans.aiAnswer || "");
                     }}
                   >
                     📋
                   </button>
-                  <ReactMarkdown>{ans.ai_answer}</ReactMarkdown>
+                  <ReactMarkdown>{ans.aiAnswer}</ReactMarkdown>
                 </span>
                 {/* <br />
                 {ans.user_note && (
@@ -408,8 +397,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                         const newAnswers = [...answers];
                         newAnswers[openNoteAnswerIndex] = {
                           ...answerToUpdate,
-                          user_note: noteDraft,
-                          user_note_enabled: userNoteEnabledDraft,
+                          userNote: noteDraft,
+                          userNoteEnabled: userNoteEnabledDraft,
                         };
                         setAnswers(newAnswers);
                         if (answerToUpdate.id) {
@@ -417,8 +406,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                             `http://localhost:8000/answers/${answerToUpdate.id}`,
                             {
                               ...answerToUpdate,
-                              user_note: noteDraft,
-                              user_note_enabled: userNoteEnabledDraft,
+                              userNote: noteDraft,
+                              userNoteEnabled: userNoteEnabledDraft,
                             },
                             { headers: { "Content-Type": "application/json" } }
                           );
