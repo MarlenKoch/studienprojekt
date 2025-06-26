@@ -7,7 +7,7 @@ import { StudentContext } from "../context/StudentContext";
 import ReactMarkdown from "react-markdown";
 
 interface ChatMessage {
-  user_prompt: string;
+  userPrompt: string;
   response: string;
 }
 
@@ -82,13 +82,13 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     }
 
     const requestBody: ChatRequest = {
-      user_prompt: { task, user_prompt: userPrompt },
-      ai_model: aiModel,
-      context_inputs: {
-        paragraph_content: "",
-        writing_style: writingStyle,
-        user_context: userContext,
-        previous_chat_json: JSON.stringify({ messages }),
+      userPrompt: { task, userPrompt: userPrompt },
+      aiModel: aiModel,
+      context: {
+        paragraphContent: "",
+        writingStyle: writingStyle,
+        userContext: userContext,
+        previousChatJson: JSON.stringify({ messages }),
       },
     };
 
@@ -96,7 +96,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       const paragraphResponse = await axios.get(
         `http://localhost:8000/paragraphs/${paragraphId}`
       );
-      requestBody.context_inputs.paragraph_content =
+      requestBody.context.paragraphContent =
         paragraphResponse.data.content_json;
     } catch (error) {
       console.error("Error fetching the paragraph:", error);
@@ -114,7 +114,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       );
 
       const newMessage: ChatMessage = {
-        user_prompt: userPrompt,
+        userPrompt: userPrompt,
         response: aiResponse.data.response,
       };
 
@@ -248,7 +248,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           <div>
             {messages.map((msg, index) => (
               <div key={index}>
-                <strong>User:</strong> {msg.user_prompt}
+                <strong>User:</strong> {msg.userPrompt}
                 <br />
                 <strong>AI:</strong>
                 <ReactMarkdown>{msg.response}</ReactMarkdown>
