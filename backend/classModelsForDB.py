@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from db import Base
 
@@ -11,9 +11,8 @@ class Project(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
     mode = Column(Integer, index=True)
-    starttime = Column(Integer, index=True)
-    duration = Column(Integer, index=True)
-    
+    starttime = Column(Integer, index=True, nullable=True)
+    duration = Column(Integer, index=True, nullable=True)
     paragraphs = relationship("Paragraph", back_populates="project")
 
 
