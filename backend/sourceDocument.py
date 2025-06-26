@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.orm import Session
 from crud import get_answer, get_answers_for_project
 from db import get_db
-from schemas import AnswerResponse
+from dbSchemas import AnswerResponse
 
 app = FastAPI()
 
