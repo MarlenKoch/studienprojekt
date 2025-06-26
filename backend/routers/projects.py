@@ -10,7 +10,7 @@ from crud import (
     get_paragraphs_for_project,
     get_chats_for_project,
 )
-from schemas import (
+from dbSchemas import (
     ProjectCreate,
     ProjectResponse,
     ParagraphResponse,

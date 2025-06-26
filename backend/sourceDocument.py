@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.orm import Session
 from crud import get_answer, get_answers_for_project
 from db import get_db
-from schemas import AnswerResponse
+from dbSchemas import AnswerResponse
 
 app = FastAPI()
 
@@ -15,7 +15,6 @@ def allAnswerIDsForProject(projectId: int, db: Session) -> List[int]:
             status_code=404, detail="Chats not found for the given project"
         )
     return [answer.id for answer in answers]
-
 
 
 def infoForOneAnswer(answerId: int, db: Session) -> AnswerResponse:

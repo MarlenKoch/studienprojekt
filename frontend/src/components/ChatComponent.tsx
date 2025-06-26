@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Chat } from "../types/Chat";
-import { ChatRequest } from "../types/ChatRequest";
-import { ChatResponse } from "../types/ChatResponse";
 import { Answer } from "../types/Answer";
+import { AiRequest } from "../types/AiRequest";
+import { AiResponse } from "../types/AiResponse";
 import ReactMarkdown from "react-markdown";
 import { useProjectTimer } from "../context/ProjectTimerContext";
 import Switch from "react-switch";
@@ -117,14 +117,14 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     };
 
     // AI request bauen
-    const requestBody: ChatRequest = {
-      user_prompt: { task, user_prompt: userPrompt },
-      ai_model: aiModel,
-      context_inputs: {
-        paragraph_content: "",
-        writing_style: writingStyle,
-        user_context: userContext,
-        previous_chat_json: JSON.stringify({
+    const requestBody: AiRequest = {
+      userPrompt: { task, userPrompt: userPrompt },
+      aiModel: aiModel,
+      context: {
+        paragraphContent: "",
+        writingStyle: writingStyle,
+        userContext: userContext,
+        previousChatJson: JSON.stringify({
           answers: answers.map((ans) => ({
             task: ans.task,
             aiAnswer: ans.aiAnswer,
@@ -138,14 +138,13 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       const paragraphResponse = await axios.get(
         `http://localhost:8000/paragraphs/${paragraphId}`
       );
-      requestBody.context_inputs.paragraph_content =
-        paragraphResponse.data.content;
+      requestBody.context.paragraphContent = paragraphResponse.data.content;
     } catch (error) {
       console.error("Error fetching the paragraph:", error);
     }
 
     try {
-      const aiResponse = await axios.post<ChatResponse>(
+      const aiResponse = await axios.post<AiResponse>(
         "http://localhost:8000/aiChat",
         requestBody,
         { headers: { "Content-Type": "application/json" } }

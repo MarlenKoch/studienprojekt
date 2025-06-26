@@ -1,69 +1,48 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from ollama import chat
+from aiSchemas import ContextInputs, UserPromptInputs, AiResponse, AiRequest
 import httpx
 
 
 app = FastAPI()
 
 
-class ContextInputs(BaseModel):
-    paragraph_content: str  # vielleicht nicht als ein string übergeben
-    writing_style: str  # aus Dropdown, also definitiv ein bestimmter String
-    user_context: str  # für zusätzliche Angaben, sollte auch '' sein können, wird am ende einfach rangehangen
-    previous_chat_json: str  # das was davor im chat angegeben wurde, einfach alles rein pasten und die KI machen lassen
-
-
-class UserPromptInputs(BaseModel):
-    task: str
-    user_prompt: str
-
-
-class ChatRequest(BaseModel):
-    user_prompt: UserPromptInputs
-    ai_model: str
-    context_inputs: ContextInputs
-
-
-class ChatResponse(BaseModel):
-    response: str
-
-
-def assembleSystemInfo(context_inputs: ContextInputs) -> str:
+def assembleSystemInfo(context: ContextInputs) -> str:
     system_info = f"""
-    Paragraph Content: {context_inputs.paragraph_content}
-    Writing Style: {context_inputs.writing_style}
-    User Context: {context_inputs.user_context}
-    Previous Conversations: {context_inputs.previous_chat_json}
+    Paragraph Content: {context.paragraphContent}
+    Writing Style: {context.writingStyle}
+    User Context: {context.userContext}
+    Previous Conversations: {context.previousChatJson}
     """
     return system_info
 
 
 def assembleUserPrompt(user_promt_inputs: UserPromptInputs) -> str:
-    user_prompt = f"""
+    userPrompt = f"""
     Task: {user_promt_inputs.task}
-    User Prompt: {user_promt_inputs.user_prompt}
+    User Prompt: {user_promt_inputs.userPrompt}
     """
-    return user_prompt
+    return userPrompt
 
 
-@app.post("/aiChat", response_model=ChatResponse)
-async def aiChat(request: ChatRequest):
-    user_info = assembleUserPrompt(request.user_prompt)
-    user_prompt = f"{user_info}"
-    system_info = assembleSystemInfo(request.context_inputs)
+@app.post("/aiChat", response_model=AiResponse)
+async def aiChat(request: AiRequest):
+    user_info = assembleUserPrompt(request.userPrompt)
+    userPrompt = f"{user_info}"
+    system_info = assembleSystemInfo(request.context)
     system_prompt = f"{system_info}"
     try:
         response = chat(
-            model=request.ai_model,
+            model=request.aiModel,
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
+                {"role": "user", "content": userPrompt},
             ],
         )
         model_response = response["message"]["content"]
 
-        return ChatResponse(response=model_response)
+        return AiResponse(response=model_response)
     except Exception as e:
         raise HTTPException(
             status_code=500, detail="An error occurred while fetching the response."
@@ -71,7 +50,7 @@ async def aiChat(request: ChatRequest):
 
 
 @app.get("/aimodels")
-async def get_models():
+async def getModels():
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get("http://localhost:11434/api/tags")

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from db import get_db
 from crud import create_chat, get_chats, get_chat, update_chat, get_answers_for_chat
-from schemas import ChatResponse, ChatCreate, AnswerResponse
+from dbSchemas import ChatResponse, ChatCreate, AnswerResponse
 
 
 router = APIRouter()

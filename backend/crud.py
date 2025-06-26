@@ -1,13 +1,12 @@
 from sqlalchemy.orm import Session
 from classModelsForDB import Project, Paragraph, Chat, Answer
-from schemas import (
+from dbSchemas import (
     ProjectCreate,
     ParagraphCreate,
     ChatCreate,
     ParagraphUpdate,
     ProjectUpdate,
     AnswerCreate,
-    AnswerResponse,
     AnswerUpdate,
 )
 
