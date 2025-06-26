@@ -474,14 +474,24 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                 type="text"
                 value={writingStyle}
                 onChange={(e) => setWritingStyle(e.target.value)}
-                placeholder="Enter writing style"
+                placeholder="Enter text style"
               />
-              <input
-                type="text"
-                value={task}
-                onChange={(e) => setTask(e.target.value)}
-                placeholder="Enter task"
-              />
+              <select value={task} onChange={(e) => setTask(e.target.value)}>
+                <option value="">Select task</option>
+                {[
+                  "umformulieren",
+                  "zusammenfassen",
+                  "text aus stichpunkten",
+                  "synonyme finden",
+                  "grammatik und rechtschreibung prüfen",
+                  "feedback geben",
+                  "erklären",
+                ].map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
               <input
                 type="text"
                 value={userContext}
