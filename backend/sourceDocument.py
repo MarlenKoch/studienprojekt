@@ -17,7 +17,6 @@ def allAnswerIDsForProject(projectId: int, db: Session) -> List[int]:
     return [answer.id for answer in answers]
 
 
-
 def infoForOneAnswer(answerId: int, db: Session) -> AnswerResponse:
     answer = get_answer(db, answerId)
     if not answer:

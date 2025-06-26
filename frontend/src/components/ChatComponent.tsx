@@ -8,6 +8,7 @@ import ReactMarkdown from "react-markdown";
 import { useProjectTimer } from "../context/ProjectTimerContext";
 import Switch from "react-switch";
 
+
 interface ChatComponentProps {
   paragraphId: number | null;
   aiModelList: string[];
@@ -118,13 +119,13 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
 
     // AI request bauen
     const requestBody: AiRequest = {
-      user_prompt: { task, user_prompt: userPrompt },
-      ai_model: aiModel,
-      context_inputs: {
-        paragraph_content: "",
-        writing_style: writingStyle,
-        user_context: userContext,
-        previous_chat_json: JSON.stringify({
+      userPrompt: { task, userPrompt: userPrompt },
+      aiModel: aiModel,
+      context: {
+        paragraphContent: "",
+        writingStyle: writingStyle,
+        userContext: userContext,
+        previousChatJson: JSON.stringify({
           answers: answers.map((ans) => ({
             task: ans.task,
             aiAnswer: ans.aiAnswer,
