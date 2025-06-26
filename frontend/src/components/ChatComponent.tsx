@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Chat } from "../types/Chat";
+import { Answer } from "../types/Answer";
 import { AiRequest } from "../types/AiRequest";
 import { AiResponse } from "../types/AiResponse";
-import { Answer } from "../types/Answer";
 import ReactMarkdown from "react-markdown";
 import { useProjectTimer } from "../context/ProjectTimerContext";
 import Switch from "react-switch";
@@ -106,6 +106,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       alert("Bitte gib eine Frage ein.");
       return;
     }
+
 
     const newAnswer: Answer = {
       task: task,
