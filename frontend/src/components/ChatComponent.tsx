@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { Chat } from "../types/Chat";
-import { ChatRequest } from "../types/ChatRequest";
-import { ChatResponse } from "../types/ChatResponse";
+import { AiRequest } from "../types/AiRequest";
+import { AiResponse } from "../types/AiResponse";
 import { StudentContext } from "../context/StudentContext";
 import ReactMarkdown from "react-markdown";
 
@@ -81,7 +81,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       return;
     }
 
-    const requestBody: ChatRequest = {
+    const requestBody: AiRequest = {
       userPrompt: { task, userPrompt: userPrompt },
       aiModel: aiModel,
       context: {
@@ -103,7 +103,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     }
 
     try {
-      const aiResponse = await axios.post<ChatResponse>(
+      const aiResponse = await axios.post<AiResponse>(
         "http://localhost:8000/aiChat",
         requestBody,
         {

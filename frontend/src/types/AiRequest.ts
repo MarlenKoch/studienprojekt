@@ -1,7 +1,7 @@
 import { ContextInputs } from "./ContextInputs";
 import { UserPromptInputs } from "./UserPromptInputs";
 
-export interface ChatRequest {
+export interface AiRequest {
   userPrompt: UserPromptInputs;
   aiModel: string;
   context: ContextInputs;
