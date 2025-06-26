@@ -9,7 +9,7 @@ from crud import (
     delete_paragraph,
     get_chats_for_paragraph,
 )
-from schemas import ParagraphCreate, ParagraphResponse, ChatResponse, ParagraphUpdate
+from dbSchemas import ParagraphCreate, ParagraphResponse, ChatResponse, ParagraphUpdate
 
 router = APIRouter()
 

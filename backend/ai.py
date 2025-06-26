@@ -1,32 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from ollama import chat
+from aiSchemas import ContextInputs, UserPromptInputs, AiResponse, AiRequest
 import httpx
 
 
 app = FastAPI()
-
-
-class ContextInputs(BaseModel):
-    paragraph_content: str  # vielleicht nicht als ein string übergeben
-    writing_style: str  # aus Dropdown, also definitiv ein bestimmter String
-    user_context: str  # für zusätzliche Angaben, sollte auch '' sein können, wird am ende einfach rangehangen
-    previous_chat_json: str  # das was davor im chat angegeben wurde, einfach alles rein pasten und die KI machen lassen
-
-
-class UserPromptInputs(BaseModel):
-    task: str
-    user_prompt: str
-
-
-class ChatRequest(BaseModel):
-    user_prompt: UserPromptInputs
-    ai_model: str
-    context_inputs: ContextInputs
-
-
-class ChatResponse(BaseModel):
-    response: str
 
 
 def assembleSystemInfo(context_inputs: ContextInputs) -> str:
@@ -47,8 +26,8 @@ def assembleUserPrompt(user_promt_inputs: UserPromptInputs) -> str:
     return user_prompt
 
 
-@app.post("/aiChat", response_model=ChatResponse)
-async def aiChat(request: ChatRequest):
+@app.post("/aiChat", response_model=AiResponse)
+async def aiChat(request: AiRequest):
     user_info = assembleUserPrompt(request.user_prompt)
     user_prompt = f"{user_info}"
     system_info = assembleSystemInfo(request.context_inputs)
@@ -63,7 +42,7 @@ async def aiChat(request: ChatRequest):
         )
         model_response = response["message"]["content"]
 
-        return ChatResponse(response=model_response)
+        return AiResponse(response=model_response)
     except Exception as e:
         raise HTTPException(
             status_code=500, detail="An error occurred while fetching the response."
@@ -71,7 +50,7 @@ async def aiChat(request: ChatRequest):
 
 
 @app.get("/aimodels")
-async def get_models():
+async def getModels():
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get("http://localhost:11434/api/tags")

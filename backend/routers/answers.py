@@ -8,7 +8,7 @@ from crud import (
     update_answer,
     get_answers_for_chat,
 )
-from schemas import AnswerCreate, AnswerResponse, AnswerUpdate
+from dbSchemas import AnswerCreate, AnswerResponse, AnswerUpdate
 
 
 router = APIRouter()
