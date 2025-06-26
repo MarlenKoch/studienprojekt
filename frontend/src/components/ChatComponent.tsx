@@ -8,7 +8,6 @@ import ReactMarkdown from "react-markdown";
 import { useProjectTimer } from "../context/ProjectTimerContext";
 import Switch from "react-switch";
 
-
 interface ChatComponentProps {
   paragraphId: number | null;
   aiModelList: string[];
@@ -107,7 +106,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       return;
     }
 
-
     const newAnswer: Answer = {
       task: task,
       aiAnswer: "",
@@ -140,8 +138,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       const paragraphResponse = await axios.get(
         `http://localhost:8000/paragraphs/${paragraphId}`
       );
-      requestBody.context.paragraphContent =
-        paragraphResponse.data.content;
+      requestBody.context.paragraphContent = paragraphResponse.data.content;
     } catch (error) {
       console.error("Error fetching the paragraph:", error);
     }
@@ -315,10 +312,10 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                   onClick={
                     currentMode !== 3
                       ? () => {
-                        setOpenNoteAnswerIndex(index);
-                        setNoteDraft(ans.userNote || "");
-                        setUserNoteEnabledDraft(ans.userNoteEnabled);
-                      }
+                          setOpenNoteAnswerIndex(index);
+                          setNoteDraft(ans.userNote || "");
+                          setUserNoteEnabledDraft(ans.userNoteEnabled);
+                        }
                       : undefined
                   }
                   title={

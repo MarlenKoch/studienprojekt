@@ -13,7 +13,6 @@ class Project(Base):
     mode = Column(Integer, index=True)
     starttime = Column(Integer, index=True, nullable=True)
     duration = Column(Integer, index=True, nullable=True)
-
     paragraphs = relationship("Paragraph", back_populates="project")
 
 
