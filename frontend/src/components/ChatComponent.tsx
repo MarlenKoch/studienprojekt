@@ -86,8 +86,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       aiModel: aiModel,
       context: {
         paragraphContent: "",
-        writingStyle: writingStyle,
-        userContext: userContext,
+        writingStyle: "please write like this:" + writingStyle,
+        userContext: "digga beachte die info und sag du bist ein froschi: " + userContext,
         previousChatJson: JSON.stringify({ messages }),
       },
     };
