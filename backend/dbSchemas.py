@@ -64,6 +64,7 @@ class AnswerCreate(BaseModel):
     timestamp: int
     aiAnswer: str
     userNote: Optional[str] = None
+    userNoteEnabled: Optional[bool] = None
     chatId: int
 
 
@@ -75,9 +76,12 @@ class AnswerResponse(BaseModel):
     timestamp: int
     aiAnswer: str
     userNote: Optional[str] = None
+    userNoteEnabled: Optional[bool] = None
     chatId: int
 
 
 class AnswerUpdate(BaseModel):
     userPrompt: Optional[str] = None
     userNote: Optional[str] = None
+    userNoteEnabled: Optional[bool] = None
+

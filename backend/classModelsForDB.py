@@ -51,6 +51,7 @@ class Answer(Base):
     timestamp = Column(Integer, index=True)
     aiAnswer = Column(String, index=True)
     userNote = Column(String, index=True)
+    userNoteEnabled = Column(Boolean, index=True)
     chatId = Column(Integer, ForeignKey("chats.id"), index=True)
 
     chats = relationship("Chat", back_populates="answers")
