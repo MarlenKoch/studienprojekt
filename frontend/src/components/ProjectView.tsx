@@ -124,7 +124,7 @@ const ProjectView: React.FC = () => {
         try {
           const response = await axios.get<string>(
             `http://localhost:8000/promptverzeichnis/`,
-            { params: { project_id: project.id } }
+            { params: { projectId: project.id } }
           );
           //setPromptsJson(response.data);
 
@@ -186,8 +186,8 @@ const ProjectView: React.FC = () => {
 
     try {
       const newParagraph = {
-        project_id: parseInt(id, 10),
-        content_json: newParagraphContent,
+        projectId: parseInt(id, 10),
+        content: newParagraphContent,
       };
 
       const response = await axios.post<Paragraph>(
@@ -215,7 +215,7 @@ const ProjectView: React.FC = () => {
     setParagraphs(
       paragraphs.map((paragraph) =>
         paragraph.id === paragraphId
-          ? { ...paragraph, content_json: newContent }
+          ? { ...paragraph, content: newContent }
           : paragraph
       )
     );
@@ -228,7 +228,7 @@ const ProjectView: React.FC = () => {
 
     try {
       await axios.put(`http://localhost:8000/paragraphs/${paragraphId}`, {
-        content_json: paragraph.content_json,
+        content: paragraph.content,
       });
       toast.success("Paragraph saved!");
     } catch (error) {
@@ -303,7 +303,7 @@ const ProjectView: React.FC = () => {
         {paragraphs.map((paragraph) => (
           <li key={paragraph.id}>
             <textarea
-              value={paragraph.content_json}
+              value={paragraph.content}
               onChange={(e) =>
                 project?.mode !== 3
                   ? handleParagraphChange(paragraph.id, e.target.value)
@@ -323,7 +323,7 @@ const ProjectView: React.FC = () => {
             <button
               onClick={(e) => {
                 e.stopPropagation(); // So button doesn't trigger parent click
-                navigator.clipboard.writeText(paragraph.content_json || "");
+                navigator.clipboard.writeText(paragraph.content || "");
               }}
             >
               📋
