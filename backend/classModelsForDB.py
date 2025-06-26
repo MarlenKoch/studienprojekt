@@ -7,20 +7,24 @@ from db import Base
 # Speichern von Projekten
 class Project(Base):
     __tablename__ = "projects"
+    
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
     mode = Column(Integer, index=True)
     starttime = Column(Integer, index=True)
     duration = Column(Integer, index=True)
+    
     paragraphs = relationship("Paragraph", back_populates="project")
 
 
 # Speichern der einzelnen Paragraphen
 class Paragraph(Base):
     __tablename__ = "paragraphs"
+    
     id = Column(Integer, primary_key=True, index=True)
-    project_id = Column(Integer, ForeignKey("projects.id"), index=True)
-    content_json = Column(String, index=True)
+    projectId = Column(Integer, ForeignKey("projects.id"), index=True)
+    content = Column(String, index=True)
+    
     project = relationship("Project", back_populates="paragraphs")
     chats = relationship("Chat", back_populates="paragraph")
 
@@ -31,12 +35,9 @@ class Chat(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
-    aiModel = Column(String, index=True)
-    task = Column(String, index=True)
-    content_json = Column(String, index=True)
-    paragraph_id = Column(Integer, ForeignKey("paragraphs.id"), index=True)
-    answers = relationship("Answer", back_populates="chats")
+    paragraphId = Column(Integer, ForeignKey("paragraphs.id"), index=True)
 
+    answers = relationship("Answer", back_populates="chats")
     paragraph = relationship("Paragraph", back_populates="chats")
 
 
@@ -46,8 +47,11 @@ class Answer(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     task = Column(String, index=True)
-    ai_answer = Column(String, index=True)
-    user_note = Column(String, index=True)
-    chat_id = Column(Integer, ForeignKey("chats.id"), index=True)
+    aiModel = Column(String, index=True)
+    userPrompt = Column(String, index=True)
+    timestamp = Column(Integer, index=True)
+    aiAnswer = Column(String, index=True)
+    userNote = Column(String, index=True)
+    chatId = Column(Integer, ForeignKey("chats.id"), index=True)
 
     chats = relationship("Chat", back_populates="answers")

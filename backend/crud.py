@@ -17,23 +17,23 @@ def get_projects(db: Session):
     return db.query(Project).all()
 
 
-def get_project(db: Session, project_id: int):
-    return db.query(Project).filter(Project.id == project_id).first()
+def get_project(db: Session, projectId: int):
+    return db.query(Project).filter(Project.id == projectId).first()
 
 
-def create_project(db: Session, project_data: ProjectCreate):
-    db_project = Project(**project_data.dict(exclude_unset=True))
+def create_project(db: Session, projectData: ProjectCreate):
+    db_project = Project(**projectData.dict(exclude_unset=True))
     db.add(db_project)
     db.commit()
     db.refresh(db_project)
     return db_project
 
 
-def update_project(db: Session, project_id: int, project_data: ProjectUpdate):
-    project = get_project(db, project_id)
+def update_project(db: Session, projectId: int, projectData: ProjectUpdate):
+    project = get_project(db, projectId)
     if not project:
         return None
-    updated_fields = project_data.dict(exclude_unset=True)  #bei patch für optionale Felder
+    updated_fields = projectData.dict(exclude_unset=True)  #bei patch für optionale Felder
     for key, value in updated_fields.items():
         setattr(project, key, value)
     db.commit()
@@ -41,8 +41,8 @@ def update_project(db: Session, project_id: int, project_data: ProjectUpdate):
     return project
 
 
-def delete_project(db: Session, project_id: int):
-    project = get_project(db, project_id)
+def delete_project(db: Session, projectId: int):
+    project = get_project(db, projectId)
     if project:
         db.delete(project)
         db.commit()
@@ -55,22 +55,22 @@ def get_paragraphs(db: Session):
     return db.query(Paragraph).all()
 
 
-def get_paragraph(db: Session, paragraph_id: int):
-    return db.query(Paragraph).filter(Paragraph.id == paragraph_id).first()
+def get_paragraph(db: Session, paragraphId: int):
+    return db.query(Paragraph).filter(Paragraph.id == paragraphId).first()
 
 
-def create_paragraph(db: Session, paragraph_data: ParagraphCreate):
-    db_paragraph = Paragraph(**paragraph_data.dict())
+def create_paragraph(db: Session, paragraphData: ParagraphCreate):
+    db_paragraph = Paragraph(**paragraphData.dict())
     db.add(db_paragraph)
     db.commit()
     db.refresh(db_paragraph)
     return db_paragraph
 
 
-def update_paragraph(db: Session, paragraph_id: int, updated_data: ParagraphUpdate):
-    paragraph = get_paragraph(db, paragraph_id)
+def update_paragraph(db: Session, paragraphId: int, updatedData: ParagraphUpdate):
+    paragraph = get_paragraph(db, paragraphId)
     if paragraph:
-        update_fields = updated_data.dict(exclude_unset=True)
+        update_fields = updatedData.dict(exclude_unset=True)
         if update_fields:
             for key, value in update_fields.items():
                 setattr(paragraph, key, value)
@@ -81,8 +81,8 @@ def update_paragraph(db: Session, paragraph_id: int, updated_data: ParagraphUpda
     return None
 
 
-def delete_paragraph(db: Session, paragraph_id: int):
-    paragraph = get_paragraph(db, paragraph_id)
+def delete_paragraph(db: Session, paragraphId: int):
+    paragraph = get_paragraph(db, paragraphId)
     if paragraph:
         db.delete(paragraph)
         db.commit()
@@ -95,8 +95,8 @@ def get_chats(db: Session):
     return db.query(Chat).all()
 
 
-def get_chat(db: Session, chat_id: int):
-    return db.query(Chat).filter(Chat.id == chat_id).first()
+def get_chat(db: Session, chatId: int):
+    return db.query(Chat).filter(Chat.id == chatId).first()
 
 
 def create_chat(db: Session, chat_data: ChatCreate):
@@ -107,8 +107,8 @@ def create_chat(db: Session, chat_data: ChatCreate):
     return db_chat
 
 
-def delete_chat(db: Session, chat_id: int):
-    chat = get_chat(db, chat_id)
+def delete_chat(db: Session, chatId: int):
+    chat = get_chat(db, chatId)
     if chat:
         db.delete(chat)
         db.commit()
@@ -117,8 +117,8 @@ def delete_chat(db: Session, chat_id: int):
 
 
 # Update chat function
-def update_chat(db: Session, chat_id: int, updated_data: ChatCreate):
-    chat = get_chat(db, chat_id)
+def update_chat(db: Session, chatId: int, updated_data: ChatCreate):
+    chat = get_chat(db, chatId)
     if chat:
         update_fields = updated_data.dict(exclude_unset=True)
         if update_fields:
@@ -170,21 +170,31 @@ def update_answer(db: Session, answer_id: int, answer_data: AnswerUpdate):
 
 
 # Relationship specific queries
-def get_chats_for_paragraph(db: Session, paragraph_id: int):
-    return db.query(Chat).filter(Chat.paragraph_id == paragraph_id).all()
+def get_chats_for_paragraph(db: Session, paragraphId: int):
+    return db.query(Chat).filter(Chat.paragraphId == paragraphId).all()
 
 
-def get_paragraphs_for_project(db: Session, project_id: int):
-    return db.query(Paragraph).filter(Paragraph.project_id == project_id).all()
+def get_paragraphs_for_project(db: Session, projectId: int):
+    return db.query(Paragraph).filter(Paragraph.projectId == projectId).all()
 
 
-def get_chats_for_project(db: Session, project_id: int):
-    paragraphs = db.query(Paragraph).filter(Paragraph.project_id == project_id).all()
-    paragraph_ids = [paragraph.id for paragraph in paragraphs]
-    chats = db.query(Chat).filter(Chat.paragraph_id.in_(paragraph_ids)).all()
+def get_chats_for_project(db: Session, projectId: int):
+    paragraphs = db.query(Paragraph).filter(Paragraph.projectId == projectId).all()
+    paragraphIds = [paragraph.id for paragraph in paragraphs]
+    chats = db.query(Chat).filter(Chat.paragraphId.in_(paragraphIds)).all()
 
     return chats
 
 
-def get_answers_for_chat(db: Session, chat_id: int):
-    return db.query(Answer).filter(Answer.chat_id == chat_id).all()
+def get_answers_for_chat(db: Session, chatId: int):
+    return db.query(Answer).filter(Answer.chatId == chatId).all()
+
+
+def get_answers_for_project(db: Session, projectId: int):
+        paragraphs = db.query(Paragraph).filter(Paragraph.projectId == projectId).all()
+        paragraphIds = [paragraph.id for paragraph in paragraphs]
+        chats = db.query(Chat).filter(Chat.paragraphId.in_(paragraphIds)).all()
+        chatIds = [chat.id for chat in chats]
+        answers = db.query(Answer).filter(Answer.chatId.in_(chatIds)).all()
+        return answers
+

@@ -29,36 +29,36 @@ def get_paragraphs_endpoint(db: Session = Depends(get_db)):
 
 
 # Endpoint zum Abrufen eines Absatzes nach ID
-@router.get("/{paragraph_id}", response_model=ParagraphResponse)
-def get_paragraph_endpoint(paragraph_id: int, db: Session = Depends(get_db)):
-    paragraph = get_paragraph(db, paragraph_id)
+@router.get("/{paragraphId}", response_model=ParagraphResponse)
+def get_paragraph_endpoint(paragraphId: int, db: Session = Depends(get_db)):
+    paragraph = get_paragraph(db, paragraphId)
     if not paragraph:
         raise HTTPException(status_code=404, detail="Paragraph not found")
     return paragraph
 
 
 # Endpoint zum Löschen eines Absatzes nach ID
-@router.delete("/{paragraph_id}", response_model=dict)
-def delete_paragraph_endpoint(paragraph_id: int, db: Session = Depends(get_db)):
-    paragraph = delete_paragraph(db, paragraph_id)
+@router.delete("/{paragraphId}", response_model=dict)
+def delete_paragraph_endpoint(paragraphId: int, db: Session = Depends(get_db)):
+    paragraph = delete_paragraph(db, paragraphId)
     if not paragraph:
         raise HTTPException(status_code=404, detail="Paragraph not found")
-    return {"detail": f"Paragraph with id {paragraph_id} deleted"}
+    return {"detail": f"Paragraph with id {paragraphId} deleted"}
 
 
 # Endpoint zum Abrufen aller Chats für einen bestimmten Absatz
-@router.get("/{paragraph_id}/chats/", response_model=list[ChatResponse])
-def get_chats_for_paragraph_endpoint(paragraph_id: int, db: Session = Depends(get_db)):
-    chats = get_chats_for_paragraph(db, paragraph_id)
+@router.get("/{paragraphId}/chats/", response_model=list[ChatResponse])
+def get_chats_for_paragraph_endpoint(paragraphId: int, db: Session = Depends(get_db)):
+    chats = get_chats_for_paragraph(db, paragraphId)
     return chats
 
 
 # Endpoint zum Aktualisieren eines Absatzes nach ID
-@router.put("/{paragraph_id}", response_model=ParagraphResponse)
+@router.put("/{paragraphId}", response_model=ParagraphResponse)
 def update_paragraph_endpoint(
-    paragraph_id: int, updated_data: ParagraphUpdate, db: Session = Depends(get_db)
+    paragraphId: int, updated_data: ParagraphUpdate, db: Session = Depends(get_db)
 ):
-    paragraph = update_paragraph(db, paragraph_id, updated_data)
+    paragraph = update_paragraph(db, paragraphId, updated_data)
     if not paragraph:
         raise HTTPException(status_code=404, detail="Paragraph not found")
     return paragraph

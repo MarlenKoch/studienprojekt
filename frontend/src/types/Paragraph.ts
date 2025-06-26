@@ -1,5 +1,5 @@
 export interface Paragraph {
     id: number;
-    project_id: number;
+    projectId: number;
     content_json: string;
 }
