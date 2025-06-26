@@ -47,20 +47,19 @@ class ParagraphUpdate(BaseModel): #brauchen wir das überhaupt? brauchen wir die
 # Chat
 class ChatCreate(BaseModel):
     title: str
-    aiModel: str
     paragraphId: int
 
 
 class ChatResponse(BaseModel):
     id: int
     title: str
-    aiModel: str
     paragraphId: int
 
 
 # Answer
 class AnswerCreate(BaseModel):
     task: str
+    aiModel: str
     userPrompt: Optional[str] = None
     timestamp: int
     aiAnswer: str
@@ -71,6 +70,7 @@ class AnswerCreate(BaseModel):
 class AnswerResponse(BaseModel):
     id: int
     task: str
+    aiModel: str
     userPrompt: Optional[str] = None
     timestamp: int
     aiAnswer: str

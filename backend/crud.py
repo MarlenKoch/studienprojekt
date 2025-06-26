@@ -187,3 +187,13 @@ def get_chats_for_project(db: Session, projectId: int):
 
 def get_answers_for_chat(db: Session, chatId: int):
     return db.query(Answer).filter(Answer.chatId == chatId).all()
+
+
+def get_answers_for_project(db: Session, projectId: int):
+        paragraphs = db.query(Paragraph).filter(Paragraph.projectId == projectId).all()
+        paragraphIds = [paragraph.id for paragraph in paragraphs]
+        chats = db.query(Chat).filter(Chat.paragraphId.in_(paragraphIds)).all()
+        chatIds = [chat.id for chat in chats]
+        answers = db.query(Answer).filter(Answer.chatId.in_(chatIds)).all()
+        return answers
+
