@@ -35,9 +35,8 @@ class Chat(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
-    aiModel = Column(String, index=True)
     paragraphId = Column(Integer, ForeignKey("paragraphs.id"), index=True)
-    
+
     answers = relationship("Answer", back_populates="chats")
     paragraph = relationship("Paragraph", back_populates="chats")
 
@@ -48,6 +47,7 @@ class Answer(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     task = Column(String, index=True)
+    aiModel = Column(String, index=True)
     userPrompt = Column(String, index=True)
     timestamp = Column(Integer, index=True)
     aiAnswer = Column(String, index=True)

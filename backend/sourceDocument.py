@@ -1,56 +1,43 @@
 from typing import List
 from fastapi import FastAPI, HTTPException, Depends
-from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from crud import get_chat, get_chats_for_project
+from crud import get_answer, get_answers_for_project
 from db import get_db
-import json
+from schemas import AnswerResponse
 
 app = FastAPI()
 
 
-class Chat(BaseModel):
-    id: int
-    aiModel: str
-    task: str
-
-
-def allChatIDsForProject(projectId: int, db: Session) -> List[int]:
-    chats = get_chats_for_project(db, projectId)
-    if not chats:
+def allAnswerIDsForProject(projectId: int, db: Session) -> List[int]:
+    answers = get_answers_for_project(db, projectId)
+    if not answers:
         raise HTTPException(
             status_code=404, detail="Chats not found for the given project"
         )
-    return [chat.id for chat in chats]
+    return [answer.id for answer in answers]
 
 
-def infoForOneChat(chatID: int, db: Session) -> Chat:
-    chat = get_chat(db, chatID)
-    if not chat:
-        raise HTTPException(status_code=404, detail="Chat not found")
-    parsed_data = json.loads(chat.content_json)
-    prompts = [message["user_prompt"] for message in parsed_data["messages"]]
-    print(prompts)
-    prompts_string_with_comma = ", ".join(prompts)
-    return Chat(
-        id=chatID,
-        content_json=prompts_string_with_comma,
-        aiModel=chat.aiModel,
-        task=chat.task,
-    )
+
+def infoForOneAnswer(answerId: int, db: Session) -> AnswerResponse:
+    answer = get_answer(db, answerId)
+    if not answer:
+        raise HTTPException(status_code=404, detail="Answer for this chat not found")
+    
+    return answer
 
 
 @app.get("/promptverzeichnis")
 async def generateSourceDocument(projectId, db: Session = Depends(get_db)):
-    chatIds = allChatIDsForProject(projectId, db)
-    chats_info = [infoForOneChat(chatId, db) for chatId in chatIds]
+    answerIds = allAnswerIDsForProject(projectId, db)
+    answersInfo = [infoForOneAnswer(answerId, db) for answerId in answerIds]
     result = [
         {
-            "id": chat.id,
-            "content_json": chat.content_json,
-            "aiModel": chat.aiModel,
-            "task": chat.task,
+            "id": answer.id,
+            "aiModel": answer.aiModel,
+            "task": answer.task,
+            "prompt": answer.userPrompt,
+            "timestamp": answer.timestamp
         }
-        for chat in chats_info
+        for answer in answersInfo
     ]
     return {"chats": result}
