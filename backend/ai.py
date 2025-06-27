@@ -9,19 +9,19 @@ app = FastAPI()
 
 
 def assembleSystemInfo(context: ContextInputs) -> str:
-    system_info = f"""
+    systemInfo = f"""
     Paragraph Content: {context.paragraphContent}
     Writing Style: {context.writingStyle}
-    User Context: {context.userContext}
-    Previous Conversations: {context.previousChatJson}
+    {f'User Context: {context.userContext}' if context.userContext else ''}
+    {f'Previous Conversations: {context.previousChatJson}' if context.previousChatJson else ''}
     """
-    return system_info
+    return systemInfo
 
 
 def assembleUserPrompt(userPromptInputs: UserPromptInputs) -> str:
     userPrompt = f"""
     {switchPrompt(userPromptInputs.task)}
-    Beachte zudem folgendes: {userPromptInputs.userPrompt}
+    {f'Beachte zudem folgendes: {userPromptInputs.userPrompt}' if userPromptInputs.userPrompt else ''}
     """
     return userPrompt
 
@@ -47,21 +47,21 @@ def switchPrompt(task):
 
 @app.post("/aiChat", response_model=AiResponse)
 async def aiChat(request: AiRequest):
-    user_info = assembleUserPrompt(request.userPrompt)
-    userPrompt = f"{user_info}"
-    system_info = assembleSystemInfo(request.context)
-    system_prompt = f"{system_info}"
+    userInfo = assembleUserPrompt(request.userPrompt)
+    userPrompt = f"{userInfo}"
+    systemInfo = assembleSystemInfo(request.context)
+    systemPrompt = f"{systemInfo}"
     try:
         response = chat(
             model=request.aiModel,
             messages=[
-                {"role": "system", "content": system_prompt},
+                {"role": "system", "content": systemPrompt},
                 {"role": "user", "content": userPrompt},
             ],
         )
-        model_response = response["message"]["content"]
+        modelResponse = response["message"]["content"]
 
-        return AiResponse(response=model_response)
+        return AiResponse(response=modelResponse)
     except Exception as e:
         raise HTTPException(
             status_code=500, detail="An error occurred while fetching the response."
