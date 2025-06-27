@@ -24,6 +24,25 @@ def infoForOneAnswer(answerId: int, db: Session) -> AnswerResponse:
     
     return answer
 
+def setTask(task):
+    if task == 1:
+        return "umformulieren"
+    elif task == 2:
+        return "zusammenfassen"
+    elif task == 3:
+        return "Text aus Stichpunkten formulieren"
+    elif task == 4:
+        return "Synonym finden"
+    elif task == 5:
+        return "Grammatik und Rechtschreibung überprüfen"
+    elif task == 6:
+        return "Feedback geben"
+    elif task == 7:
+        return "erklären"
+    elif task == 0:
+        return "(Benutzerdefiniert, siehe Prompt)"
+    else:
+        return ""
 
 @app.get("/promptverzeichnis")
 async def generateSourceDocument(projectId, db: Session = Depends(get_db)):
@@ -33,7 +52,7 @@ async def generateSourceDocument(projectId, db: Session = Depends(get_db)):
         {
             "id": answer.id,
             "aiModel": answer.aiModel,
-            "task": answer.task,
+            "task": setTask(answer.task),
             "prompt": answer.userPrompt,
             "timestamp": answer.timestamp
         }

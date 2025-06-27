@@ -45,7 +45,7 @@ class Answer(Base):
     __tablename__ = "answers"
 
     id = Column(Integer, primary_key=True, index=True)
-    task = Column(String, index=True)
+    task = Column(Integer, index=True)
     aiModel = Column(String, index=True)
     userPrompt = Column(String, index=True)
     timestamp = Column(Integer, index=True)
