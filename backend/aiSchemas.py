@@ -9,7 +9,7 @@ class ContextInputs(BaseModel):
 
 
 class UserPromptInputs(BaseModel):
-    task: str
+    task: int
     userPrompt: str
 
 
