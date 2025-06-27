@@ -21,7 +21,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const [systemInfo, setSystemInfo] = useState("");
   const [chatTitle, setChatTitle] = useState("");
   const [aiModel, setAiModel] = useState(aiModelList[0] || "");
-  const [task, setTask] = useState("");
+  const [task, setTask] = useState(0);
   const [userPrompt, setUserPrompt] = useState("");
   const [writingStyle, setWritingStyle] = useState("");
   const [userContext, setUserContext] = useState("");
@@ -79,7 +79,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     setIsNewChatActive(false);
     setChatTitle("");
     setAiModel(aiModelList[0] || "");
-    setTask("");
+    setTask(0);
     setWritingStyle("");
     setUserContext("");
     setUserPrompt("");
@@ -101,8 +101,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       alert("paragraph ID is missing.");
       return;
     }
-    if (!task.trim()) {
-      alert("Bitte gib eine Frage ein.");
+    if (task === 0 && currentMode != 0) {
+      alert("Bitte wähle ine zulässige Anfrage!");
       return;
     }
 
@@ -273,7 +273,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     setAnswers([]);
     setChatTitle("blub test");
     setAiModel(aiModelList[0] || "");
-    setTask("");
+    setTask(0);
     setWritingStyle("");
     setUserContext("");
     setUserPrompt("");
@@ -466,7 +466,10 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                 onChange={(e) => setWritingStyle(e.target.value)}
                 placeholder="Enter text style"
               />
-              <select value={task} onChange={(e) => setTask(e.target.value)}>
+              <select
+                value={task}
+                onChange={(e) => setTask(Number(e.target.value))}
+              >
                 <option value="">Select task</option>
                 {[
                   "umformulieren",
@@ -476,8 +479,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                   "grammatik und rechtschreibung prüfen",
                   "feedback geben",
                   "erklären",
-                ].map((n) => (
-                  <option key={n} value={n}>
+                ].map((n, idx) => (
+                  <option key={n} value={idx + 1}>
                     {n}
                   </option>
                 ))}

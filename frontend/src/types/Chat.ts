@@ -4,5 +4,5 @@ export interface Chat {
   aiModel: string;
   content_json: string;
   paragraphId: number;
-  task: string;
+  task: number;
 }

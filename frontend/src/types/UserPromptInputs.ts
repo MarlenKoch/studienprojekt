@@ -1,4 +1,4 @@
 export interface UserPromptInputs {
-    task: string
-    userPrompt: string
+  task: number;
+  userPrompt: string;
 }
