@@ -236,6 +236,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
               userNoteEnabled: answer.userNoteEnabled,
               aiModel: answer.aiModel,
               timestamp: answer.timestamp,
+              userPrompt: answer.userPrompt,
             });
             changed = true;
           } catch (error) {

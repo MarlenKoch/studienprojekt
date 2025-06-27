@@ -1,15 +1,16 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import jsPDF from "jspdf";
 import { useParams } from "react-router-dom";
 import { Project } from "../types/Project";
 import { Paragraph } from "../types/Paragraph";
 import ChatComponent from "./ChatComponent";
 import { useProjectTimer } from "../context/ProjectTimerContext";
+import "jspdf-autotable";
 
 // 1. Toastify import
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { generatePDF } from "./GeneratePDF";
 
 const ProjectView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -119,6 +120,7 @@ const ProjectView: React.FC = () => {
 
   // Fetches prompts and generates PDF when requested.
   useEffect(() => {
+    if (!isCreatingPromptJson) return;
     const getPromptsGeneratePDF = async () => {
       if (project?.id !== undefined) {
         try {
@@ -130,7 +132,8 @@ const ProjectView: React.FC = () => {
 
           generatePDF(
             JSON.stringify(response.data),
-            `promptverzeichnis_${project?.title}`
+            `Promptverzeichnis ${project?.title ?? "Projekt"}`,
+            "/logo-test.png" // Path zum Logo im public-Ordner
           );
           toast.success("PDF generated and downloaded!");
         } catch (error) {
@@ -238,17 +241,17 @@ const ProjectView: React.FC = () => {
   };
 
   // PDF Generator
-  function generatePDF(jsonString: string, fileName: string) {
-    const doc = new jsPDF();
+  // function generatePDF(jsonString: string, fileName: string) {
+  //   const doc = new jsPDF();
 
-    const json = JSON.parse(jsonString);
-    const formattedJson = JSON.stringify(json, null, 2);
+  //   const json = JSON.parse(jsonString);
+  //   const formattedJson = JSON.stringify(json, null, 2);
 
-    const lines = doc.splitTextToSize(formattedJson, 180);
+  //   const lines = doc.splitTextToSize(formattedJson, 180);
 
-    doc.text(lines, 10, 5);
-    doc.save(`${fileName}.pdf`);
-  }
+  //   doc.text(lines, 10, 5);
+  //   doc.save(`${fileName}.pdf`);
+  // }
 
   // Window focus/blur
   const handleFocus = () => {
