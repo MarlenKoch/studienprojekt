@@ -12,7 +12,6 @@ export const generatePDF = async (
   const promptsArray: TableData[] = Array.isArray(parsed.chats)
     ? parsed.chats
     : [];
-
   // Logo als Base64-Datenurl
   async function getImgDataUrl(url: string): Promise<string> {
     const res = await fetch(url);
@@ -57,7 +56,7 @@ export const generatePDF = async (
     ]),
     startY: 120,
     styles: { fontSize: 10, cellPadding: 5 },
-    headStyles: { fillColor: [79, 140, 255] },
+    headStyles: { fillColor: [191, 170, 5] }, ////HIER FARBE ÄNDERNN
     theme: "striped",
     margin: { left: 30, right: 30, top: 50 },
     didDrawPage: (data: HookData) => {

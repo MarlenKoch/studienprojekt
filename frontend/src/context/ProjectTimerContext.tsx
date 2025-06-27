@@ -51,7 +51,6 @@ export const ProjectTimerProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const setProjectMode = async (projectId: number | null, newMode: number) => {
-    console.log("pro jec tid ", projectId);
     if (projectId != null) {
       await axios.put(`http://localhost:8000/projects/${projectId}`, {
         mode: newMode,

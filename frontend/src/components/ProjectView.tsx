@@ -77,11 +77,9 @@ const ProjectView: React.FC = () => {
     fetchProject();
     fetchParagraphs();
 
-    window.addEventListener("focus", handleFocus);
     window.addEventListener("blur", handleBlur);
 
     return () => {
-      window.removeEventListener("focus", handleFocus);
       window.removeEventListener("blur", handleBlur);
     };
   }, [id]);
@@ -92,7 +90,6 @@ const ProjectView: React.FC = () => {
       Number(timerHours) * 3600 +
       Number(timerMinutes) * 60 +
       Number(timerSeconds);
-    console.log(project?.id);
     axios.put(`http://localhost:8000/projects/${project?.id}`, {
       starttime: Math.floor(Date.now() / 1000),
       duration: totalSeconds,
@@ -238,25 +235,6 @@ const ProjectView: React.FC = () => {
       toast.error("Error saving paragraph.");
       console.error("Error saving paragraph:", error);
     }
-  };
-
-  // PDF Generator
-  // function generatePDF(jsonString: string, fileName: string) {
-  //   const doc = new jsPDF();
-
-  //   const json = JSON.parse(jsonString);
-  //   const formattedJson = JSON.stringify(json, null, 2);
-
-  //   const lines = doc.splitTextToSize(formattedJson, 180);
-
-  //   doc.text(lines, 10, 5);
-  //   doc.save(`${fileName}.pdf`);
-  // }
-
-  // Window focus/blur
-  const handleFocus = () => {
-    // You may use toast if you want to inform user on focus gain/loss.
-    // toast.info("Das Fenster hat den Fokus erhalten.");
   };
 
   const handleBlur = async () => {

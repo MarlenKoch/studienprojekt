@@ -7,6 +7,7 @@ import { AiResponse } from "../types/AiResponse";
 import ReactMarkdown from "react-markdown";
 import { useProjectTimer } from "../context/ProjectTimerContext";
 import Switch from "react-switch";
+import { toast } from "react-toastify";
 
 interface ChatComponentProps {
   paragraphId: number | null;
@@ -98,11 +99,11 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const handleSend = async () => {
     if (currentMode === 3) return; // Sicherheit
     if (paragraphId === null) {
-      alert("paragraph ID is missing.");
+      toast.warn("paragraph ID is missing.");
       return;
     }
     if (task === 0 && currentMode != 0) {
-      alert("Bitte wähle ine zulässige Anfrage!");
+      toast.warn("Bitte wähle ine zulässige Anfrage!");
       return;
     }
 
@@ -166,7 +167,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       setUserPrompt("");
     } catch (error) {
       console.error("Error:", error);
-      alert("Error occurred while getting AI response.");
+      toast.warn("Error occurred while getting AI response.");
     }
   };
 
@@ -176,7 +177,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     const _answers = answersToSave || answers;
 
     if (_answers.length === 0 || chatTitle.trim() === "" || !paragraphId) {
-      alert("Please provide all necessary information.");
+      toast.warn("Please provide all necessary information.");
       return;
     }
 
@@ -202,7 +203,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
         setActiveChat(chatResp);
       } catch (error) {
         console.error("Fehler beim Speichern des Chats", error);
-        alert("Fehler beim Speichern des Chats");
+        toast.warn("Fehler beim Speichern des Chats");
         return;
       }
     } else {
@@ -246,7 +247,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       }
       if (changed) await fetchAnswers(chatId);
       fetchChats();
-      if (!answersToSave) alert("Chat und Antworten gespeichert!");
+      if (!answersToSave) toast.warn("Chat und Antworten gespeichert!");
     }
     setIsNewChatActive(false);
   };
@@ -259,8 +260,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     setActiveChat(chat);
     setIsNewChatActive(false);
     setChatTitle(chat.title);
-    setAiModel(chat.aiModel);
-    setTask(chat.task);
+    setAiModel("");
+    setTask(0);
     setWritingStyle("");
     setUserContext("");
     setUserPrompt("");
@@ -313,10 +314,10 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                   onClick={
                     currentMode !== 3
                       ? () => {
-                        setOpenNoteAnswerIndex(index);
-                        setNoteDraft(ans.userNote || "");
-                        setUserNoteEnabledDraft(ans.userNoteEnabled);
-                      }
+                          setOpenNoteAnswerIndex(index);
+                          setNoteDraft(ans.userNote || "");
+                          setUserNoteEnabledDraft(ans.userNoteEnabled);
+                        }
                       : undefined
                   }
                   title={
@@ -414,7 +415,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                         }
                         setOpenNoteAnswerIndex(null);
                       } catch (err) {
-                        alert("Fehler beim Speichern des Kommentars");
+                        toast.warn("Fehler beim Speichern des Kommentars");
                         console.error(err);
                       }
                       setIsSavingNote(false);
