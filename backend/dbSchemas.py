@@ -58,7 +58,7 @@ class ChatResponse(BaseModel):
 
 # Answer
 class AnswerCreate(BaseModel):
-    task: str
+    task: int
     aiModel: str
     userPrompt: Optional[str] = None
     timestamp: int
@@ -70,7 +70,7 @@ class AnswerCreate(BaseModel):
 
 class AnswerResponse(BaseModel):
     id: int
-    task: str
+    task: int
     aiModel: str
     userPrompt: Optional[str] = None
     timestamp: int

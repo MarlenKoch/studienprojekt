@@ -312,10 +312,10 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                   onClick={
                     currentMode !== 3
                       ? () => {
-                          setOpenNoteAnswerIndex(index);
-                          setNoteDraft(ans.userNote || "");
-                          setUserNoteEnabledDraft(ans.userNoteEnabled);
-                        }
+                        setOpenNoteAnswerIndex(index);
+                        setNoteDraft(ans.userNote || "");
+                        setUserNoteEnabledDraft(ans.userNoteEnabled);
+                      }
                       : undefined
                   }
                   title={
@@ -470,10 +470,10 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                 {[
                   "umformulieren",
                   "zusammenfassen",
-                  "text aus stichpunkten",
-                  "synonyme finden",
-                  "grammatik und rechtschreibung prüfen",
-                  "feedback geben",
+                  "Text aus Stichpunkten",
+                  "Synonyme finden",
+                  "Grammatik und Rechtschreibung prüfen",
+                  "Feedback geben",
                   "erklären",
                 ].map((n) => (
                   <option key={n} value={n}>
