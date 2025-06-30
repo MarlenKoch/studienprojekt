@@ -4,6 +4,7 @@ from dbSchemas import (
     ProjectCreate,
     ParagraphCreate,
     ChatCreate,
+    ChatUpdate,
     ParagraphUpdate,
     ProjectUpdate,
     AnswerCreate,
@@ -115,8 +116,7 @@ def delete_chat(db: Session, chatId: int):
     return None
 
 
-# Update chat function
-def update_chat(db: Session, chatId: int, updated_data: ChatCreate):
+def update_chat(db: Session, chatId: int, updated_data: ChatUpdate):
     chat = get_chat(db, chatId)
     if chat:
         update_fields = updated_data.dict(exclude_unset=True)
