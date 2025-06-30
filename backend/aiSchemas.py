@@ -15,10 +15,12 @@ class UserPromptInputs(BaseModel):
     synonym: Optional[str] = None
 
 
+# diese Felder werden jeweils getrennt verarbeitet beim AI Aufruf
+# das was vom Frontend kommt
 class AiRequest(BaseModel):
-    userPrompt: UserPromptInputs
+    userPrompt: UserPromptInputs #siehe oben
     aiModel: str
-    context: ContextInputs
+    context: ContextInputs #siehe oben
 
 
 class AiResponse(BaseModel):
