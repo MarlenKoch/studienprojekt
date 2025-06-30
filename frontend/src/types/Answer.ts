@@ -1,6 +1,6 @@
 export interface Answer {
   id?: number;
-  task: string; // User-Eingabe
+  task: number; // User-Eingabe
   aiModel: string;
   userPrompt: string;
   timestamp: number;

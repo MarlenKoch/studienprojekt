@@ -7,6 +7,7 @@ import { AiResponse } from "../types/AiResponse";
 import ReactMarkdown from "react-markdown";
 import { useProjectTimer } from "../context/ProjectTimerContext";
 import Switch from "react-switch";
+import { toast } from "react-toastify";
 
 interface ChatComponentProps {
   paragraphId: number | null;
@@ -21,7 +22,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const [systemInfo, setSystemInfo] = useState("");
   const [chatTitle, setChatTitle] = useState("");
   const [aiModel, setAiModel] = useState(aiModelList[0] || "");
-  const [task, setTask] = useState("");
+  const [task, setTask] = useState(0);
   const [userPrompt, setUserPrompt] = useState("");
   const [writingStyle, setWritingStyle] = useState("");
   const [userContext, setUserContext] = useState("");
@@ -79,7 +80,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     setIsNewChatActive(false);
     setChatTitle("");
     setAiModel(aiModelList[0] || "");
-    setTask("");
+    setTask(0);
     setWritingStyle("");
     setUserContext("");
     setUserPrompt("");
@@ -98,11 +99,11 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const handleSend = async () => {
     if (currentMode === 3) return; // Sicherheit
     if (paragraphId === null) {
-      alert("paragraph ID is missing.");
+      toast.warn("paragraph ID is missing.");
       return;
     }
-    if (!task.trim()) {
-      alert("Bitte gib eine Frage ein.");
+    if (task === 0 && currentMode != 0) {
+      toast.warn("Bitte wähle ine zulässige Anfrage!");
       return;
     }
 
@@ -166,7 +167,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       setUserPrompt("");
     } catch (error) {
       console.error("Error:", error);
-      alert("Error occurred while getting AI response.");
+      toast.warn("Error occurred while getting AI response.");
     }
   };
 
@@ -176,7 +177,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     const _answers = answersToSave || answers;
 
     if (_answers.length === 0 || chatTitle.trim() === "" || !paragraphId) {
-      alert("Please provide all necessary information.");
+      toast.warn("Please provide all necessary information.");
       return;
     }
 
@@ -202,7 +203,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
         setActiveChat(chatResp);
       } catch (error) {
         console.error("Fehler beim Speichern des Chats", error);
-        alert("Fehler beim Speichern des Chats");
+        toast.warn("Fehler beim Speichern des Chats");
         return;
       }
     } else {
@@ -236,6 +237,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
               userNoteEnabled: answer.userNoteEnabled,
               aiModel: answer.aiModel,
               timestamp: answer.timestamp,
+              userPrompt: answer.userPrompt,
             });
             changed = true;
           } catch (error) {
@@ -245,7 +247,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       }
       if (changed) await fetchAnswers(chatId);
       fetchChats();
-      if (!answersToSave) alert("Chat und Antworten gespeichert!");
+      if (!answersToSave) toast.warn("Chat und Antworten gespeichert!");
     }
     setIsNewChatActive(false);
   };
@@ -258,8 +260,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     setActiveChat(chat);
     setIsNewChatActive(false);
     setChatTitle(chat.title);
-    setAiModel(chat.aiModel);
-    setTask(chat.task);
+    setAiModel("");
+    setTask(0);
     setWritingStyle("");
     setUserContext("");
     setUserPrompt("");
@@ -272,7 +274,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     setAnswers([]);
     setChatTitle("blub test");
     setAiModel(aiModelList[0] || "");
-    setTask("");
+    setTask(0);
     setWritingStyle("");
     setUserContext("");
     setUserPrompt("");
@@ -312,10 +314,10 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                   onClick={
                     currentMode !== 3
                       ? () => {
-                        setOpenNoteAnswerIndex(index);
-                        setNoteDraft(ans.userNote || "");
-                        setUserNoteEnabledDraft(ans.userNoteEnabled);
-                      }
+                          setOpenNoteAnswerIndex(index);
+                          setNoteDraft(ans.userNote || "");
+                          setUserNoteEnabledDraft(ans.userNoteEnabled);
+                        }
                       : undefined
                   }
                   title={
@@ -413,7 +415,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                         }
                         setOpenNoteAnswerIndex(null);
                       } catch (err) {
-                        alert("Fehler beim Speichern des Kommentars");
+                        toast.warn("Fehler beim Speichern des Kommentars");
                         console.error(err);
                       }
                       setIsSavingNote(false);
@@ -465,7 +467,10 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                 onChange={(e) => setWritingStyle(e.target.value)}
                 placeholder="Enter text style"
               />
-              <select value={task} onChange={(e) => setTask(e.target.value)}>
+              <select
+                value={task}
+                onChange={(e) => setTask(Number(e.target.value))}
+              >
                 <option value="">Select task</option>
                 {[
                   "umformulieren",
@@ -475,8 +480,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                   "Grammatik und Rechtschreibung prüfen",
                   "Feedback geben",
                   "erklären",
-                ].map((n) => (
-                  <option key={n} value={n}>
+                ].map((n, idx) => (
+                  <option key={n} value={idx + 1}>
                     {n}
                   </option>
                 ))}

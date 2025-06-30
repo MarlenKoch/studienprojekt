@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { Project } from "../types/Project";
 import { useProjectTimer } from "../context/ProjectTimerContext";
+import { toast } from "react-toastify";
 
 const Home: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -32,16 +33,14 @@ const Home: React.FC = () => {
       if (currentMode === 2) await setProjectMode(currentProjectId, 3);
       setCurrentProjectId(null);
       stopTimer();
-      console.log("kwenvgwo");
     };
-    console.log("run this once on mount");
     fetchProjects();
     cleanUpContext();
   }, []);
 
   const handleAddProject = async () => {
     if (newProjectTitle.trim() === "") {
-      alert("Please enter all required fields.");
+      toast.warn("Please enter all required fields.");
       return;
     }
 
@@ -68,6 +67,7 @@ const Home: React.FC = () => {
   return (
     <div>
       <h2>Home Component</h2>
+      <img src="/logo-test.svg" width={60} height={60} alt="KI-Logo" />
       <h3>
         aktuelle projekt ist {currentProjectId}, mode: {currentMode}
       </h3>
