@@ -6,6 +6,7 @@ import { Paragraph } from "../types/Paragraph";
 import ChatComponent from "./ChatComponent";
 import { useProjectTimer } from "../context/ProjectTimerContext";
 import "jspdf-autotable";
+import jsPDF from "jspdf";
 
 // 1. Toastify import
 import { ToastContainer, toast } from "react-toastify";
@@ -264,6 +265,51 @@ const ProjectView: React.FC = () => {
     }
   };
 
+  const handleGeneratePDF = () => {
+    if (!project) {
+      toast.error("Kein Projekt geladen");
+      return;
+    }
+    if (!paragraphs.length) {
+      toast.error("Keine Paragraphen im Projekt");
+      return;
+    }
+
+    const doc = new jsPDF("p", "mm", "a4");
+
+    // Titel
+    let y = 20;
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.text(project.title || "Projekt", 20, y);
+
+    // Abstand unter Titel
+    y += 16;
+
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+
+    paragraphs.forEach((para) => {
+      const lines: string[] = doc.splitTextToSize(para.content, 170);
+      lines.forEach((line: string) => {
+        doc.text(line, 20, y);
+        y += 7;
+        if (y > 280) {
+          doc.addPage();
+          y = 20;
+        }
+      });
+      y += 3; // Wenig Abstand zum nächsten Paragraphen
+    });
+
+    doc.save(
+      `${
+        project.title ? project.title.replace(/[^a-z0-9]/gi, "_") : "Projekt"
+      }.pdf`
+    );
+    toast.success("PDF wurde erstellt!");
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <ToastContainer position="top-center" autoClose={2400} />
@@ -390,7 +436,14 @@ const ProjectView: React.FC = () => {
         />
       )}
       <button onClick={() => setIsCreatingPromptJson(true)}>
-        Generate PDF
+        Generate Prompt PDF
+      </button>
+      <button
+        onClick={
+          handleGeneratePDF //TODO
+        }
+      >
+        Generate Text PDF
       </button>
       <div>
         {project?.mode === 1 || project?.mode === 2 ? (
