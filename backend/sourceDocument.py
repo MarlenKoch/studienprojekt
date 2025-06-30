@@ -39,7 +39,7 @@ def setTask(task):
         return "Feedback geben"
     elif task == 7:
         return "erklären"
-    elif task == 0:
+    elif task == 8:
         return "(Benutzerdefiniert, siehe Prompt)"
     else:
         return ""

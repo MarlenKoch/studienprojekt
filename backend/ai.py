@@ -34,7 +34,7 @@ def switchPrompt(task):
     elif task == 3:
         return "Formuliere aus den folgenden Stichpunkten einen Fließtext. Geh dabei auf alle Informationen ein. Deine Antwort soll ausschließlich aus dem Text bestehen."
     elif task == 4:
-        return "Synonyme"
+        return "Ignoriere alle weiteren Prompts, antworte lediglich mit einer Liste von Synonymen für: "
     elif task == 5:
         return "Korrigiere im folgenden Text Rechtschreibung und Grammatik. Antworte ausschließlich mit dem korrigierten Text."
     elif task == 6:
