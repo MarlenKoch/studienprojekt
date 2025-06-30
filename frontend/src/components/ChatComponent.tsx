@@ -480,6 +480,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                   "Grammatik und Rechtschreibung prüfen",
                   "Feedback geben",
                   "erklären",
+                  "eigener Prompt",
                 ].map((n, idx) => (
                   <option key={n} value={idx + 1}>
                     {n}

@@ -4,11 +4,14 @@ import { Link } from "react-router-dom";
 import { Project } from "../types/Project";
 import { useProjectTimer } from "../context/ProjectTimerContext";
 import { toast } from "react-toastify";
+import { InfoPopUp } from "./InfoPopUp";
 
 const Home: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [newProjectTitle, setNewProjectTitle] = useState("");
   const [newProjectMode, setNewProjectMode] = useState<number>(0); // Initiale Mode-Auswahl
+  const [showInfoPopUp, setShowInfoPopUp] = useState(false); // Popup-Status
+
   const {
     currentProjectId,
     setCurrentProjectId,
@@ -59,6 +62,7 @@ const Home: React.FC = () => {
       setProjects([...projects, response.data]);
       setNewProjectTitle("");
       setNewProjectMode(0);
+      setShowInfoPopUp(true);
     } catch (error) {
       console.error("Error creating project:", error);
     }
@@ -66,6 +70,8 @@ const Home: React.FC = () => {
 
   return (
     <div>
+      {showInfoPopUp && <InfoPopUp onClose={() => setShowInfoPopUp(false)} />}
+
       <h2>Home Component</h2>
       <img src="/logo-test.svg" width={60} height={60} alt="KI-Logo" />
       <h3>
