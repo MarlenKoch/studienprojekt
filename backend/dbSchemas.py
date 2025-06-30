@@ -40,8 +40,8 @@ class ParagraphResponse(BaseModel):
     content: str
 
 
-class ParagraphUpdate(BaseModel): #brauchen wir das überhaupt? brauchen wir die update schemata? kann das weg? ist das müll?
-    content: Optional[str] = None
+class ParagraphUpdate(BaseModel): 
+    content: str
 
 
 # Chat
@@ -54,6 +54,10 @@ class ChatResponse(BaseModel):
     id: int
     title: str
     paragraphId: int
+    
+class ChatUpdate(BaseModel):
+    title: str
+    
 
 
 # Answer
