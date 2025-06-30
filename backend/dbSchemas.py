@@ -15,6 +15,7 @@ class ProjectCreate(BaseModel):
 
 
 class ProjectUpdate(BaseModel):
+    title: Optional[str] = None
     mode: Optional[int] = None
     starttime: Optional[int] = None
     duration: Optional[int] = None

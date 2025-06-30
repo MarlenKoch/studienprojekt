@@ -19,7 +19,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   paragraphId,
   aiModelList,
 }) => {
-  const [systemInfo, setSystemInfo] = useState("");
   const [chatTitle, setChatTitle] = useState("");
   const [aiModel, setAiModel] = useState(aiModelList[0] || "");
   const [task, setTask] = useState(0);
@@ -31,6 +30,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [isNewChatActive, setIsNewChatActive] = useState(false);
   const { currentMode } = useProjectTimer();
+  const [isShowingSynonym, setIsShowingSynonym] = useState(false);
+  const [synonym, setSynonym] = useState("");
 
   // States für das Kommentar-Popup
   const [openNoteAnswerIndex, setOpenNoteAnswerIndex] = useState<number | null>(
@@ -84,6 +85,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     setWritingStyle("");
     setUserContext("");
     setUserPrompt("");
+    setSynonym("");
   }, [paragraphId]);
 
   useEffect(() => {
@@ -100,6 +102,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     else if (task === 1 || task === 3)
       setAiModel("jobautomation/OpenEuroLLM-German");
     else if (task === 2) setAiModel("mayflowergmbh/wiederchat");
+    if (task === 4) setIsShowingSynonym(true);
+    else setIsShowingSynonym(false);
   }, [task]);
 
   // ========== Hauptfunktionen ==========
@@ -127,7 +131,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
 
     // AI request bauen
     const requestBody: AiRequest = {
-      userPrompt: { task, userPrompt: userPrompt },
+      userPrompt: { task, userPrompt, ...(task === 4 && { synonym }) },
       aiModel: aiModel,
       context: {
         paragraphContent: "",
@@ -262,8 +266,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
 
   // ========== Nutzeraktionen für Ansicht & Button ==========
 
-  const handleSaveChat = () => saveChatWithAnswers();
-
   const handleChatTitleClick = (chat: Chat) => {
     setActiveChat(chat);
     setIsNewChatActive(false);
@@ -286,6 +288,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     setWritingStyle("");
     setUserContext("");
     setUserPrompt("");
+    setSynonym("");
   };
 
   const taskOptions = [
@@ -461,18 +464,15 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           {/* Felder nur wenn nicht Modus 3 */}
           {currentMode !== 3 && (
             <>
-              <input
-                type="text"
-                value={userPrompt}
-                onChange={(e) => setUserPrompt(e.target.value)}
-                placeholder="Enter your question"
-              />
-              <input
-                type="text"
-                value={systemInfo}
-                onChange={(e) => setSystemInfo(e.target.value)}
-                placeholder="Enter system information"
-              />
+              {currentMode === 0 && (
+                <input
+                  type="text"
+                  value={userPrompt}
+                  onChange={(e) => setUserPrompt(e.target.value)}
+                  placeholder="Enter your question"
+                />
+              )}
+
               <label>Choose a Model:</label>
               <select
                 value={aiModel}
@@ -501,6 +501,14 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                   </option>
                 ))}
               </select>
+              {isShowingSynonym && (
+                <input
+                  type="text"
+                  value={synonym}
+                  onChange={(e) => setSynonym(e.target.value)}
+                  placeholder="Enter synonyms"
+                />
+              )}
               <input
                 type="text"
                 value={userContext}
@@ -517,7 +525,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                 onChange={(e) => setChatTitle(e.target.value)}
                 placeholder="Enter title to save the chat"
               />
-              <button onClick={handleSaveChat}>Save Chat</button>
+              <button onClick={() => saveChatWithAnswers()}>Save Chat</button>
             </>
           )}
         </>

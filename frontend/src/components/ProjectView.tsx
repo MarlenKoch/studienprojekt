@@ -30,7 +30,8 @@ const ProjectView: React.FC = () => {
   const [timerHours, setTimerHours] = useState(0);
   const [timerMinutes, setTimerMinutes] = useState(20);
   const [timerSeconds, setTimerSeconds] = useState(0);
-
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editableTitle, setEditableTitle] = useState<string>("");
   const [isChangingMode, setIsChangingMode] = useState<boolean>(false);
   const { timeLeft, startTimer, stopTimer, setOnTimeout, setProjectMode } =
     useProjectTimer();
@@ -172,6 +173,12 @@ const ProjectView: React.FC = () => {
     fetchOllamaModelNames();
   }, [activeParagraphId]);
 
+  useEffect(() => {
+    if (project?.title) {
+      setEditableTitle(project.title);
+    }
+  }, [project?.title]);
+
   // Handles adding a new paragraph
   const handleAddParagraph = async () => {
     if (newParagraphContent.trim() === "") {
@@ -267,13 +274,63 @@ const ProjectView: React.FC = () => {
       <h2>
         Project View for Project ID: {id}, {project?.id}
       </h2>
-      {project ? (
-        <div>
-          <h3>{project.title}</h3>
-        </div>
-      ) : (
-        <p>Loading...</p>
-      )}
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        {isEditingTitle ? (
+          <>
+            <input
+              type="text"
+              value={editableTitle}
+              onChange={(e) => setEditableTitle(e.target.value)}
+              style={{ fontSize: "1.4rem", padding: 4 }}
+            />
+            <button
+              onClick={async () => {
+                if (!project) return;
+                try {
+                  await axios.put(
+                    `http://localhost:8000/projects/${project.id}`,
+                    {
+                      // ...project,
+                      title: editableTitle,
+                    }
+                  );
+                  setProject({ ...project, title: editableTitle }); // Lokale Aktualisierung
+                  setIsEditingTitle(false);
+                  toast.success("Title updated!");
+                } catch (err) {
+                  toast.error("Error updating title");
+                  console.error("Error updating title:", err);
+                }
+              }}
+            >
+              Save
+            </button>
+            <button
+              onClick={() => {
+                setIsEditingTitle(false);
+                setEditableTitle(project?.title ?? "");
+              }}
+              style={{ marginLeft: 4 }}
+            >
+              Cancel
+            </button>
+          </>
+        ) : (
+          <>
+            <h3 style={{ margin: 0 }}>{project?.title}</h3>
+            <button
+              onClick={() => {
+                setIsEditingTitle(true);
+                setEditableTitle(project?.title ?? "");
+              }}
+              style={{ marginLeft: 8 }}
+            >
+              Edit
+            </button>
+          </>
+        )}
+      </div>
+
       <h3>Paragraphs</h3>
       <ul>
         {paragraphs.map((paragraph) => (
