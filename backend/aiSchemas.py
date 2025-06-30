@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -11,6 +12,7 @@ class ContextInputs(BaseModel):
 class UserPromptInputs(BaseModel):
     task: int
     userPrompt: str
+    synonym: Optional[str] = None
 
 
 class AiRequest(BaseModel):
