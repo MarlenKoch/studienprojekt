@@ -94,6 +94,14 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     }
   }, [activeChat, isNewChatActive]);
 
+  useEffect(() => {
+    if (task === 4 || task === 6 || task === 8 || task === 5)
+      setAiModel("gemma3:12b");
+    else if (task === 1 || task === 3)
+      setAiModel("jobautomation/OpenEuroLLM-German");
+    else if (task === 2) setAiModel("mayflowergmbh/wiederchat");
+  }, [task]);
+
   // ========== Hauptfunktionen ==========
 
   const handleSend = async () => {
@@ -102,7 +110,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       toast.warn("paragraph ID is missing.");
       return;
     }
-    if (task === 0 && currentMode != 0) {
+    if (task === 0 || (task === 8 && currentMode != 0)) {
       toast.warn("Bitte wähle ine zulässige Anfrage!");
       return;
     }
@@ -280,6 +288,21 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     setUserPrompt("");
   };
 
+  const taskOptions = [
+    { id: 1, label: "umformulieren" },
+    { id: 2, label: "zusammenfassen" },
+    { id: 3, label: "Text aus Stichpunkten" },
+    { id: 4, label: "Synonyme finden" },
+    { id: 5, label: "Grammatik und Rechtschreibung prüfen" },
+    { id: 6, label: "Feedback geben" },
+    { id: 7, label: "erklären" },
+    { id: 8, label: "eigener Prompt" },
+  ];
+
+  const filteredTaskOptions =
+    currentMode === 1 || currentMode === 2
+      ? taskOptions.filter((opt) => opt.label !== "eigener Prompt")
+      : taskOptions;
   // ========== RENDER ==========
 
   return (
@@ -472,18 +495,9 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                 onChange={(e) => setTask(Number(e.target.value))}
               >
                 <option value="">Select task</option>
-                {[
-                  "umformulieren",
-                  "zusammenfassen",
-                  "Text aus Stichpunkten",
-                  "Synonyme finden",
-                  "Grammatik und Rechtschreibung prüfen",
-                  "Feedback geben",
-                  "erklären",
-                  "eigener Prompt",
-                ].map((n, idx) => (
-                  <option key={n} value={idx + 1}>
-                    {n}
+                {filteredTaskOptions.map(({ id, label }) => (
+                  <option key={id} value={id}>
+                    {label}
                   </option>
                 ))}
               </select>

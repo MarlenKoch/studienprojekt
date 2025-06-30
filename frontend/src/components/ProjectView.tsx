@@ -205,11 +205,6 @@ const ProjectView: React.FC = () => {
     }
   };
 
-  // Sets active paragraph
-  const handleParagraphClick = (paragraphId: number) => {
-    setActiveParagraphId(paragraphId);
-  };
-
   // Updates content locally
   const handleParagraphChange = (paragraphId: number, newContent: string) => {
     setParagraphs(
@@ -298,7 +293,7 @@ const ProjectView: React.FC = () => {
                 overflow: "hidden",
                 resize: "none",
               }}
-              onClick={() => handleParagraphClick(paragraph.id)}
+              onClick={() => setActiveParagraphId(paragraph.id)}
               readOnly={project?.mode === 3}
             />
             <button
@@ -345,6 +340,18 @@ const ProjectView: React.FC = () => {
           <p>Im Schülermodus</p>
         ) : (
           <p>Du bist kein Schüler</p>
+        )}
+        {project?.mode === 2 ? (
+          <button
+            onClick={() => {
+              setIsChangingMode(true);
+              stopTimer();
+            }}
+          >
+            abgeben
+          </button>
+        ) : (
+          <p>kein knopf</p>
         )}
       </div>
       {/* TIMER POPUP für Modus 2 */}
