@@ -8,10 +8,11 @@ import { useProjectTimer } from "../context/ProjectTimerContext";
 import "jspdf-autotable";
 import jsPDF from "jspdf";
 
-// 1. Toastify import
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { generatePDF } from "./GeneratePDF";
+
+import { useNavigate } from "react-router-dom";
 
 const ProjectView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -25,7 +26,7 @@ const ProjectView: React.FC = () => {
   //const [promptsJson, setPromptsJson] = useState<string>("");
   const [isCreatingPromptJson, setIsCreatingPromptJson] =
     useState<boolean>(false);
-
+  const navigate = useNavigate();
   // Timer Popup
   const [showTimerPopup, setShowTimerPopup] = useState(false);
   const [timerHours, setTimerHours] = useState(0);
@@ -112,7 +113,11 @@ const ProjectView: React.FC = () => {
   // Handles changing project mode when triggered by timer or blur.
   useEffect(() => {
     if (isChangingMode === true) {
-      if (project?.mode === 2) updateProjectMode(3);
+      if (project?.mode === 2) {
+        updateProjectMode(3);
+        setIsCreatingPromptJson(true);
+        handleGeneratePDF();
+      }
       setIsChangingMode(false);
     }
   }, [isChangingMode]);
@@ -136,8 +141,12 @@ const ProjectView: React.FC = () => {
           );
           toast.success("PDF generated and downloaded!");
         } catch (error) {
-          toast.error("Error fetching chats for PDF");
-          console.error("Error fetching chats:", error);
+          if (axios.isAxiosError(error) && error.response?.status === 404) {
+            toast.error("Keine gespeicherten Chats gefunden. ");
+          } else {
+            toast.error("Error fetching chats for PDF");
+            console.error("Error fetching chats:", error);
+          }
         }
       } else {
         if (isCreatingPromptJson === true) {
@@ -240,10 +249,90 @@ const ProjectView: React.FC = () => {
     }
   };
 
+  const handleDeleteChat = async (chatId: number) => {
+    try {
+      // Alle Answers zu diesem Chat holen
+      const answersRes = await axios.get<{ id: number }[]>(
+        `http://localhost:8000/chats/${chatId}/answers`
+      );
+      const answers = answersRes.data;
+
+      // Alle Answers löschen (parallel)
+      await Promise.all(
+        answers.map((answer) =>
+          axios.delete(`http://localhost:8000/answers/${answer.id}`)
+        )
+      );
+
+      // Den Chat löschen
+      await axios.delete(`http://localhost:8000/chats/${chatId}`);
+    } catch (error) {
+      toast.error("Fehler beim Löschen eines Chats oder dessen Answers.");
+      console.error(error);
+    }
+  };
+
+  const handleDeleteParagraph = async (paragraphId: number) => {
+    try {
+      // 1. Alle Chats zum Paragraph holen
+      const chatsRes = await axios.get<{ id: number }[]>(
+        `http://localhost:8000/paragraphs/${paragraphId}/chats`
+      );
+      const chats = chatsRes.data;
+
+      // 2. Alle Chats (mit ihren Answers) löschen
+      await Promise.all(chats.map((chat) => handleDeleteChat(chat.id)));
+
+      // 3. Paragraph löschen
+      await axios.delete(`http://localhost:8000/paragraphs/${paragraphId}`);
+
+      // 4. Aus localem State entfernen
+      setParagraphs(paragraphs.filter((p) => p.id !== paragraphId));
+
+      toast.success(
+        "Paragraph (inkl. aller Chats und Answers) wurde gelöscht!"
+      );
+    } catch (error) {
+      toast.error("Fehler beim Löschen eines Paragraphen, Chat oder Answers.");
+      console.error(error);
+    }
+  };
+
+  const handleDeleteProject = async () => {
+    if (!project) {
+      toast.error("Kein Projekt geladen.");
+      return;
+    }
+
+    if (
+      !window.confirm(
+        "Möchtest du das Projekt und alle Paragraphen wirklich löschen?"
+      )
+    )
+      return;
+
+    try {
+      // 1. Alle Paragraphen parallel löschen
+      await Promise.all(
+        paragraphs.map((para) =>
+          axios.delete(`http://localhost:8000/paragraphs/${para.id}`)
+        )
+      );
+
+      // 2. Projekt löschen
+      await axios.delete(`http://localhost:8000/projects/${project.id}`);
+
+      toast.success("Projekt und alle Paragraphen gelöscht!");
+      navigate("/"); // Zur Startseite oder zur Projektliste, je nach Routing
+    } catch (error) {
+      toast.error("Fehler beim Löschen des Projekts oder Paragraphen.");
+      console.error("Error deleting project or paragraphs:", error);
+    }
+  };
+
   const handleBlur = async () => {
     stopTimer();
     setIsChangingMode(true);
-    // toast.info("Das Fenster hat den Fokus verloren. Timer stopped, mode changed.");
   };
 
   // Update mode
@@ -375,6 +464,7 @@ const ProjectView: React.FC = () => {
             </button>
           </>
         )}
+        <button onClick={handleDeleteProject}>Delete Project</button>
       </div>
 
       <h3>Paragraphs</h3>
@@ -408,9 +498,14 @@ const ProjectView: React.FC = () => {
               📋
             </button>
             {project?.mode !== 3 && (
-              <button onClick={() => handleSaveParagraph(paragraph.id)}>
-                Save
-              </button>
+              <div>
+                <button onClick={() => handleSaveParagraph(paragraph.id)}>
+                  Save
+                </button>
+                <button onClick={() => handleDeleteParagraph(paragraph.id)}>
+                  Delete Paragraph
+                </button>
+              </div>
             )}
           </li>
         ))}
