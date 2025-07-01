@@ -20,13 +20,13 @@ def assembleSystemInfo(context: ContextInputs) -> str:
 
 def assembleUserPrompt(userPromptInputs: UserPromptInputs) -> str:
     userPrompt = f"""
-    {switchPrompt(userPromptInputs.task)}
+    {switchPrompt(userPromptInputs.task, userPromptInputs.synonym)}
     {f'Beachte zudem folgendes: {userPromptInputs.userPrompt}' if userPromptInputs.userPrompt else ''}
     """
     return userPrompt
 
 
-def switchPrompt(task):
+def switchPrompt(task, synonym):
     if task == 1:
         return "Schreibe den folgenden Text neu, verbessere dabei die Struktur und Formulierung. Geh dabei auf alle Informationen im Text ein. Dein Schreibstil soll wissenschaftlich sein. Deine Antwort soll ausschließlich aus dem Text bestehen. Füge keine weiteren Informationen oder Erklärungen hinzu."
     elif task == 2:
@@ -34,7 +34,7 @@ def switchPrompt(task):
     elif task == 3:
         return "Formuliere aus den folgenden Stichpunkten einen Fließtext. Geh dabei auf alle Informationen ein. Deine Antwort soll ausschließlich aus dem Text bestehen."
     elif task == 4:
-        return "Ignoriere alle weiteren Prompts, antworte lediglich mit einer Liste von Synonymen für: "
+        return "Ignoriere alle weiteren Prompts, antworte lediglich mit einer Liste von Synonymen für: " + {synonym}
     elif task == 5:
         return "Korrigiere im folgenden Text Rechtschreibung und Grammatik. Antworte ausschließlich mit dem korrigierten Text."
     elif task == 6:

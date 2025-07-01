@@ -80,7 +80,7 @@ def update_paragraph(db: Session, paragraphId: int, updatedData: ParagraphUpdate
         print("Paragraph not found or no fields to update.")
     return None
 
-
+# damit es auch für den nicht-Schülermodus eine Lösung gibt, die dann die Answers zu dem Paragraph löscht
 def delete_paragraph(db: Session, paragraphId: int):
     paragraph = get_paragraph(db, paragraphId)
     if paragraph:
@@ -88,6 +88,18 @@ def delete_paragraph(db: Session, paragraphId: int):
         db.commit()
         return paragraph
     return None
+
+def delete_paragraph_and_answers(db: Session, paragraphId: int):
+    paragraph = db.query(Paragraph).filter(Paragraph.id == paragraphId).first()
+    if not paragraph:
+        return None
+
+    for chat in paragraph.chats:
+        db.query(Answer).filter(Answer.chatId == chat.id).delete(synchronize_session=False)
+
+    db.delete(paragraph)
+    db.commit()
+    return paragraph
 
 
 # CRUD for Chats
@@ -190,10 +202,6 @@ def get_answers_for_chat(db: Session, chatId: int):
 
 
 def get_answers_for_project(db: Session, projectId: int):
-        paragraphs = db.query(Paragraph).filter(Paragraph.projectId == projectId).all()
-        paragraphIds = [paragraph.id for paragraph in paragraphs]
-        chats = db.query(Chat).filter(Chat.paragraphId.in_(paragraphIds)).all()
-        chatIds = [chat.id for chat in chats]
-        answers = db.query(Answer).filter(Answer.chatId.in_(chatIds)).all()
+        answers = db.query(Answer).filter(Answer.projectId == projectId).all()
         return answers
 

@@ -13,7 +13,10 @@ class Project(Base):
     mode = Column(Integer, index=True)
     starttime = Column(Integer, index=True, nullable=True)
     duration = Column(Integer, index=True, nullable=True)
-    paragraphs = relationship("Paragraph", back_populates="project")
+    
+    paragraphs = relationship("Paragraph", back_populates="project", cascade="all, delete-orphan")
+    answers = relationship("Answer", back_populates="project", cascade="all, delete-orphan")
+
 
 
 # Speichern der einzelnen Paragraphen
@@ -25,7 +28,7 @@ class Paragraph(Base):
     content = Column(String, index=True)
     
     project = relationship("Project", back_populates="paragraphs")
-    chats = relationship("Chat", back_populates="paragraph")
+    chats = relationship("Chat", back_populates="paragraph",cascade="all, delete-orphan")
 
 
 # Speichern der einzelnen Chats
@@ -53,5 +56,7 @@ class Answer(Base):
     userNote = Column(String, index=True)
     userNoteEnabled = Column(Boolean, index=True)
     chatId = Column(Integer, ForeignKey("chats.id"), index=True)
+    projectId = Column(Integer, ForeignKey("projects.id"), index=True)
 
     chats = relationship("Chat", back_populates="answers")
+    project = relationship("Project", back_populates="answers")
