@@ -13,7 +13,10 @@ class Project(Base):
     mode = Column(Integer, index=True)
     starttime = Column(Integer, index=True, nullable=True)
     duration = Column(Integer, index=True, nullable=True)
+    
     paragraphs = relationship("Paragraph", back_populates="project")
+    answers = relationship("Answer", back_populates="project")
+
 
 
 # Speichern der einzelnen Paragraphen
@@ -53,5 +56,7 @@ class Answer(Base):
     userNote = Column(String, index=True)
     userNoteEnabled = Column(Boolean, index=True)
     chatId = Column(Integer, ForeignKey("chats.id"), index=True)
+    projectId = Column(Integer, ForeignKey("projects.id"), index=True)
 
     chats = relationship("Chat", back_populates="answers")
+    project = relationship("Project", back_populates="answers")
