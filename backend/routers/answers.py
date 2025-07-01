@@ -6,7 +6,7 @@ from crud import (
     get_answer,
     get_answers,
     update_answer,
-    get_answers_for_chat,
+    delete_answer
 )
 from dbSchemas import AnswerCreate, AnswerResponse, AnswerUpdate
 
@@ -35,7 +35,7 @@ def get_answer_endpoint(answer_id: int, db: Session = Depends(get_db)):
     return answer
 
 
-# Endpoint zum Updaten von Answer
+# Endpoint zum Updaten einer Answer
 @router.put("/{answer_id}", response_model=AnswerResponse)
 def update_answer_endpoint(
     answer_id: int, answer_update: AnswerUpdate, db: Session = Depends(get_db)
@@ -44,3 +44,13 @@ def update_answer_endpoint(
     if not updated_answer:
         raise HTTPException(status_code=404, detail="Answer not found")
     return updated_answer
+
+# Endpoint zum Löschen einer Answer
+@router.delete("/{answer_id}", response_model=AnswerResponse)
+def delete_answer_endpoint(
+    answer_id: int, db: Session = Depends(get_db)
+):
+    deleted_answer = delete_answer(db, answer_id)
+    if not deleted_answer:
+        raise HTTPException(status_code=404, detail="Answer not found")
+    return deleted_answer
