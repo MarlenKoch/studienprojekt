@@ -293,6 +293,17 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     setSynonym("");
   };
 
+  const handleDeleteChat = async (chatId: number) => {
+    try {
+      // Den Chat löschen
+      await axios.delete(`http://localhost:8000/chats/${chatId}`);
+      fetchChats();
+    } catch (error) {
+      toast.error("Fehler beim Löschen eines Chats oder dessen Answers.");
+      console.error(error);
+    }
+  };
+
   const taskOptions = [
     { id: 1, label: "umformulieren" },
     { id: 2, label: "zusammenfassen" },
@@ -543,6 +554,11 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
             }}
           >
             <h6>{chat.title}</h6>
+            {currentMode == 0 && (
+              <button onClick={() => handleDeleteChat(chat.id)}>
+                Delete chat
+              </button>
+            )}
           </li>
         ))}
       </ul>

@@ -35,8 +35,14 @@ const ProjectView: React.FC = () => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editableTitle, setEditableTitle] = useState<string>("");
   const [isChangingMode, setIsChangingMode] = useState<boolean>(false);
-  const { timeLeft, startTimer, stopTimer, setOnTimeout, setProjectMode } =
-    useProjectTimer();
+  const {
+    timeLeft,
+    startTimer,
+    stopTimer,
+    setOnTimeout,
+    setProjectMode,
+    currentMode,
+  } = useProjectTimer();
 
   // Fetches project and paragraph data
   useEffect(() => {
@@ -143,7 +149,7 @@ const ProjectView: React.FC = () => {
           toast.success("PDF generated and downloaded!");
         } catch (error) {
           if (axios.isAxiosError(error) && error.response?.status === 404) {
-            toast.error("Keine gespeicherten Chats gefunden. ");
+            toast.warn("Keine gespeicherten Chats gefunden. ");
             generatePDF(
               "keine AI verwendet",
               `Promptverzeichnis ${project?.title ?? "Projekt"}`,
@@ -256,45 +262,18 @@ const ProjectView: React.FC = () => {
     }
   };
 
-  const handleDeleteChat = async (chatId: number) => {
-    try {
-      // Alle Answers zu diesem Chat holen
-      const answersRes = await axios.get<{ id: number }[]>(
-        `http://localhost:8000/chats/${chatId}/answers`
-      );
-      const answers = answersRes.data;
-
-      // Alle Answers löschen (parallel)
-      await Promise.all(
-        answers.map((answer) =>
-          axios.delete(`http://localhost:8000/answers/${answer.id}`)
-        )
-      );
-
-      // Den Chat löschen
-      await axios.delete(`http://localhost:8000/chats/${chatId}`);
-    } catch (error) {
-      toast.error("Fehler beim Löschen eines Chats oder dessen Answers.");
-      console.error(error);
-    }
-  };
-
   const handleDeleteParagraph = async (paragraphId: number) => {
     try {
-      // 1. Alle Chats zum Paragraph holen
-      const chatsRes = await axios.get<{ id: number }[]>(
-        `http://localhost:8000/paragraphs/${paragraphId}/chats`
-      );
-      const chats = chatsRes.data;
-
-      // 2. Alle Chats (mit ihren Answers) löschen
-      await Promise.all(chats.map((chat) => handleDeleteChat(chat.id)));
-
-      // 3. Paragraph löschen
-      await axios.delete(`http://localhost:8000/paragraphs/${paragraphId}`);
-
+      if (currentMode == 2 || currentMode == 1) {
+        await axios.delete(`http://localhost:8000/paragraphs/${paragraphId}`);
+      } else if (currentMode == 0) {
+        await axios.delete(
+          `http://localhost:8000/paragraphs/with_answers/${paragraphId}`
+        );
+      }
       // 4. Aus localem State entfernen
       setParagraphs(paragraphs.filter((p) => p.id !== paragraphId));
+      setActiveParagraphId(null);
 
       toast.success(
         "Paragraph (inkl. aller Chats und Answers) wurde gelöscht!"
@@ -319,13 +298,6 @@ const ProjectView: React.FC = () => {
       return;
 
     try {
-      // 1. Alle Paragraphen parallel löschen
-      await Promise.all(
-        paragraphs.map((para) =>
-          axios.delete(`http://localhost:8000/paragraphs/${para.id}`)
-        )
-      );
-
       // 2. Projekt löschen
       await axios.delete(`http://localhost:8000/projects/${project.id}`);
 

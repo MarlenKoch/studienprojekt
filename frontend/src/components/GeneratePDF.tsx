@@ -71,7 +71,8 @@ export const generatePDF = async (
       },
     });
   } else {
-    doc.text(promptsJson, 50, 90);
+    doc.setFontSize(18);
+    doc.text(promptsJson, 200, 300);
   }
 
   doc.save(`${pdfTitle}.pdf`);
