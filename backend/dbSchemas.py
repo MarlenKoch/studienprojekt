@@ -70,6 +70,7 @@ class AnswerCreate(BaseModel):
     userNote: Optional[str] = None
     userNoteEnabled: Optional[bool] = None
     chatId: int
+    projectId: int
 
 
 class AnswerResponse(BaseModel):
@@ -82,6 +83,7 @@ class AnswerResponse(BaseModel):
     userNote: Optional[str] = None
     userNoteEnabled: Optional[bool] = None
     chatId: int
+    projectId: int
 
 
 class AnswerUpdate(BaseModel):
