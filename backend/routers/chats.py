@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from db import get_db
-from crud import create_chat, get_chats, get_chat, update_chat, get_answers_for_chat
+from crud import create_chat, get_chats, get_chat, update_chat, get_answers_for_chat, delete_chat
 from dbSchemas import ChatResponse, ChatCreate, AnswerResponse
 
 
@@ -40,6 +40,16 @@ def update_chat_endpoint(
     if not updated_chat:
         raise HTTPException(status_code=404, detail="Chat not found")
     return updated_chat
+
+# Endpoint zum Löschen eines Chat
+@router.delete("/{chat_id}", response_model=ChatResponse)
+def delete_chat_endpoint(
+    chat_id: int, db: Session = Depends(get_db)
+):
+    deleted_chat = delete_chat(db, chat_id)
+    if not deleted_chat:
+        raise HTTPException(status_code=404, detail="Chat not found")
+    return deleted_chat
 
 
 # Endpoint zum Abrufen aller Answers für einen bestimmten Chat

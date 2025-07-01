@@ -8,6 +8,7 @@ from crud import (
     update_paragraph,
     delete_paragraph,
     get_chats_for_paragraph,
+    delete_paragraph_and_answers
 )
 from dbSchemas import ParagraphCreate, ParagraphResponse, ChatResponse, ParagraphUpdate
 
@@ -44,6 +45,14 @@ def delete_paragraph_endpoint(paragraphId: int, db: Session = Depends(get_db)):
     if not paragraph:
         raise HTTPException(status_code=404, detail="Paragraph not found")
     return {"detail": f"Paragraph with id {paragraphId} deleted"}
+
+# Endpoint zum Löschen eines Absatzes sowie dazugehöriger Answers nach ID (Paragraph löschen ohne Schülermodus)
+@router.delete("/with_answers/{paragraphId}", response_model=dict)
+def delete_paragraph_with_answers_endpoint(paragraphId: int, db: Session = Depends(get_db)):
+    paragraph = delete_paragraph_and_answers(db, paragraphId)
+    if not paragraph:
+        raise HTTPException(status_code=404, detail="Paragraph not found")
+    return {"detail": f"Paragraph with id {paragraphId} and all related Chats and Answers deleted"}
 
 
 # Endpoint zum Abrufen aller Chats für einen bestimmten Absatz

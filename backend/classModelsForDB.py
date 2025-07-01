@@ -14,8 +14,8 @@ class Project(Base):
     starttime = Column(Integer, index=True, nullable=True)
     duration = Column(Integer, index=True, nullable=True)
     
-    paragraphs = relationship("Paragraph", back_populates="project")
-    answers = relationship("Answer", back_populates="project")
+    paragraphs = relationship("Paragraph", back_populates="project", cascade="all, delete-orphan")
+    answers = relationship("Answer", back_populates="project", cascade="all, delete-orphan")
 
 
 
@@ -28,7 +28,7 @@ class Paragraph(Base):
     content = Column(String, index=True)
     
     project = relationship("Project", back_populates="paragraphs")
-    chats = relationship("Chat", back_populates="paragraph")
+    chats = relationship("Chat", back_populates="paragraph",cascade="all, delete-orphan")
 
 
 # Speichern der einzelnen Chats

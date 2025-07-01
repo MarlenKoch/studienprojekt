@@ -70,7 +70,7 @@ def get_paragraphs_for_project_endpoint(projectId: int, db: Session = Depends(ge
 
 
 # Endpoint zum Abrufen aller Chats für ein bestimmtes Projekt
-@router.get("/projects/{projectId}/chats", response_model=list[ChatResponse])
+@router.get("/{projectId}/chats", response_model=list[ChatResponse])
 def get_chats_for_project_endpoint(projectId: int, db: Session = Depends(get_db)):
     chats = get_chats_for_project(db, projectId)
     if not chats:
