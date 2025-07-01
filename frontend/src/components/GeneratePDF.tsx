@@ -6,12 +6,9 @@ import { TableData } from "../types/TableData";
 export const generatePDF = async (
   promptsJson: string,
   pdfTitle: string,
-  logoUrl: string
+  logoUrl: string,
+  hasPrompts: boolean
 ) => {
-  const parsed = JSON.parse(promptsJson);
-  const promptsArray: TableData[] = Array.isArray(parsed.chats)
-    ? parsed.chats
-    : [];
   // Logo als Base64-Datenurl
   async function getImgDataUrl(url: string): Promise<string> {
     const res = await fetch(url);
@@ -44,29 +41,38 @@ export const generatePDF = async (
       80
     );
 
-  // === Tabelle
-  autoTable(doc, {
-    head: [["ID", "AI-Modell", "Task", "Prompt", "Zeit"]],
-    body: promptsArray.map((row) => [
-      row.id,
-      row.aiModel,
-      row.task,
-      row.prompt ?? "",
-      row.timestamp ? new Date(row.timestamp).toLocaleString("de-DE") : "",
-    ]),
-    startY: 120,
-    styles: { fontSize: 10, cellPadding: 5 },
-    headStyles: { fillColor: [191, 170, 5] }, ////HIER FARBE ÄNDERNN
-    theme: "striped",
-    margin: { left: 30, right: 30, top: 50 },
-    didDrawPage: (data: HookData) => {
-      if (data.pageNumber > 1) {
-        doc.setFontSize(12);
-        doc.setTextColor(60);
-        doc.text(pdfTitle, 40, 40);
-      }
-    },
-  });
+  if (hasPrompts) {
+    const parsed = JSON.parse(promptsJson);
+    const promptsArray: TableData[] = Array.isArray(parsed.chats)
+      ? parsed.chats
+      : [];
+
+    // === Tabelle
+    autoTable(doc, {
+      head: [["ID", "AI-Modell", "Task", "Prompt", "Zeit"]],
+      body: promptsArray.map((row) => [
+        row.id,
+        row.aiModel,
+        row.task,
+        row.prompt ?? "",
+        row.timestamp ? new Date(row.timestamp).toLocaleString("de-DE") : "",
+      ]),
+      startY: 120,
+      styles: { fontSize: 10, cellPadding: 5 },
+      headStyles: { fillColor: [191, 170, 5] }, ////HIER FARBE ÄNDERNN
+      theme: "striped",
+      margin: { left: 30, right: 30, top: 50 },
+      didDrawPage: (data: HookData) => {
+        if (data.pageNumber > 1) {
+          doc.setFontSize(12);
+          doc.setTextColor(60);
+          doc.text(pdfTitle, 40, 40);
+        }
+      },
+    });
+  } else {
+    doc.text(promptsJson, 50, 90);
+  }
 
   doc.save(`${pdfTitle}.pdf`);
 };

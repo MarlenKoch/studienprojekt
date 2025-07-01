@@ -9,7 +9,13 @@ app = FastAPI()
 
 
 def allAnswerIDsForProject(projectId: int, db: Session) -> List[int]:
-    answers = get_answers_for_project(db, projectId)
+    try:
+        answers = get_answers_for_project(db, projectId)
+    except Exception as e:
+        if e.status_code == 404:
+            raise HTTPException(
+                status_code=404, detail="Chats not found for the given project"
+            )
     if not answers:
         raise HTTPException(
             status_code=404, detail="Chats not found for the given project"
@@ -18,7 +24,13 @@ def allAnswerIDsForProject(projectId: int, db: Session) -> List[int]:
 
 
 def infoForOneAnswer(answerId: int, db: Session) -> AnswerResponse:
-    answer = get_answer(db, answerId)
+    try:
+        answer = get_answer(db, answerId)
+    except Exception as e:
+        if e.status_code == 404:
+            raise HTTPException(
+                status_code=404, detail="Answer for this chat not found"
+            )
     if not answer:
         raise HTTPException(status_code=404, detail="Answer for this chat not found")
     

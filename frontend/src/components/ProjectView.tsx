@@ -137,12 +137,19 @@ const ProjectView: React.FC = () => {
           generatePDF(
             JSON.stringify(response.data),
             `Promptverzeichnis ${project?.title ?? "Projekt"}`,
-            "/logo-test.png" // Path zum Logo im public-Ordner
+            "/logo-test.png", // Path zum Logo im public-Ordner
+            true
           );
           toast.success("PDF generated and downloaded!");
         } catch (error) {
           if (axios.isAxiosError(error) && error.response?.status === 404) {
             toast.error("Keine gespeicherten Chats gefunden. ");
+            generatePDF(
+              "keine AI verwendet",
+              `Promptverzeichnis ${project?.title ?? "Projekt"}`,
+              "/logo-test.png", // Path zum Logo im public-Ordner
+              false
+            );
           } else {
             toast.error("Error fetching chats for PDF");
             console.error("Error fetching chats:", error);
