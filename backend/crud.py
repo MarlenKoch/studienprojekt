@@ -190,6 +190,6 @@ def get_answers_for_chat(db: Session, chatId: int):
 
 
 def get_answers_for_project(db: Session, projectId: int):
-        answers = db.query(Answer).filter(Answer.projectId.in_(projectId)).all()
+        answers = db.query(Answer).filter(Answer.projectId == projectId).all()
         return answers
 
