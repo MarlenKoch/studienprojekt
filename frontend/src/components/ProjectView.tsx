@@ -528,6 +528,7 @@ const ProjectView: React.FC = () => {
           paragraphId={activeParagraphId}
           aiModelList={aiModelList}
           // mode={project?.mode}
+          projectId={project?.id}
         />
       )}
       <button onClick={() => setIsCreatingPromptJson(true)}>

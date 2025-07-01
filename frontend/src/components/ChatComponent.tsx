@@ -12,12 +12,13 @@ import { toast } from "react-toastify";
 interface ChatComponentProps {
   paragraphId: number | null;
   aiModelList: string[];
-  mode?: number;
+  projectId: number | undefined;
 }
 
 const ChatComponent: React.FC<ChatComponentProps> = ({
   paragraphId,
   aiModelList,
+  projectId,
 }) => {
   const [chatTitle, setChatTitle] = useState("");
   const [aiModel, setAiModel] = useState(aiModelList[0] || "");
@@ -250,6 +251,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
               aiModel: answer.aiModel,
               timestamp: answer.timestamp,
               userPrompt: answer.userPrompt,
+              projectId: projectId,
             });
             changed = true;
           } catch (error) {
