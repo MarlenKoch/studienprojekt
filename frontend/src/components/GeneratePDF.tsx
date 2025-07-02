@@ -2,12 +2,12 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import autoTable, { HookData } from "jspdf-autotable";
 import { TableData } from "../types/TableData";
+import { toast } from "react-toastify";
 
 export const generatePDF = async (
   promptsJson: string,
   pdfTitle: string,
-  logoUrl: string,
-  hasPrompts: boolean
+  logoUrl: string
 ) => {
   // Logo als Base64-Datenurl
   async function getImgDataUrl(url: string): Promise<string> {
@@ -41,8 +41,8 @@ export const generatePDF = async (
       80
     );
 
-  if (hasPrompts) {
-    const parsed = JSON.parse(promptsJson);
+  const parsed = JSON.parse(promptsJson);
+  if (parsed.chats && parsed.chats.length !== 0) {
     const promptsArray: TableData[] = Array.isArray(parsed.chats)
       ? parsed.chats
       : [];
@@ -71,8 +71,9 @@ export const generatePDF = async (
       },
     });
   } else {
+    toast.warn("Keine gespeicherten Chats gefunden. ");
     doc.setFontSize(18);
-    doc.text(promptsJson, 200, 300);
+    doc.text("Keine KI verwendet", 200, 300);
   }
 
   doc.save(`${pdfTitle}.pdf`);

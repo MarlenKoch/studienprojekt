@@ -138,28 +138,15 @@ const ProjectView: React.FC = () => {
             `http://localhost:8000/promptverzeichnis/`,
             { params: { projectId: project.id } }
           );
-          //setPromptsJson(response.data);
-
           generatePDF(
             JSON.stringify(response.data),
             `Promptverzeichnis ${project?.title ?? "Projekt"}`,
-            "/logo-test.png", // Path zum Logo im public-Ordner
-            true
+            "/logo-test.png"
           );
           toast.success("PDF generated and downloaded!");
         } catch (error) {
-          if (axios.isAxiosError(error) && error.response?.status === 404) {
-            toast.warn("Keine gespeicherten Chats gefunden. ");
-            generatePDF(
-              "keine AI verwendet",
-              `Promptverzeichnis ${project?.title ?? "Projekt"}`,
-              "/logo-test.png", // Path zum Logo im public-Ordner
-              false
-            );
-          } else {
-            toast.error("Error fetching chats for PDF");
-            console.error("Error fetching chats:", error);
-          }
+          toast.error("Error fetching chats for PDF");
+          console.error("Error fetching chats:", error);
         }
       } else {
         if (isCreatingPromptJson === true) {
