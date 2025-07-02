@@ -8,22 +8,6 @@ from dbSchemas import AnswerResponse
 app = FastAPI()
 
 
-def allAnswerIDsForProject(projectId: int, db: Session) -> List[int]:
-    answers = get_answers_for_project(db, projectId)
-    if not answers:
-        raise HTTPException(
-            status_code=404, detail="Chats not found for the given project"
-        )
-    return [answer.id for answer in answers]
-
-
-def infoForOneAnswer(answerId: int, db: Session) -> AnswerResponse:
-    answer = get_answer(db, answerId)
-    if not answer:
-        raise HTTPException(status_code=404, detail="Answer for this chat not found")
-    
-    return answer
-
 def setTask(task):
     if task == 1:
         return "umformulieren"
@@ -46,8 +30,7 @@ def setTask(task):
 
 @app.get("/promptverzeichnis")
 async def generateSourceDocument(projectId, db: Session = Depends(get_db)):
-    answerIds = allAnswerIDsForProject(projectId, db)
-    answersInfo = [infoForOneAnswer(answerId, db) for answerId in answerIds]
+    answers = get_answers_for_project(db, projectId)
     result = [
         {
             "id": answer.id,
@@ -56,6 +39,6 @@ async def generateSourceDocument(projectId, db: Session = Depends(get_db)):
             "prompt": answer.userPrompt,
             "timestamp": answer.timestamp
         }
-        for answer in answersInfo
+        for answer in answers
     ]
     return {"chats": result}

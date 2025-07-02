@@ -12,14 +12,14 @@ import { toast } from "react-toastify";
 interface ChatComponentProps {
   paragraphId: number | null;
   aiModelList: string[];
-  mode?: number;
+  projectId: number | undefined;
 }
 
 const ChatComponent: React.FC<ChatComponentProps> = ({
   paragraphId,
   aiModelList,
+  projectId,
 }) => {
-  const [systemInfo, setSystemInfo] = useState("");
   const [chatTitle, setChatTitle] = useState("");
   const [aiModel, setAiModel] = useState(aiModelList[0] || "");
   const [task, setTask] = useState(0);
@@ -31,6 +31,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [isNewChatActive, setIsNewChatActive] = useState(false);
   const { currentMode } = useProjectTimer();
+  const [isShowingSynonym, setIsShowingSynonym] = useState(false);
+  const [synonym, setSynonym] = useState("");
 
   // States für das Kommentar-Popup
   const [openNoteAnswerIndex, setOpenNoteAnswerIndex] = useState<number | null>(
@@ -84,6 +86,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     setWritingStyle("");
     setUserContext("");
     setUserPrompt("");
+    setSynonym("");
   }, [paragraphId]);
 
   useEffect(() => {
@@ -94,6 +97,16 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     }
   }, [activeChat, isNewChatActive]);
 
+  useEffect(() => {
+    if (task === 4 || task === 6 || task === 8 || task === 5)
+      setAiModel("gemma3:12b");
+    else if (task === 1 || task === 3)
+      setAiModel("jobautomation/OpenEuroLLM-German");
+    else if (task === 2) setAiModel("mayflowergmbh/wiederchat");
+    if (task === 4) setIsShowingSynonym(true);
+    else setIsShowingSynonym(false);
+  }, [task]);
+
   // ========== Hauptfunktionen ==========
 
   const handleSend = async () => {
@@ -102,7 +115,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       toast.warn("paragraph ID is missing.");
       return;
     }
-    if (task === 0 && currentMode != 0) {
+    if (task === 0 || (task === 8 && currentMode != 0)) {
       toast.warn("Bitte wähle ine zulässige Anfrage!");
       return;
     }
@@ -119,7 +132,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
 
     // AI request bauen
     const requestBody: AiRequest = {
-      userPrompt: { task, userPrompt: userPrompt },
+      userPrompt: { task, userPrompt, ...(task === 4 && { synonym }) },
       aiModel: aiModel,
       context: {
         paragraphContent: "",
@@ -238,6 +251,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
               aiModel: answer.aiModel,
               timestamp: answer.timestamp,
               userPrompt: answer.userPrompt,
+              projectId: projectId,
             });
             changed = true;
           } catch (error) {
@@ -253,8 +267,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   };
 
   // ========== Nutzeraktionen für Ansicht & Button ==========
-
-  const handleSaveChat = () => saveChatWithAnswers();
 
   const handleChatTitleClick = (chat: Chat) => {
     setActiveChat(chat);
@@ -278,8 +290,35 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     setWritingStyle("");
     setUserContext("");
     setUserPrompt("");
+    setSynonym("");
   };
 
+  const handleDeleteChat = async (chatId: number) => {
+    try {
+      // Den Chat löschen
+      await axios.delete(`http://localhost:8000/chats/${chatId}`);
+      fetchChats();
+    } catch (error) {
+      toast.error("Fehler beim Löschen eines Chats oder dessen Answers.");
+      console.error(error);
+    }
+  };
+
+  const taskOptions = [
+    { id: 1, label: "umformulieren" },
+    { id: 2, label: "zusammenfassen" },
+    { id: 3, label: "Text aus Stichpunkten" },
+    { id: 4, label: "Synonyme finden" },
+    { id: 5, label: "Grammatik und Rechtschreibung prüfen" },
+    { id: 6, label: "Feedback geben" },
+    { id: 7, label: "erklären" },
+    { id: 8, label: "eigener Prompt" },
+  ];
+
+  const filteredTaskOptions =
+    currentMode === 1 || currentMode === 2
+      ? taskOptions.filter((opt) => opt.label !== "eigener Prompt")
+      : taskOptions;
   // ========== RENDER ==========
 
   return (
@@ -438,18 +477,15 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           {/* Felder nur wenn nicht Modus 3 */}
           {currentMode !== 3 && (
             <>
-              <input
-                type="text"
-                value={userPrompt}
-                onChange={(e) => setUserPrompt(e.target.value)}
-                placeholder="Enter your question"
-              />
-              <input
-                type="text"
-                value={systemInfo}
-                onChange={(e) => setSystemInfo(e.target.value)}
-                placeholder="Enter system information"
-              />
+              {currentMode === 0 && (
+                <input
+                  type="text"
+                  value={userPrompt}
+                  onChange={(e) => setUserPrompt(e.target.value)}
+                  placeholder="Enter your question"
+                />
+              )}
+
               <label>Choose a Model:</label>
               <select
                 value={aiModel}
@@ -472,20 +508,20 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                 onChange={(e) => setTask(Number(e.target.value))}
               >
                 <option value="">Select task</option>
-                {[
-                  "umformulieren",
-                  "zusammenfassen",
-                  "Text aus Stichpunkten",
-                  "Synonyme finden",
-                  "Grammatik und Rechtschreibung prüfen",
-                  "Feedback geben",
-                  "erklären",
-                ].map((n, idx) => (
-                  <option key={n} value={idx + 1}>
-                    {n}
+                {filteredTaskOptions.map(({ id, label }) => (
+                  <option key={id} value={id}>
+                    {label}
                   </option>
                 ))}
               </select>
+              {isShowingSynonym && (
+                <input
+                  type="text"
+                  value={synonym}
+                  onChange={(e) => setSynonym(e.target.value)}
+                  placeholder="Enter synonyms"
+                />
+              )}
               <input
                 type="text"
                 value={userContext}
@@ -502,7 +538,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                 onChange={(e) => setChatTitle(e.target.value)}
                 placeholder="Enter title to save the chat"
               />
-              <button onClick={handleSaveChat}>Save Chat</button>
+              <button onClick={() => saveChatWithAnswers()}>Save Chat</button>
             </>
           )}
         </>
@@ -518,6 +554,11 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
             }}
           >
             <h6>{chat.title}</h6>
+            {currentMode == 0 && (
+              <button onClick={() => handleDeleteChat(chat.id)}>
+                Delete chat
+              </button>
+            )}
           </li>
         ))}
       </ul>

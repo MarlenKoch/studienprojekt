@@ -6,11 +6,13 @@ import { Paragraph } from "../types/Paragraph";
 import ChatComponent from "./ChatComponent";
 import { useProjectTimer } from "../context/ProjectTimerContext";
 import "jspdf-autotable";
+import jsPDF from "jspdf";
 
-// 1. Toastify import
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { generatePDF } from "./GeneratePDF";
+
+import { useNavigate } from "react-router-dom";
 
 const ProjectView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -24,16 +26,23 @@ const ProjectView: React.FC = () => {
   //const [promptsJson, setPromptsJson] = useState<string>("");
   const [isCreatingPromptJson, setIsCreatingPromptJson] =
     useState<boolean>(false);
-
+  const navigate = useNavigate();
   // Timer Popup
   const [showTimerPopup, setShowTimerPopup] = useState(false);
   const [timerHours, setTimerHours] = useState(0);
   const [timerMinutes, setTimerMinutes] = useState(20);
   const [timerSeconds, setTimerSeconds] = useState(0);
-
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editableTitle, setEditableTitle] = useState<string>("");
   const [isChangingMode, setIsChangingMode] = useState<boolean>(false);
-  const { timeLeft, startTimer, stopTimer, setOnTimeout, setProjectMode } =
-    useProjectTimer();
+  const {
+    timeLeft,
+    startTimer,
+    stopTimer,
+    setOnTimeout,
+    setProjectMode,
+    currentMode,
+  } = useProjectTimer();
 
   // Fetches project and paragraph data
   useEffect(() => {
@@ -110,7 +119,11 @@ const ProjectView: React.FC = () => {
   // Handles changing project mode when triggered by timer or blur.
   useEffect(() => {
     if (isChangingMode === true) {
-      if (project?.mode === 2) updateProjectMode(3);
+      if (project?.mode === 2) {
+        updateProjectMode(3);
+        setIsCreatingPromptJson(true);
+        handleGeneratePDF();
+      }
       setIsChangingMode(false);
     }
   }, [isChangingMode]);
@@ -125,12 +138,10 @@ const ProjectView: React.FC = () => {
             `http://localhost:8000/promptverzeichnis/`,
             { params: { projectId: project.id } }
           );
-          //setPromptsJson(response.data);
-
           generatePDF(
             JSON.stringify(response.data),
             `Promptverzeichnis ${project?.title ?? "Projekt"}`,
-            "/logo-test.png" // Path zum Logo im public-Ordner
+            "/logo-test.png"
           );
           toast.success("PDF generated and downloaded!");
         } catch (error) {
@@ -172,6 +183,12 @@ const ProjectView: React.FC = () => {
     fetchOllamaModelNames();
   }, [activeParagraphId]);
 
+  useEffect(() => {
+    if (project?.title) {
+      setEditableTitle(project.title);
+    }
+  }, [project?.title]);
+
   // Handles adding a new paragraph
   const handleAddParagraph = async () => {
     if (newParagraphContent.trim() === "") {
@@ -205,11 +222,6 @@ const ProjectView: React.FC = () => {
     }
   };
 
-  // Sets active paragraph
-  const handleParagraphClick = (paragraphId: number) => {
-    setActiveParagraphId(paragraphId);
-  };
-
   // Updates content locally
   const handleParagraphChange = (paragraphId: number, newContent: string) => {
     setParagraphs(
@@ -237,10 +249,56 @@ const ProjectView: React.FC = () => {
     }
   };
 
+  const handleDeleteParagraph = async (paragraphId: number) => {
+    try {
+      if (currentMode == 2 || currentMode == 1) {
+        await axios.delete(`http://localhost:8000/paragraphs/${paragraphId}`);
+      } else if (currentMode == 0) {
+        await axios.delete(
+          `http://localhost:8000/paragraphs/with_answers/${paragraphId}`
+        );
+      }
+      // 4. Aus localem State entfernen
+      setParagraphs(paragraphs.filter((p) => p.id !== paragraphId));
+      setActiveParagraphId(null);
+
+      toast.success(
+        "Paragraph (inkl. aller Chats und Answers) wurde gelöscht!"
+      );
+    } catch (error) {
+      toast.error("Fehler beim Löschen eines Paragraphen, Chat oder Answers.");
+      console.error(error);
+    }
+  };
+
+  const handleDeleteProject = async () => {
+    if (!project) {
+      toast.error("Kein Projekt geladen.");
+      return;
+    }
+
+    if (
+      !window.confirm(
+        "Möchtest du das Projekt und alle Paragraphen wirklich löschen?"
+      )
+    )
+      return;
+
+    try {
+      // 2. Projekt löschen
+      await axios.delete(`http://localhost:8000/projects/${project.id}`);
+
+      toast.success("Projekt und alle Paragraphen gelöscht!");
+      navigate("/"); // Zur Startseite oder zur Projektliste, je nach Routing
+    } catch (error) {
+      toast.error("Fehler beim Löschen des Projekts oder Paragraphen.");
+      console.error("Error deleting project or paragraphs:", error);
+    }
+  };
+
   const handleBlur = async () => {
     stopTimer();
     setIsChangingMode(true);
-    // toast.info("Das Fenster hat den Fokus verloren. Timer stopped, mode changed.");
   };
 
   // Update mode
@@ -262,6 +320,51 @@ const ProjectView: React.FC = () => {
     }
   };
 
+  const handleGeneratePDF = () => {
+    if (!project) {
+      toast.error("Kein Projekt geladen");
+      return;
+    }
+    if (!paragraphs.length) {
+      toast.error("Keine Paragraphen im Projekt");
+      return;
+    }
+
+    const doc = new jsPDF("p", "mm", "a4");
+
+    // Titel
+    let y = 20;
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.text(project.title || "Projekt", 20, y);
+
+    // Abstand unter Titel
+    y += 16;
+
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+
+    paragraphs.forEach((para) => {
+      const lines: string[] = doc.splitTextToSize(para.content, 170);
+      lines.forEach((line: string) => {
+        doc.text(line, 20, y);
+        y += 7;
+        if (y > 280) {
+          doc.addPage();
+          y = 20;
+        }
+      });
+      y += 3; // Wenig Abstand zum nächsten Paragraphen
+    });
+
+    doc.save(
+      `${
+        project.title ? project.title.replace(/[^a-z0-9]/gi, "_") : "Projekt"
+      }.pdf`
+    );
+    toast.success("PDF wurde erstellt!");
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <ToastContainer position="top-center" autoClose={2400} />
@@ -272,13 +375,64 @@ const ProjectView: React.FC = () => {
       <h2>
         Project View for Project ID: {id}, {project?.id}
       </h2>
-      {project ? (
-        <div>
-          <h3>{project.title}</h3>
-        </div>
-      ) : (
-        <p>Loading...</p>
-      )}
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        {isEditingTitle ? (
+          <>
+            <input
+              type="text"
+              value={editableTitle}
+              onChange={(e) => setEditableTitle(e.target.value)}
+              style={{ fontSize: "1.4rem", padding: 4 }}
+            />
+            <button
+              onClick={async () => {
+                if (!project) return;
+                try {
+                  await axios.put(
+                    `http://localhost:8000/projects/${project.id}`,
+                    {
+                      // ...project,
+                      title: editableTitle,
+                    }
+                  );
+                  setProject({ ...project, title: editableTitle }); // Lokale Aktualisierung
+                  setIsEditingTitle(false);
+                  toast.success("Title updated!");
+                } catch (err) {
+                  toast.error("Error updating title");
+                  console.error("Error updating title:", err);
+                }
+              }}
+            >
+              Save
+            </button>
+            <button
+              onClick={() => {
+                setIsEditingTitle(false);
+                setEditableTitle(project?.title ?? "");
+              }}
+              style={{ marginLeft: 4 }}
+            >
+              Cancel
+            </button>
+          </>
+        ) : (
+          <>
+            <h3 style={{ margin: 0 }}>{project?.title}</h3>
+            <button
+              onClick={() => {
+                setIsEditingTitle(true);
+                setEditableTitle(project?.title ?? "");
+              }}
+              style={{ marginLeft: 8 }}
+            >
+              Edit
+            </button>
+          </>
+        )}
+        <button onClick={handleDeleteProject}>Delete Project</button>
+      </div>
+
       <h3>Paragraphs</h3>
       <ul>
         {paragraphs.map((paragraph) => (
@@ -298,7 +452,7 @@ const ProjectView: React.FC = () => {
                 overflow: "hidden",
                 resize: "none",
               }}
-              onClick={() => handleParagraphClick(paragraph.id)}
+              onClick={() => setActiveParagraphId(paragraph.id)}
               readOnly={project?.mode === 3}
             />
             <button
@@ -310,9 +464,14 @@ const ProjectView: React.FC = () => {
               📋
             </button>
             {project?.mode !== 3 && (
-              <button onClick={() => handleSaveParagraph(paragraph.id)}>
-                Save
-              </button>
+              <div>
+                <button onClick={() => handleSaveParagraph(paragraph.id)}>
+                  Save
+                </button>
+                <button onClick={() => handleDeleteParagraph(paragraph.id)}>
+                  Delete Paragraph
+                </button>
+              </div>
             )}
           </li>
         ))}
@@ -335,16 +494,36 @@ const ProjectView: React.FC = () => {
           paragraphId={activeParagraphId}
           aiModelList={aiModelList}
           // mode={project?.mode}
+          projectId={project?.id}
         />
       )}
       <button onClick={() => setIsCreatingPromptJson(true)}>
-        Generate PDF
+        Generate Prompt PDF
+      </button>
+      <button
+        onClick={
+          handleGeneratePDF //TODO
+        }
+      >
+        Generate Text PDF
       </button>
       <div>
         {project?.mode === 1 || project?.mode === 2 ? (
           <p>Im Schülermodus</p>
         ) : (
           <p>Du bist kein Schüler</p>
+        )}
+        {project?.mode === 2 ? (
+          <button
+            onClick={() => {
+              setIsChangingMode(true);
+              stopTimer();
+            }}
+          >
+            abgeben
+          </button>
+        ) : (
+          <p>kein knopf</p>
         )}
       </div>
       {/* TIMER POPUP für Modus 2 */}

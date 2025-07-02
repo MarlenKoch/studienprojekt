@@ -8,4 +8,5 @@ export interface Answer {
   userNote: string; // (optional)
   userNoteEnabled: boolean;
   chat_id?: number;
+  project_id?: number;
 }
