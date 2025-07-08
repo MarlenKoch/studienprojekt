@@ -5,6 +5,7 @@ import { Project } from "../../types/Project";
 import { useProjectTimer } from "../../context/ProjectTimerContext";
 import { toast } from "react-toastify";
 import { InfoPopUp } from "../InfoPopUp/InfoPopUp";
+import styles from "./Home.module.css"
 
 const Home: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -71,9 +72,6 @@ const Home: React.FC = () => {
   return (
     <div>
       {showInfoPopUp && <InfoPopUp onClose={() => setShowInfoPopUp(false)} />}
-
-      <h2>Home Component</h2>
-      <img src="/logo-test.svg" width={60} height={60} alt="KI-Logo" />
       <h3>
         aktuelle projekt ist {currentProjectId}, mode: {currentMode}
       </h3>
@@ -96,7 +94,9 @@ const Home: React.FC = () => {
       <button onClick={handleAddProject}>Add Project</button>
       <h3>Existing Projects:</h3>
       <ul>
+        
         {projects.map((project) => (
+          <div className={styles.containerBox}>
           <li key={project.id}>
             <Link
               to={`/project/${project.id}`}
@@ -106,9 +106,13 @@ const Home: React.FC = () => {
               }}
             >
               {project.title} (Mode: {project.mode})
+              
             </Link>
+            
           </li>
+          </div>
         ))}
+        
       </ul>
     </div>
   );
