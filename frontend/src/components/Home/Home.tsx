@@ -72,9 +72,6 @@ const Home: React.FC = () => {
   return (
     <div>
       {showInfoPopUp && <InfoPopUp onClose={() => setShowInfoPopUp(false)} />}
-      <h3>
-        aktuelle projekt ist {currentProjectId}, mode: {currentMode}
-      </h3>
       <input
         type="text"
         value={newProjectTitle}
