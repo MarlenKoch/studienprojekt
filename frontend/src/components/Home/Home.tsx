@@ -5,7 +5,7 @@ import { Project } from "../../types/Project";
 import { useProjectTimer } from "../../context/ProjectTimerContext";
 import { toast } from "react-toastify";
 import { InfoPopUp } from "../InfoPopUp/InfoPopUp";
-import styles from "./Home.module.css"
+import styles from "./Home.module.css";
 
 const Home: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
