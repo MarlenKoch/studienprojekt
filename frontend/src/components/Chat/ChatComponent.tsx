@@ -9,6 +9,7 @@ import { useProjectTimer } from "../../context/ProjectTimerContext";
 import Switch from "react-switch";
 import { toast } from "react-toastify";
 import { Splitter, SplitterPanel } from "primereact/splitter";
+import styles from "./Chat.module.css";
 
 interface ChatComponentProps {
   paragraphId: number | null;
@@ -338,30 +339,33 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           {(currentMode === 0 || currentMode === 1 || currentMode === 2) && (
             <button onClick={handleNewChat}>New Chat</button>
           )}
+
           <h4>Saved Chats:</h4>
-          <ul>
-            {chats.map((chat) => (
-              <li
-                key={chat.id}
-                onClick={() => handleChatTitleClick(chat)}
-                style={{
-                  cursor: "pointer",
-                }}
-              >
-                <h6>{chat.title}</h6>
-                {currentMode == 0 && (
-                  <button onClick={() => handleDeleteChat(chat.id)}>
-                    Delete chat
-                  </button>
-                )}
-              </li>
-            ))}
-          </ul>
+          <div className={styles.scrollableContainer}>
+            <ul>
+              {chats.map((chat) => (
+                <li
+                  key={chat.id}
+                  onClick={() => handleChatTitleClick(chat)}
+                  style={{
+                    cursor: "pointer",
+                  }}
+                >
+                  <h6>{chat.title}</h6>
+                  {currentMode == 0 && (
+                    <button onClick={() => handleDeleteChat(chat.id)}>
+                      Delete chat
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
         </SplitterPanel>
         <SplitterPanel size={activeChat || isNewChatActive ? 50 : 0}>
           {(activeChat || isNewChatActive) && (
             <>
-              <div>
+              <div className={styles.scrollableContainer}>
                 {answers.map((ans, index) => (
                   <div key={ans.id ?? `local-${index}`}>
                     <strong>User:</strong> {ans.task}

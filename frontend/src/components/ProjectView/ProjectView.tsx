@@ -16,6 +16,8 @@ import { generatePDF } from "../GeneratePDF/GeneratePDF";
 import { useNavigate } from "react-router-dom";
 import { Splitter, SplitterPanel } from "primereact/splitter";
 
+import styles from "./ProjectView.module.css";
+
 const ProjectView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [project, setProject] = useState<Project | null>(null);
@@ -371,9 +373,6 @@ const ProjectView: React.FC = () => {
     <div style={{ display: "flex", flexDirection: "column" }}>
       <ToastContainer position="top-center" autoClose={2400} />
       <h3>{timeLeft !== null && `Remaining Time:{" "} ${timeLeft} seconds`}</h3>
-      {/* <h2>
-        Project View for Project ID: {id}, {project?.id}
-      </h2> */}
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         {isEditingTitle ? (
           <>
@@ -433,49 +432,53 @@ const ProjectView: React.FC = () => {
       </div>
       <Splitter>
         <SplitterPanel size={activeParagraphId ? 50 : 100} minSize={10}>
-          <h3>Paragraphs</h3>
-          <ul>
-            {paragraphs.map((paragraph) => (
-              <li key={paragraph.id}>
-                <textarea
-                  value={paragraph.content}
-                  onChange={(e) =>
-                    project?.mode !== 3
-                      ? handleParagraphChange(paragraph.id, e.target.value)
-                      : undefined
-                  }
-                  placeholder="Edit paragraph content"
-                  style={{
-                    width: "100%",
-                    height: "auto",
-                    minHeight: "60px",
-                    overflow: "hidden",
-                    resize: "none",
-                  }}
-                  onClick={() => setActiveParagraphId(paragraph.id)}
-                  readOnly={project?.mode === 3}
-                />
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation(); // So button doesn't trigger parent click
-                    navigator.clipboard.writeText(paragraph.content || "");
-                  }}
-                >
-                  📋
-                </button>
-                {project?.mode !== 3 && (
-                  <div>
-                    <button onClick={() => handleSaveParagraph(paragraph.id)}>
-                      Save
-                    </button>
-                    <button onClick={() => handleDeleteParagraph(paragraph.id)}>
-                      Delete Paragraph
-                    </button>
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
+          <div className={styles.scrollableContainer}>
+            <h3>Paragraphs</h3>
+            <ul>
+              {paragraphs.map((paragraph) => (
+                <li key={paragraph.id}>
+                  <textarea
+                    value={paragraph.content}
+                    onChange={(e) =>
+                      project?.mode !== 3
+                        ? handleParagraphChange(paragraph.id, e.target.value)
+                        : undefined
+                    }
+                    placeholder="Edit paragraph content"
+                    style={{
+                      width: "100%",
+                      height: "auto",
+                      minHeight: "60px",
+                      overflow: "hidden",
+                      resize: "none",
+                    }}
+                    onClick={() => setActiveParagraphId(paragraph.id)}
+                    readOnly={project?.mode === 3}
+                  />
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation(); // So button doesn't trigger parent click
+                      navigator.clipboard.writeText(paragraph.content || "");
+                    }}
+                  >
+                    📋
+                  </button>
+                  {project?.mode !== 3 && (
+                    <div>
+                      <button onClick={() => handleSaveParagraph(paragraph.id)}>
+                        Save
+                      </button>
+                      <button
+                        onClick={() => handleDeleteParagraph(paragraph.id)}
+                      >
+                        Delete Paragraph
+                      </button>
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
           {(project?.mode === 0 ||
             project?.mode === 1 ||
             project?.mode === 2) && (
