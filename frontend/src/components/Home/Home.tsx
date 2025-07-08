@@ -7,6 +7,21 @@ import { toast } from "react-toastify";
 import { InfoPopUp } from "../InfoPopUp/InfoPopUp";
 import styles from "./Home.module.css";
 
+const modeLabel = (mode: number) => {
+  switch (mode) {
+    case 0:
+      return "normaler Modus";
+    case 1:
+      return "Schülermodus";
+    case 2:
+      return "Arbeiten schreiben";
+    case 3:
+      return "abgegeben";
+    default:
+      return "unbekannt";
+  }
+};
+
 const Home: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [newProjectTitle, setNewProjectTitle] = useState("");
@@ -95,9 +110,9 @@ const Home: React.FC = () => {
                   onChange={(e) => setNewProjectMode(Number(e.target.value))}
                   className={styles.addSelect}
                 >
-                  <option value={0}>Mode 0</option>
-                  <option value={1}>Mode 1</option>
-                  <option value={2}>Mode 2</option>
+                  <option value={0}>normaler Modus</option>
+                  <option value={1}>Schülermodus</option>
+                  <option value={2}>Arbeiten schreiben</option>
                 </select>
                 <div className={styles.buttonRow}>
                   <button onClick={handleAddProject} className={styles.miniButton}>Erstellen</button>
@@ -117,7 +132,7 @@ const Home: React.FC = () => {
                 }}
               >
                 {project.title}
-                <span style={{ fontSize: "80%", marginTop: "8px" }}>(Mode: {project.mode})</span>
+                <span className={styles.modeFont} style={{ fontSize: "80%", marginTop: "8px" }}>({modeLabel(project.mode)})</span>
               </Link>
             </li>
           ))}

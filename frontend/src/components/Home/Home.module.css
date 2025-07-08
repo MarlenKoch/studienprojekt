@@ -111,3 +111,10 @@ a.projectBox {
   cursor: pointer;
   line-height: 1.2;
 }
+
+.modeFont {
+  font-size: 0.75em;
+  font-weight: 400;
+  margin-top: 8px;
+  opacity: 0.85;  /* Optional für dezenteren Look */
+}
