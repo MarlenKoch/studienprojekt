@@ -8,6 +8,7 @@ import ReactMarkdown from "react-markdown";
 import { useProjectTimer } from "../context/ProjectTimerContext";
 import Switch from "react-switch";
 import { toast } from "react-toastify";
+import { Splitter, SplitterPanel } from "primereact/splitter";
 
 interface ChatComponentProps {
   paragraphId: number | null;
@@ -325,243 +326,255 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     <div
       style={{
         marginTop: "20px",
-        border: "1px solid #ccc",
+        // border: "1px solid #ccc",
         padding: "10px",
-        width: "300px",
       }}
     >
-      <h3>AI Chat for Paragraph ID: {paragraphId}</h3>
+      <Splitter>
+        <SplitterPanel>
+          <h3>AI Chat for Paragraph ID: {paragraphId}</h3>
 
-      {(currentMode === 0 || currentMode === 1 || currentMode === 2) && (
-        <button onClick={handleNewChat}>New Chat</button>
-      )}
-      <p>{currentMode}</p>
-
-      {(activeChat || isNewChatActive) && (
-        <>
-          <div>
-            {answers.map((ans, index) => (
-              <div key={ans.id ?? `local-${index}`}>
-                <strong>User:</strong> {ans.task}
-                <br />
-                <strong>AI:</strong>
-                <span
-                  style={{
-                    cursor: currentMode !== 3 ? "pointer" : "default",
-                    color: currentMode !== 3 ? "white" : "inherit",
-                  }}
-                  onClick={
-                    currentMode !== 3
-                      ? () => {
-                          setOpenNoteAnswerIndex(index);
-                          setNoteDraft(ans.userNote || "");
-                          setUserNoteEnabledDraft(ans.userNoteEnabled);
-                        }
-                      : undefined
-                  }
-                  title={
-                    currentMode !== 3 ? "Kommentar hinzufügen/bearbeiten" : ""
-                  }
-                >
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation(); // So button doesn't trigger parent click
-                      navigator.clipboard.writeText(ans.aiAnswer || "");
-                    }}
-                  >
-                    📋
+          <p>{currentMode}</p>
+          {(currentMode === 0 || currentMode === 1 || currentMode === 2) && (
+            <button onClick={handleNewChat}>New Chat</button>
+          )}
+          <h4>Saved Chats:</h4>
+          <ul>
+            {chats.map((chat) => (
+              <li
+                key={chat.id}
+                onClick={() => handleChatTitleClick(chat)}
+                style={{
+                  cursor: "pointer",
+                }}
+              >
+                <h6>{chat.title}</h6>
+                {currentMode == 0 && (
+                  <button onClick={() => handleDeleteChat(chat.id)}>
+                    Delete chat
                   </button>
-                  <ReactMarkdown>{ans.aiAnswer}</ReactMarkdown>
-                </span>
-                {/* <br />
+                )}
+              </li>
+            ))}
+          </ul>
+        </SplitterPanel>
+        <SplitterPanel>
+          {(activeChat || isNewChatActive) && (
+            <>
+              <div>
+                {answers.map((ans, index) => (
+                  <div key={ans.id ?? `local-${index}`}>
+                    <strong>User:</strong> {ans.task}
+                    <br />
+                    <strong>AI:</strong>
+                    <span
+                      style={{
+                        cursor: currentMode !== 3 ? "pointer" : "default",
+                        color: currentMode !== 3 ? "white" : "inherit",
+                      }}
+                      onClick={
+                        currentMode !== 3
+                          ? () => {
+                              setOpenNoteAnswerIndex(index);
+                              setNoteDraft(ans.userNote || "");
+                              setUserNoteEnabledDraft(ans.userNoteEnabled);
+                            }
+                          : undefined
+                      }
+                      title={
+                        currentMode !== 3
+                          ? "Kommentar hinzufügen/bearbeiten"
+                          : ""
+                      }
+                    >
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation(); // So button doesn't trigger parent click
+                          navigator.clipboard.writeText(ans.aiAnswer || "");
+                        }}
+                      >
+                        📋
+                      </button>
+                      <ReactMarkdown>{ans.aiAnswer}</ReactMarkdown>
+                    </span>
+                    {/* <br />
                 {ans.user_note && (
                   <>
                     <strong>Kommentar:</strong> {ans.user_note}
                   </>
                 )} */}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          {/* Edit-Kommentar Popup */}
-          {openNoteAnswerIndex !== null && (
-            <>
-              {/* Hintergrund-Overlay */}
-              <div
-                style={{
-                  position: "fixed",
-                  inset: 0,
-                  background: "rgba(0,0,0,0.15)",
-                  zIndex: 9000,
-                }}
-                onClick={() => setOpenNoteAnswerIndex(null)}
-              />
-              {/* Popup-Box */}
-              <div
-                style={{
-                  position: "fixed",
-                  top: "30%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  background: "white",
-                  border: "2px solid #333",
-                  borderRadius: "10px",
-                  boxShadow: "0 8px 16px rgba(0,0,0,0.25)",
-                  zIndex: 9999,
-                  padding: "24px",
-                }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <h4>Kommentar bearbeiten</h4>
-                <textarea
-                  rows={5}
-                  style={{ width: "100%" }}
-                  value={noteDraft}
-                  onChange={(e) => setNoteDraft(e.target.value)}
-                  disabled={isSavingNote}
-                />
-                <div style={{ margin: "10px 0" }}>
-                  <label style={{ marginRight: 10 }}>
-                    Kommentar aktivieren:
-                  </label>
-                  <Switch
-                    checked={userNoteEnabledDraft}
-                    onChange={setUserNoteEnabledDraft}
+              {/* Edit-Kommentar Popup */}
+              {openNoteAnswerIndex !== null && (
+                <>
+                  {/* Hintergrund-Overlay */}
+                  <div
+                    style={{
+                      position: "fixed",
+                      inset: 0,
+                      background: "rgba(0,0,0,0.15)",
+                      zIndex: 9000,
+                    }}
+                    onClick={() => setOpenNoteAnswerIndex(null)}
                   />
-                </div>
-                <div style={{ marginTop: 10 }}>
-                  <button
-                    onClick={async () => {
-                      setIsSavingNote(true);
-                      try {
-                        const answerToUpdate = answers[openNoteAnswerIndex];
-                        const newAnswers = [...answers];
-                        newAnswers[openNoteAnswerIndex] = {
-                          ...answerToUpdate,
-                          userNote: noteDraft,
-                          userNoteEnabled: userNoteEnabledDraft,
-                        };
-                        setAnswers(newAnswers);
-                        if (answerToUpdate.id) {
-                          await axios.put(
-                            `http://localhost:8000/answers/${answerToUpdate.id}`,
-                            {
+                  {/* Popup-Box */}
+                  <div
+                    style={{
+                      position: "fixed",
+                      top: "30%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      background: "white",
+                      border: "2px solid #333",
+                      borderRadius: "10px",
+                      boxShadow: "0 8px 16px rgba(0,0,0,0.25)",
+                      zIndex: 9999,
+                      padding: "24px",
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <h4>Kommentar bearbeiten</h4>
+                    <textarea
+                      rows={5}
+                      style={{ width: "100%" }}
+                      value={noteDraft}
+                      onChange={(e) => setNoteDraft(e.target.value)}
+                      disabled={isSavingNote}
+                    />
+                    <div style={{ margin: "10px 0" }}>
+                      <label style={{ marginRight: 10 }}>
+                        Kommentar aktivieren:
+                      </label>
+                      <Switch
+                        checked={userNoteEnabledDraft}
+                        onChange={setUserNoteEnabledDraft}
+                      />
+                    </div>
+                    <div style={{ marginTop: 10 }}>
+                      <button
+                        onClick={async () => {
+                          setIsSavingNote(true);
+                          try {
+                            const answerToUpdate = answers[openNoteAnswerIndex];
+                            const newAnswers = [...answers];
+                            newAnswers[openNoteAnswerIndex] = {
                               ...answerToUpdate,
                               userNote: noteDraft,
                               userNoteEnabled: userNoteEnabledDraft,
-                            },
-                            { headers: { "Content-Type": "application/json" } }
-                          );
-                        }
-                        setOpenNoteAnswerIndex(null);
-                      } catch (err) {
-                        toast.warn("Fehler beim Speichern des Kommentars");
-                        console.error(err);
-                      }
-                      setIsSavingNote(false);
-                    }}
-                    disabled={isSavingNote}
-                  >
-                    Speichern
-                  </button>
-                  <button
-                    style={{ marginLeft: 10 }}
-                    onClick={() => setOpenNoteAnswerIndex(null)}
-                    disabled={isSavingNote}
-                  >
-                    Abbrechen
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
-          {/* Felder nur wenn nicht Modus 3 */}
-          {currentMode !== 3 && (
-            <>
-              {currentMode === 0 && (
-                <input
-                  type="text"
-                  value={userPrompt}
-                  onChange={(e) => setUserPrompt(e.target.value)}
-                  placeholder="Enter your question"
-                />
+                            };
+                            setAnswers(newAnswers);
+                            if (answerToUpdate.id) {
+                              await axios.put(
+                                `http://localhost:8000/answers/${answerToUpdate.id}`,
+                                {
+                                  ...answerToUpdate,
+                                  userNote: noteDraft,
+                                  userNoteEnabled: userNoteEnabledDraft,
+                                },
+                                {
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                  },
+                                }
+                              );
+                            }
+                            setOpenNoteAnswerIndex(null);
+                          } catch (err) {
+                            toast.warn("Fehler beim Speichern des Kommentars");
+                            console.error(err);
+                          }
+                          setIsSavingNote(false);
+                        }}
+                        disabled={isSavingNote}
+                      >
+                        Speichern
+                      </button>
+                      <button
+                        style={{ marginLeft: 10 }}
+                        onClick={() => setOpenNoteAnswerIndex(null)}
+                        disabled={isSavingNote}
+                      >
+                        Abbrechen
+                      </button>
+                    </div>
+                  </div>
+                </>
               )}
+              {/* Felder nur wenn nicht Modus 3 */}
+              {currentMode !== 3 && (
+                <>
+                  {currentMode === 0 && (
+                    <input
+                      type="text"
+                      value={userPrompt}
+                      onChange={(e) => setUserPrompt(e.target.value)}
+                      placeholder="Enter your question"
+                    />
+                  )}
 
-              <label>Choose a Model:</label>
-              <select
-                value={aiModel}
-                onChange={(e) => setAiModel(e.target.value)}
-              >
-                {aiModelList.map((model) => (
-                  <option key={model} value={model}>
-                    {model}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="text"
-                value={writingStyle}
-                onChange={(e) => setWritingStyle(e.target.value)}
-                placeholder="Enter text style"
-              />
-              <select
-                value={task}
-                onChange={(e) => setTask(Number(e.target.value))}
-              >
-                <option value="">Select task</option>
-                {filteredTaskOptions.map(({ id, label }) => (
-                  <option key={id} value={id}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-              {isShowingSynonym && (
-                <input
-                  type="text"
-                  value={synonym}
-                  onChange={(e) => setSynonym(e.target.value)}
-                  placeholder="Enter synonyms"
-                />
+                  <label>Choose a Model:</label>
+                  <select
+                    value={aiModel}
+                    onChange={(e) => setAiModel(e.target.value)}
+                  >
+                    {aiModelList.map((model) => (
+                      <option key={model} value={model}>
+                        {model}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="text"
+                    value={writingStyle}
+                    onChange={(e) => setWritingStyle(e.target.value)}
+                    placeholder="Enter text style"
+                  />
+                  <select
+                    value={task}
+                    onChange={(e) => setTask(Number(e.target.value))}
+                  >
+                    <option value="">Select task</option>
+                    {filteredTaskOptions.map(({ id, label }) => (
+                      <option key={id} value={id}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                  {isShowingSynonym && (
+                    <input
+                      type="text"
+                      value={synonym}
+                      onChange={(e) => setSynonym(e.target.value)}
+                      placeholder="Enter synonyms"
+                    />
+                  )}
+                  <input
+                    type="text"
+                    value={userContext}
+                    onChange={(e) => setUserContext(e.target.value)}
+                    placeholder="Enter user context"
+                  />
+                  <button onClick={handleSend}>Send</button>
+                  <button onClick={() => setIsInfoPopUpOpen(true)}>
+                    Open Popup
+                  </button>
+                  <input
+                    type="text"
+                    value={chatTitle}
+                    onChange={(e) => setChatTitle(e.target.value)}
+                    placeholder="Enter title to save the chat"
+                  />
+                  <button onClick={() => saveChatWithAnswers()}>
+                    Save Chat
+                  </button>
+                </>
               )}
-              <input
-                type="text"
-                value={userContext}
-                onChange={(e) => setUserContext(e.target.value)}
-                placeholder="Enter user context"
-              />
-              <button onClick={handleSend}>Send</button>
-              <button onClick={() => setIsInfoPopUpOpen(true)}>
-                Open Popup
-              </button>
-              <input
-                type="text"
-                value={chatTitle}
-                onChange={(e) => setChatTitle(e.target.value)}
-                placeholder="Enter title to save the chat"
-              />
-              <button onClick={() => saveChatWithAnswers()}>Save Chat</button>
             </>
           )}
-        </>
-      )}
-      <h4>Saved Chats:</h4>
-      <ul>
-        {chats.map((chat) => (
-          <li
-            key={chat.id}
-            onClick={() => handleChatTitleClick(chat)}
-            style={{
-              cursor: "pointer",
-            }}
-          >
-            <h6>{chat.title}</h6>
-            {currentMode == 0 && (
-              <button onClick={() => handleDeleteChat(chat.id)}>
-                Delete chat
-              </button>
-            )}
-          </li>
-        ))}
-      </ul>
+        </SplitterPanel>
+      </Splitter>
       {isInfoPopUpOpen && (
         <>
           <div

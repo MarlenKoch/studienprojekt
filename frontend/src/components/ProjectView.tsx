@@ -7,12 +7,14 @@ import ChatComponent from "./ChatComponent";
 import { useProjectTimer } from "../context/ProjectTimerContext";
 import "jspdf-autotable";
 import jsPDF from "jspdf";
+//import primereact from "primereact";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { generatePDF } from "./GeneratePDF";
 
 import { useNavigate } from "react-router-dom";
+import { Splitter, SplitterPanel } from "primereact/splitter";
 
 const ProjectView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -368,13 +370,10 @@ const ProjectView: React.FC = () => {
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <ToastContainer position="top-center" autoClose={2400} />
-      <h3>
-        Remaining Time:{" "}
-        {timeLeft !== null ? `${timeLeft} seconds` : "Not Applicable"}
-      </h3>
-      <h2>
+      <h3>{timeLeft !== null && `Remaining Time:{" "} ${timeLeft} seconds`}</h3>
+      {/* <h2>
         Project View for Project ID: {id}, {project?.id}
-      </h2>
+      </h2> */}
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         {isEditingTitle ? (
           <>
@@ -432,71 +431,78 @@ const ProjectView: React.FC = () => {
         )}
         <button onClick={handleDeleteProject}>Delete Project</button>
       </div>
-
-      <h3>Paragraphs</h3>
-      <ul>
-        {paragraphs.map((paragraph) => (
-          <li key={paragraph.id}>
-            <textarea
-              value={paragraph.content}
-              onChange={(e) =>
-                project?.mode !== 3
-                  ? handleParagraphChange(paragraph.id, e.target.value)
-                  : undefined
-              }
-              placeholder="Edit paragraph content"
-              style={{
-                width: "100%",
-                height: "auto",
-                minHeight: "60px",
-                overflow: "hidden",
-                resize: "none",
-              }}
-              onClick={() => setActiveParagraphId(paragraph.id)}
-              readOnly={project?.mode === 3}
+      <Splitter>
+        <SplitterPanel size={activeParagraphId ? 50 : 100} minSize={10}>
+          <h3>Paragraphs</h3>
+          <ul>
+            {paragraphs.map((paragraph) => (
+              <li key={paragraph.id}>
+                <textarea
+                  value={paragraph.content}
+                  onChange={(e) =>
+                    project?.mode !== 3
+                      ? handleParagraphChange(paragraph.id, e.target.value)
+                      : undefined
+                  }
+                  placeholder="Edit paragraph content"
+                  style={{
+                    width: "100%",
+                    height: "auto",
+                    minHeight: "60px",
+                    overflow: "hidden",
+                    resize: "none",
+                  }}
+                  onClick={() => setActiveParagraphId(paragraph.id)}
+                  readOnly={project?.mode === 3}
+                />
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation(); // So button doesn't trigger parent click
+                    navigator.clipboard.writeText(paragraph.content || "");
+                  }}
+                >
+                  📋
+                </button>
+                {project?.mode !== 3 && (
+                  <div>
+                    <button onClick={() => handleSaveParagraph(paragraph.id)}>
+                      Save
+                    </button>
+                    <button onClick={() => handleDeleteParagraph(paragraph.id)}>
+                      Delete Paragraph
+                    </button>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+          {(project?.mode === 0 ||
+            project?.mode === 1 ||
+            project?.mode === 2) && (
+            <div>
+              <h3>Add New Paragraph</h3>
+              <input
+                type="text"
+                value={newParagraphContent}
+                onChange={(e) => setNewParagraphContent(e.target.value)}
+                placeholder="Enter paragraph content"
+                style={{ marginRight: "10px" }}
+              />
+              <button onClick={handleAddParagraph}>Add Paragraph</button>
+            </div>
+          )}
+        </SplitterPanel>
+        <SplitterPanel size={activeParagraphId ? 50 : 0}>
+          {activeParagraphId !== null && (
+            <ChatComponent
+              paragraphId={activeParagraphId}
+              aiModelList={aiModelList}
+              // mode={project?.mode}
+              projectId={project?.id}
             />
-            <button
-              onClick={(e) => {
-                e.stopPropagation(); // So button doesn't trigger parent click
-                navigator.clipboard.writeText(paragraph.content || "");
-              }}
-            >
-              📋
-            </button>
-            {project?.mode !== 3 && (
-              <div>
-                <button onClick={() => handleSaveParagraph(paragraph.id)}>
-                  Save
-                </button>
-                <button onClick={() => handleDeleteParagraph(paragraph.id)}>
-                  Delete Paragraph
-                </button>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
-      {(project?.mode === 0 || project?.mode === 1 || project?.mode === 2) && (
-        <div>
-          <h3>Add New Paragraph</h3>
-          <input
-            type="text"
-            value={newParagraphContent}
-            onChange={(e) => setNewParagraphContent(e.target.value)}
-            placeholder="Enter paragraph content"
-            style={{ marginRight: "10px" }}
-          />
-          <button onClick={handleAddParagraph}>Add Paragraph</button>
-        </div>
-      )}
-      {activeParagraphId !== null && (
-        <ChatComponent
-          paragraphId={activeParagraphId}
-          aiModelList={aiModelList}
-          // mode={project?.mode}
-          projectId={project?.id}
-        />
-      )}
+          )}
+        </SplitterPanel>
+      </Splitter>
       <button onClick={() => setIsCreatingPromptJson(true)}>
         Generate Prompt PDF
       </button>
@@ -508,12 +514,8 @@ const ProjectView: React.FC = () => {
         Generate Text PDF
       </button>
       <div>
-        {project?.mode === 1 || project?.mode === 2 ? (
-          <p>Im Schülermodus</p>
-        ) : (
-          <p>Du bist kein Schüler</p>
-        )}
-        {project?.mode === 2 ? (
+        {project?.mode === 1 || (project?.mode === 2 && <p>Im Schülermodus</p>)}
+        {project?.mode === 2 && (
           <button
             onClick={() => {
               setIsChangingMode(true);
@@ -522,10 +524,9 @@ const ProjectView: React.FC = () => {
           >
             abgeben
           </button>
-        ) : (
-          <p>kein knopf</p>
         )}
       </div>
+
       {/* TIMER POPUP für Modus 2 */}
       {showTimerPopup && (
         <div

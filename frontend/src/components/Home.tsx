@@ -72,11 +72,8 @@ const Home: React.FC = () => {
     <div>
       {showInfoPopUp && <InfoPopUp onClose={() => setShowInfoPopUp(false)} />}
 
-      <h2>Home Component</h2>
-      <img src="/logo-test.svg" width={60} height={60} alt="KI-Logo" />
-      <h3>
-        aktuelle projekt ist {currentProjectId}, mode: {currentMode}
-      </h3>
+      {/* <img src="/logo-test.svg" width={60} height={60} alt="KI-Logo" /> */}
+
       <input
         type="text"
         value={newProjectTitle}
