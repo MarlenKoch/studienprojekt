@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Chat } from "../types/Chat";
-import { Answer } from "../types/Answer";
-import { AiRequest } from "../types/AiRequest";
-import { AiResponse } from "../types/AiResponse";
+import { Chat } from "../../types/Chat";
+import { Answer } from "../../types/Answer";
+import { AiRequest } from "../../types/AiRequest";
+import { AiResponse } from "../../types/AiResponse";
 import ReactMarkdown from "react-markdown";
-import { useProjectTimer } from "../context/ProjectTimerContext";
+import { useProjectTimer } from "../../context/ProjectTimerContext";
 import Switch from "react-switch";
 import { toast } from "react-toastify";
 

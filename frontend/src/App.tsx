@@ -1,22 +1,28 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import Home from "./components/Home";
-import ProjectView from "./components/ProjectView";
+import Home from "./components/Home/Home";
+import ProjectView from "./components/ProjectView/ProjectView";
 import { ProjectTimerProvider } from "./context/ProjectTimerContext";
+import Header from "./components/Header/Header";
+import Footer from "./components/Footer/Footer";
+import Impressum from "./components/FooterPages/Impressum"
+import UeberUns from "./components/FooterPages/UeberUns"
+
 
 const App: React.FC = () => {
   return (
     <ProjectTimerProvider>
       <Router>
-        <div style={{ padding: "20px" }}>
-          <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
-            <h1>Schreibassistent</h1>
-          </Link>
+        <div>
+          <Header/>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/project/:id" element={<ProjectView />} />{" "}
-            {/* Adjust path */}
+            <Route path="/impressum" element={<Impressum/>}/>
+            <Route path="/ueberUns" element={<UeberUns/>}/>
+
           </Routes>
+          <Footer/>
         </div>
       </Router>
     </ProjectTimerProvider>
