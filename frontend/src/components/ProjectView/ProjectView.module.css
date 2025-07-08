@@ -1,11 +1,162 @@
-.scrollableContainer {
-  overflow-y: auto;
-  overflow-x: hidden;
-  max-height: calc(100vh - 550px);
-  font-size: large;
-  padding: 0;
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 1136px;
+  margin: 32px auto;
+  padding: 24px;
+  background: #f9fbfd;
+  border-radius: 18px;
+  box-shadow: 0 5px 35px rgba(40, 80, 140, 0.09);
+  min-height: 70vh;
+}
+
+.topBar {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  background: #fff;
+  padding: 14px 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(60, 60, 100, 0.03);
+}
+
+.topBarTitle {
+  font-size: 2.1rem;
+  font-weight: 600;
+  margin: 0 18px 0 0;
+  flex: 1;
+}
+
+.actionBtn {
+  background: linear-gradient(90deg, #4ccfc9, #ef476f);
+  color: #fff;
+  border: none;
+  font-size: 1.12rem;
+  padding: 8px 18px;
+  border-radius: 23px;
+  box-shadow: 0 2px 16px rgba(239, 71, 111, 0.04);
+  cursor: pointer;
+  transition: background 0.25s;
+  margin-left: 0.5rem;
+}
+.actionBtn.danger {
+  background: #ef476f;
+}
+
+.sectionCard {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(80, 80, 120, 0.045);
+  margin-bottom: 18px;
+  padding: 24px;
+}
+
+.addParagraphForm {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.input,
+.textarea {
+  background: #f6faff;
+  border: 1px solid #b2e6e0;
+  border-radius: 9px;
+  font-size: 1rem;
+  padding: 8px 11px;
+  margin: 4px 0;
+}
+
+.textarea {
+  resize: vertical;
+  width: 100%;
+  min-height: 54px;
+}
+
+.paragraphList {
   margin: 0;
-  outline-width: 1px;
-  outline-color: deeppink;
-  outline-style: solid;
+  padding: 0;
+  list-style: none;
+}
+.paragraphList li {
+  margin-bottom: 18px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #ececec;
+}
+.paragraphRow {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.paragraphActions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.iconBtn {
+  background: #e8f5fb;
+  color: #2c5282;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 9px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background 0.16s;
+}
+.iconBtn:hover {
+  background: #b2e6e0;
+}
+.scrollableContainer {
+  max-height: 45vh;
+  overflow-y: auto;
+  margin-top: 0;
+}
+
+.projectActionBar {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.tag {
+  background: #e6fff7;
+  color: #16b994;
+  padding: 3px 14px;
+  border-radius: 15px;
+  font-size: 1rem;
+  margin-top: 7px;
+  display: inline-block;
+}
+
+.timerPopBg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.23);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 11000;
+}
+.timerPopContent {
+  background: #fff;
+  padding: 30px 22px;
+  border-radius: 18px;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 5px 24px rgba(80, 40, 120, 0.08);
+}
+.timerInputs {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.timerInput {
+  width: 52px;
 }

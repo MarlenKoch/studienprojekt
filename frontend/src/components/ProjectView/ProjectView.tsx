@@ -370,30 +370,35 @@ const ProjectView: React.FC = () => {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column" }}>
+    <div className={styles.wrapper}>
       <ToastContainer position="top-center" autoClose={2400} />
-      <h3>{timeLeft !== null && `Remaining Time:{" "} ${timeLeft} seconds`}</h3>
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      {timeLeft !== null && (
+        <div className={styles.tag}>
+          Verbleibende Zeit: <strong>{timeLeft}s</strong>
+        </div>
+      )}
+
+      {/* Top-Bar: Titel + Edit/Delete */}
+      <div className={styles.topBar}>
         {isEditingTitle ? (
           <>
             <input
+              className={styles.input}
               type="text"
               value={editableTitle}
               onChange={(e) => setEditableTitle(e.target.value)}
-              style={{ fontSize: "1.4rem", padding: 4 }}
+              style={{ fontSize: "1.5rem" }}
             />
             <button
+              className={styles.actionBtn}
               onClick={async () => {
                 if (!project) return;
                 try {
                   await axios.put(
                     `http://localhost:8000/projects/${project.id}`,
-                    {
-                      // ...project,
-                      title: editableTitle,
-                    }
+                    { title: editableTitle }
                   );
-                  setProject({ ...project, title: editableTitle }); // Lokale Aktualisierung
+                  setProject({ ...project, title: editableTitle });
                   setIsEditingTitle(false);
                   toast.success("Title updated!");
                 } catch (err) {
@@ -405,121 +410,148 @@ const ProjectView: React.FC = () => {
               Save
             </button>
             <button
+              className={[styles.actionBtn, styles.danger].join(" ")}
               onClick={() => {
                 setIsEditingTitle(false);
                 setEditableTitle(project?.title ?? "");
               }}
-              style={{ marginLeft: 4 }}
             >
               Cancel
             </button>
           </>
         ) : (
           <>
-            <h3 style={{ margin: 0 }}>{project?.title}</h3>
+            <span className={styles.topBarTitle}>{project?.title}</span>
             <button
+              className={styles.actionBtn}
               onClick={() => {
                 setIsEditingTitle(true);
                 setEditableTitle(project?.title ?? "");
               }}
-              style={{ marginLeft: 8 }}
             >
               Edit
             </button>
           </>
         )}
-        <button onClick={handleDeleteProject}>Delete Project</button>
+        <button
+          className={[styles.actionBtn, styles.danger].join(" ")}
+          onClick={handleDeleteProject}
+        >
+          Delete Project
+        </button>
       </div>
+
       <Splitter>
         <SplitterPanel size={activeParagraphId ? 50 : 100} minSize={10}>
-          <div className={styles.scrollableContainer}>
+          <div className={styles.sectionCard}>
             <h3>Paragraphs</h3>
-            <ul>
+            <ul className={styles.paragraphList}>
               {paragraphs.map((paragraph) => (
                 <li key={paragraph.id}>
-                  <textarea
-                    value={paragraph.content}
-                    onChange={(e) =>
-                      project?.mode !== 3
-                        ? handleParagraphChange(paragraph.id, e.target.value)
-                        : undefined
-                    }
-                    placeholder="Edit paragraph content"
-                    style={{
-                      width: "100%",
-                      height: "auto",
-                      minHeight: "60px",
-                      overflow: "hidden",
-                      resize: "none",
-                    }}
-                    onClick={() => setActiveParagraphId(paragraph.id)}
-                    readOnly={project?.mode === 3}
-                  />
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation(); // So button doesn't trigger parent click
-                      navigator.clipboard.writeText(paragraph.content || "");
-                    }}
-                  >
-                    📋
-                  </button>
-                  {project?.mode !== 3 && (
-                    <div>
-                      <button onClick={() => handleSaveParagraph(paragraph.id)}>
-                        Save
-                      </button>
+                  <div className={styles.paragraphRow}>
+                    <textarea
+                      className={styles.textarea}
+                      value={paragraph.content}
+                      onChange={(e) =>
+                        project?.mode !== 3
+                          ? handleParagraphChange(paragraph.id, e.target.value)
+                          : undefined
+                      }
+                      placeholder="Edit paragraph content"
+                      onClick={() => setActiveParagraphId(paragraph.id)}
+                      readOnly={project?.mode === 3}
+                    />
+                    <div className={styles.paragraphActions}>
                       <button
-                        onClick={() => handleDeleteParagraph(paragraph.id)}
+                        className={styles.iconBtn}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigator.clipboard.writeText(
+                            paragraph.content || ""
+                          );
+                        }}
+                        title="Copy"
                       >
-                        Delete Paragraph
+                        📋
                       </button>
+                      {project?.mode !== 3 && (
+                        <>
+                          <button
+                            className={styles.iconBtn}
+                            onClick={() => handleSaveParagraph(paragraph.id)}
+                          >
+                            💾
+                          </button>
+                          <button
+                            className={[styles.iconBtn, styles.danger].join(
+                              " "
+                            )}
+                            onClick={() => handleDeleteParagraph(paragraph.id)}
+                          >
+                            🗑
+                          </button>
+                        </>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </li>
               ))}
             </ul>
+
+            {(project?.mode === 0 ||
+              project?.mode === 1 ||
+              project?.mode === 2) && (
+              <form
+                className={styles.addParagraphForm}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleAddParagraph();
+                }}
+              >
+                <input
+                  className={styles.input}
+                  type="text"
+                  value={newParagraphContent}
+                  onChange={(e) => setNewParagraphContent(e.target.value)}
+                  placeholder="Neuen Paragraph-Inhalt eingeben"
+                />
+                <button className={styles.actionBtn} type="submit">
+                  Paragraph hinzufügen
+                </button>
+              </form>
+            )}
           </div>
-          {(project?.mode === 0 ||
-            project?.mode === 1 ||
-            project?.mode === 2) && (
-            <div>
-              <h3>Add New Paragraph</h3>
-              <input
-                type="text"
-                value={newParagraphContent}
-                onChange={(e) => setNewParagraphContent(e.target.value)}
-                placeholder="Enter paragraph content"
-                style={{ marginRight: "10px" }}
-              />
-              <button onClick={handleAddParagraph}>Add Paragraph</button>
-            </div>
-          )}
         </SplitterPanel>
         <SplitterPanel size={activeParagraphId ? 50 : 0}>
           {activeParagraphId !== null && (
             <ChatComponent
               paragraphId={activeParagraphId}
               aiModelList={aiModelList}
-              // mode={project?.mode}
               projectId={project?.id}
             />
           )}
         </SplitterPanel>
       </Splitter>
-      <button onClick={() => setIsCreatingPromptJson(true)}>
-        Generate Prompt PDF
-      </button>
-      <button
-        onClick={
-          handleGeneratePDF //TODO
-        }
-      >
-        Generate Text PDF
-      </button>
+
+      <div className={styles.projectActionBar}>
+        <button
+          className={styles.actionBtn}
+          onClick={() => setIsCreatingPromptJson(true)}
+        >
+          Generate Prompt PDF
+        </button>
+        <button className={styles.actionBtn} onClick={handleGeneratePDF}>
+          Generate Text PDF
+        </button>
+      </div>
+
       <div>
-        {project?.mode === 1 || (project?.mode === 2 && <p>Im Schülermodus</p>)}
+        {(project?.mode === 1 || project?.mode === 2) && (
+          <span className={styles.tag}>Im Schülermodus</span>
+        )}
         {project?.mode === 2 && (
           <button
+            className={styles.actionBtn}
             onClick={() => {
               setIsChangingMode(true);
               stopTimer();
@@ -530,64 +562,46 @@ const ProjectView: React.FC = () => {
         )}
       </div>
 
-      {/* TIMER POPUP für Modus 2 */}
+      {/* TIMER POPUP */}
       {showTimerPopup && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            background: "rgba(0,0,0,0.4)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 10000,
-          }}
-        >
-          <div
-            style={{
-              background: "#fff",
-              padding: 20,
-              borderRadius: 8,
-              minWidth: 300,
-              display: "flex",
-              flexDirection: "column",
-              gap: 10,
-            }}
-          >
+        <div className={styles.timerPopBg}>
+          <div className={styles.timerPopContent}>
             <h3>Timer einstellen</h3>
-            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            <div className={styles.timerInputs}>
               <input
+                className={styles.timerInput}
                 type="number"
                 min={0}
                 max={23}
                 value={timerHours}
                 onChange={(e) => setTimerHours(Number(e.target.value))}
-                style={{ width: 50 }}
               />{" "}
               Stunden
               <input
+                className={styles.timerInput}
                 type="number"
                 min={0}
                 max={59}
                 value={timerMinutes}
                 onChange={(e) => setTimerMinutes(Number(e.target.value))}
-                style={{ width: 50 }}
               />{" "}
               Minuten
               <input
+                className={styles.timerInput}
                 type="number"
                 min={0}
                 max={59}
                 value={timerSeconds}
                 onChange={(e) => setTimerSeconds(Number(e.target.value))}
-                style={{ width: 50 }}
               />{" "}
               Sekunden
             </div>
-            <button onClick={handleStartTimerFromPopUp}>Starten</button>
+            <button
+              className={styles.actionBtn}
+              onClick={handleStartTimerFromPopUp}
+            >
+              Starten
+            </button>
           </div>
         </div>
       )}

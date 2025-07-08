@@ -9,7 +9,8 @@ import { useProjectTimer } from "../../context/ProjectTimerContext";
 import Switch from "react-switch";
 import { toast } from "react-toastify";
 import { Splitter, SplitterPanel } from "primereact/splitter";
-import styles from "./Chat.module.css";
+// import styles from "./Chat.module.css";
+import chatStyles from "./Chat.module.css";
 
 interface ChatComponentProps {
   paragraphId: number | null;
@@ -324,37 +325,36 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   // ========== RENDER ==========
 
   return (
-    <div
-      style={{
-        marginTop: "20px",
-        // border: "1px solid #ccc",
-        padding: "10px",
-      }}
-    >
+    <div className={chatStyles.wrapper}>
       <Splitter>
         <SplitterPanel size={activeChat || isNewChatActive ? 50 : 100}>
-          <h3>AI Chat for Paragraph ID: {paragraphId}</h3>
-
-          <p>{currentMode}</p>
+          <div className={chatStyles.heading}>
+            AI Chat für Paragraph-ID: {paragraphId}
+          </div>
           {(currentMode === 0 || currentMode === 1 || currentMode === 2) && (
-            <button onClick={handleNewChat}>New Chat</button>
+            <button className={chatStyles.btn} onClick={handleNewChat}>
+              + Neuer Chat
+            </button>
           )}
-
-          <h4>Saved Chats:</h4>
-          <div className={styles.scrollableContainer}>
-            <ul>
+          <h4 style={{ marginTop: "17px" }}>Gespeicherte Chats</h4>
+          <div className={chatStyles.scrollableContainer}>
+            <ul className={chatStyles.chatList}>
               {chats.map((chat) => (
                 <li
                   key={chat.id}
                   onClick={() => handleChatTitleClick(chat)}
-                  style={{
-                    cursor: "pointer",
-                  }}
+                  className={activeChat?.id === chat.id ? "active" : ""}
                 >
-                  <h6>{chat.title}</h6>
-                  {currentMode == 0 && (
-                    <button onClick={() => handleDeleteChat(chat.id)}>
-                      Delete chat
+                  <span>{chat.title}</span>
+                  {currentMode === 0 && (
+                    <button
+                      className={chatStyles.iconBtn}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteChat(chat.id);
+                      }}
+                    >
+                      🗑
                     </button>
                   )}
                 </li>
@@ -364,91 +364,80 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
         </SplitterPanel>
         <SplitterPanel size={activeChat || isNewChatActive ? 50 : 0}>
           {(activeChat || isNewChatActive) && (
-            <>
-              <div className={styles.scrollableContainer}>
+            <div>
+              {/* Answers */}
+              <div
+                className={chatStyles.scrollableContainer}
+                style={{ marginBottom: "13px" }}
+              >
                 {answers.map((ans, index) => (
-                  <div key={ans.id ?? `local-${index}`}>
-                    <strong>User:</strong> {ans.task}
-                    <br />
-                    <strong>AI:</strong>
-                    <span
-                      style={{
-                        cursor: currentMode !== 3 ? "pointer" : "default",
-                        color: currentMode !== 3 ? "white" : "inherit",
-                      }}
-                      onClick={
-                        currentMode !== 3
-                          ? () => {
-                              setOpenNoteAnswerIndex(index);
-                              setNoteDraft(ans.userNote || "");
-                              setUserNoteEnabledDraft(ans.userNoteEnabled);
-                            }
-                          : undefined
-                      }
-                      title={
-                        currentMode !== 3
-                          ? "Kommentar hinzufügen/bearbeiten"
-                          : ""
-                      }
-                    >
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation(); // So button doesn't trigger parent click
-                          navigator.clipboard.writeText(ans.aiAnswer || "");
+                  <div
+                    key={ans.id ?? `local-${index}`}
+                    className={chatStyles.answerBlock}
+                  >
+                    <div>
+                      <strong>User:</strong> {ans.task}
+                      <br />
+                      <strong>AI:</strong>
+                      <span
+                        style={{
+                          cursor: currentMode !== 3 ? "pointer" : "default",
+                          color: currentMode !== 3 ? "#505087" : "inherit",
                         }}
+                        onClick={
+                          currentMode !== 3
+                            ? () => {
+                                setOpenNoteAnswerIndex(index);
+                                setNoteDraft(ans.userNote || "");
+                                setUserNoteEnabledDraft(ans.userNoteEnabled);
+                              }
+                            : undefined
+                        }
+                        title={
+                          currentMode !== 3
+                            ? "Kommentar hinzufügen/bearbeiten"
+                            : ""
+                        }
                       >
-                        📋
-                      </button>
-                      <ReactMarkdown>{ans.aiAnswer}</ReactMarkdown>
-                    </span>
-                    {/* <br />
-                {ans.user_note && (
-                  <>
-                    <strong>Kommentar:</strong> {ans.user_note}
-                  </>
-                )} */}
+                        <button
+                          className={chatStyles.iconBtn}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigator.clipboard.writeText(ans.aiAnswer || "");
+                          }}
+                        >
+                          📋
+                        </button>
+                        <span className="markdown">
+                          <ReactMarkdown>{ans.aiAnswer}</ReactMarkdown>
+                        </span>
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>
-              {/* Edit-Kommentar Popup */}
+              {/* Kommentar Popup */}
               {openNoteAnswerIndex !== null && (
                 <>
-                  {/* Hintergrund-Overlay */}
                   <div
-                    style={{
-                      position: "fixed",
-                      inset: 0,
-                      background: "rgba(0,0,0,0.15)",
-                      zIndex: 9000,
-                    }}
+                    className={chatStyles.answerNotePopBg}
                     onClick={() => setOpenNoteAnswerIndex(null)}
                   />
-                  {/* Popup-Box */}
                   <div
-                    style={{
-                      position: "fixed",
-                      top: "30%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      background: "white",
-                      border: "2px solid #333",
-                      borderRadius: "10px",
-                      boxShadow: "0 8px 16px rgba(0,0,0,0.25)",
-                      zIndex: 9999,
-                      padding: "24px",
-                    }}
+                    className={chatStyles.answerNotePopContent}
                     onClick={(e) => e.stopPropagation()}
                   >
                     <h4>Kommentar bearbeiten</h4>
                     <textarea
                       rows={5}
+                      className={chatStyles.textarea}
                       style={{ width: "100%" }}
                       value={noteDraft}
                       onChange={(e) => setNoteDraft(e.target.value)}
                       disabled={isSavingNote}
                     />
                     <div style={{ margin: "10px 0" }}>
-                      <label style={{ marginRight: 10 }}>
+                      <label className={chatStyles.label}>
                         Kommentar aktivieren:
                       </label>
                       <Switch
@@ -458,6 +447,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                     </div>
                     <div style={{ marginTop: 10 }}>
                       <button
+                        className={chatStyles.btn}
                         onClick={async () => {
                           setIsSavingNote(true);
                           try {
@@ -496,6 +486,9 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                         Speichern
                       </button>
                       <button
+                        className={[chatStyles.btn, chatStyles.cancel].join(
+                          " "
+                        )}
                         style={{ marginLeft: 10 }}
                         onClick={() => setOpenNoteAnswerIndex(null)}
                         disabled={isSavingNote}
@@ -508,108 +501,115 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
               )}
               {/* Felder nur wenn nicht Modus 3 */}
               {currentMode !== 3 && (
-                <>
-                  {currentMode === 0 && (
-                    <input
-                      type="text"
-                      value={userPrompt}
-                      onChange={(e) => setUserPrompt(e.target.value)}
-                      placeholder="Enter your question"
-                    />
-                  )}
+                <div style={{ marginTop: "20px" }}>
+                  <div className={chatStyles.chatControlRow}>
+                    {currentMode === 0 && (
+                      <input
+                        className={chatStyles.field}
+                        type="text"
+                        value={userPrompt}
+                        onChange={(e) => setUserPrompt(e.target.value)}
+                        placeholder="Deine Frage an die KI"
+                      />
+                    )}
 
-                  <label>Choose a Model:</label>
-                  <select
-                    value={aiModel}
-                    onChange={(e) => setAiModel(e.target.value)}
-                  >
-                    {aiModelList.map((model) => (
-                      <option key={model} value={model}>
-                        {model}
-                      </option>
-                    ))}
-                  </select>
-                  <input
-                    type="text"
-                    value={writingStyle}
-                    onChange={(e) => setWritingStyle(e.target.value)}
-                    placeholder="Enter text style"
-                  />
-                  <select
-                    value={task}
-                    onChange={(e) => setTask(Number(e.target.value))}
-                  >
-                    <option value="">Select task</option>
-                    {filteredTaskOptions.map(({ id, label }) => (
-                      <option key={id} value={id}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
-                  {isShowingSynonym && (
+                    <label className={chatStyles.label}>Modell:</label>
+                    <select
+                      className={chatStyles.taskSelector}
+                      value={aiModel}
+                      onChange={(e) => setAiModel(e.target.value)}
+                    >
+                      {aiModelList.map((model) => (
+                        <option key={model} value={model}>
+                          {model}
+                        </option>
+                      ))}
+                    </select>
+
                     <input
+                      className={chatStyles.field}
                       type="text"
-                      value={synonym}
-                      onChange={(e) => setSynonym(e.target.value)}
-                      placeholder="Enter synonyms"
+                      value={writingStyle}
+                      onChange={(e) => setWritingStyle(e.target.value)}
+                      placeholder="Stil (optional)"
                     />
-                  )}
-                  <input
-                    type="text"
-                    value={userContext}
-                    onChange={(e) => setUserContext(e.target.value)}
-                    placeholder="Enter user context"
-                  />
-                  <button onClick={handleSend}>Send</button>
-                  <button onClick={() => setIsInfoPopUpOpen(true)}>
-                    Open Popup
-                  </button>
-                  <input
-                    type="text"
-                    value={chatTitle}
-                    onChange={(e) => setChatTitle(e.target.value)}
-                    placeholder="Enter title to save the chat"
-                  />
-                  <button onClick={() => saveChatWithAnswers()}>
-                    Save Chat
-                  </button>
-                </>
+
+                    <select
+                      className={chatStyles.taskSelector}
+                      value={task}
+                      onChange={(e) => setTask(Number(e.target.value))}
+                    >
+                      <option value="">Task wählen</option>
+                      {filteredTaskOptions.map(({ id, label }) => (
+                        <option key={id} value={id}>
+                          {label}
+                        </option>
+                      ))}
+                    </select>
+                    {isShowingSynonym && (
+                      <input
+                        className={`${chatStyles.field} ${chatStyles.syninput}`}
+                        type="text"
+                        value={synonym}
+                        onChange={(e) => setSynonym(e.target.value)}
+                        placeholder="Wort/Synonym"
+                      />
+                    )}
+                    <input
+                      className={chatStyles.field}
+                      type="text"
+                      value={userContext}
+                      onChange={(e) => setUserContext(e.target.value)}
+                      placeholder="Zusatztipp o. Kontext"
+                    />
+                  </div>
+                  <div
+                    style={{ display: "flex", gap: "10px", marginTop: "14px" }}
+                  >
+                    <button className={chatStyles.btn} onClick={handleSend}>
+                      AI Antwort anfordern
+                    </button>
+                    <input
+                      className={chatStyles.field}
+                      type="text"
+                      value={chatTitle}
+                      onChange={(e) => setChatTitle(e.target.value)}
+                      placeholder="Chat-Titel"
+                    />
+                    <button
+                      className={chatStyles.btn}
+                      onClick={() => saveChatWithAnswers()}
+                    >
+                      Chat speichern
+                    </button>
+                  </div>
+                </div>
               )}
-            </>
+            </div>
           )}
         </SplitterPanel>
       </Splitter>
       {isInfoPopUpOpen && (
         <>
           <div
-            style={{
-              position: "fixed",
-              inset: 0,
-              background: "rgba(0,0,0,0.15)",
-              zIndex: 9000,
-            }}
+            className={chatStyles.answerNotePopBg}
             onClick={() => setIsInfoPopUpOpen(false)}
           />
           <div
-            style={{
-              position: "fixed",
-              top: "40%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              background: "red",
-              padding: 24,
-              border: "2px solid #333",
-              borderRadius: 10,
-              zIndex: 9999,
-              minWidth: 200,
-            }}
+            className={chatStyles.answerNotePopContent}
+            style={{ background: "#f9dede" }}
             onClick={(e) => e.stopPropagation()}
           >
             <p>
-              AI Warnung: AI kann falsche Informationen geben und Haluzinieren.
-              Überprüfe Informationen. PÜ.
+              <b>AI Warnung:</b> Die AI kann auch falsche Informationen liefern.
+              Bitte eigenständig den Output prüfen.
             </p>
-            <button onClick={() => setIsInfoPopUpOpen(false)}>Close</button>
+            <button
+              className={chatStyles.btn}
+              onClick={() => setIsInfoPopUpOpen(false)}
+            >
+              Schließen
+            </button>
           </div>
         </>
       )}
