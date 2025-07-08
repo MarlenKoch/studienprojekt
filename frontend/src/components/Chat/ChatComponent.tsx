@@ -331,7 +331,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       }}
     >
       <Splitter>
-        <SplitterPanel>
+        <SplitterPanel size={activeChat || isNewChatActive ? 50 : 100}>
           <h3>AI Chat for Paragraph ID: {paragraphId}</h3>
 
           <p>{currentMode}</p>
@@ -358,7 +358,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
             ))}
           </ul>
         </SplitterPanel>
-        <SplitterPanel>
+        <SplitterPanel size={activeChat || isNewChatActive ? 50 : 0}>
           {(activeChat || isNewChatActive) && (
             <>
               <div>
