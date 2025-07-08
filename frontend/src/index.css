@@ -1,4 +1,49 @@
-:root {
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  text-align: center;
+  --background: #333333;
+  --box: #4b4d52;
+  --HeadFoodBar: #5f6a72;
+  --button: #89aaa9;
+  --accent: #a6cbbe;
+  --white: #ffffff;
+  color: var(--white);
+  background-color: var(--background);
+  overflow: hidden;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: var(--button);
+  cursor: pointer;
+  transition: 0.25s;
+  margin: 20px;
+  color: var(--white);
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+
+
+/* :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -65,4 +110,4 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-}
+} */
