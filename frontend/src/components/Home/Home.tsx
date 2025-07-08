@@ -5,7 +5,7 @@ import { Project } from "../../types/Project";
 import { useProjectTimer } from "../../context/ProjectTimerContext";
 import { toast } from "react-toastify";
 import { InfoPopUp } from "../InfoPopUp/InfoPopUp";
-import styles from "./Home.module.css"
+import styles from "./Home.module.css";
 
 const Home: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -91,25 +91,21 @@ const Home: React.FC = () => {
       <button onClick={handleAddProject}>Add Project</button>
       <h3>Existing Projects:</h3>
       <ul>
-        
         {projects.map((project) => (
-          <div className={styles.containerBox}>
-          <li key={project.id}>
-            <Link
-              to={`/project/${project.id}`}
-              onClick={() => {
-                setCurrentProjectId(project.id);
-                setProjectMode(project.id, project.mode);
-              }}
-            >
-              {project.title} (Mode: {project.mode})
-              
-            </Link>
-            
-          </li>
+          <div className={styles.containerBox} key={project.id}>
+            <li key={project.id}>
+              <Link
+                to={`/project/${project.id}`}
+                onClick={() => {
+                  setCurrentProjectId(project.id);
+                  setProjectMode(project.id, project.mode);
+                }}
+              >
+                {project.title} (Mode: {project.mode})
+              </Link>
+            </li>
           </div>
         ))}
-        
       </ul>
     </div>
   );
