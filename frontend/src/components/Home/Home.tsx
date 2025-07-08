@@ -20,6 +20,7 @@ const modeLabel = (mode: number) => {
     default:
       return "unbekannt";
   }
+  
 };
 
 const Home: React.FC = () => {
