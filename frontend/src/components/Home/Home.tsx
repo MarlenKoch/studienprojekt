@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { InfoPopUp } from "../InfoPopUp/InfoPopUp";
 import styles from "./Home.module.css";
 
+
 const modeLabel = (mode: number) => {
   switch (mode) {
     case 0:
@@ -22,6 +23,7 @@ const modeLabel = (mode: number) => {
   }
   
 };
+
 
 const Home: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -126,12 +128,14 @@ const Home: React.FC = () => {
             <li key={project.id}>
               <Link
                 className={styles.projectBox}
+
                 to={`/project/${project.id}`}
                 onClick={() => {
                   setCurrentProjectId(project.id);
                   setProjectMode(project.id, project.mode);
                 }}
               >
+
                 {project.title}
                 <span className={styles.modeFont} style={{ fontSize: "80%", marginTop: "8px" }}>({modeLabel(project.mode)})</span>
               </Link>
@@ -139,6 +143,7 @@ const Home: React.FC = () => {
           ))}
         </ul>
       </div>
+
     </div>
   );
 };
