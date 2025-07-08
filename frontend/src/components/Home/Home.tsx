@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { Project } from "../types/Project";
-import { useProjectTimer } from "../context/ProjectTimerContext";
+import { Project } from "../../types/Project";
+import { useProjectTimer } from "../../context/ProjectTimerContext";
 import { toast } from "react-toastify";
-import { InfoPopUp } from "./InfoPopUp";
+import { InfoPopUp } from "../InfoPopUp/InfoPopUp";
 
 const Home: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);

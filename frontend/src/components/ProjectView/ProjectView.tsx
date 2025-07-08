@@ -1,17 +1,17 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Project } from "../types/Project";
-import { Paragraph } from "../types/Paragraph";
-import ChatComponent from "./ChatComponent";
-import { useProjectTimer } from "../context/ProjectTimerContext";
+import { Project } from "../../types/Project";
+import { Paragraph } from "../../types/Paragraph";
+import ChatComponent from "../Chat/ChatComponent";
+import { useProjectTimer } from "../../context/ProjectTimerContext";
 import "jspdf-autotable";
 import jsPDF from "jspdf";
 //import primereact from "primereact";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { generatePDF } from "./GeneratePDF";
+import { generatePDF } from "../GeneratePDF/GeneratePDF";
 
 import { useNavigate } from "react-router-dom";
 import { Splitter, SplitterPanel } from "primereact/splitter";

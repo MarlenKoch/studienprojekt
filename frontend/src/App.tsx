@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import Home from "./components/Home";
-import ProjectView from "./components/ProjectView";
+import Home from "./components/Home/Home";
+import ProjectView from "./components/ProjectView/ProjectView";
 import { ProjectTimerProvider } from "./context/ProjectTimerContext";
 
 const App: React.FC = () => {
