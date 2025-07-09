@@ -327,6 +327,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   return (
     <div className={chatStyles.wrapper}>
       <Splitter
+        key={activeChat || isNewChatActive ? "open-2" : "closed-2"}
         className={chatStyles.splitter}
         style={{
           height: "100%",

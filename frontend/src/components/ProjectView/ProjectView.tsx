@@ -15,6 +15,7 @@ import { generatePDF } from "../GeneratePDF/GeneratePDF";
 
 import { useNavigate } from "react-router-dom";
 import { Splitter, SplitterPanel } from "primereact/splitter";
+import TextareaAutosize from "react-textarea-autosize";
 
 import styles from "./ProjectView.module.css";
 
@@ -451,6 +452,7 @@ const ProjectView: React.FC = () => {
       </div>
 
       <Splitter
+        key={activeParagraphId ? "open-1" : "closed-1"}
         className={styles.splitter}
         gutterSize={activeParagraphId ? 5 : 0}
         style={{
@@ -502,7 +504,7 @@ const ProjectView: React.FC = () => {
               {paragraphs.map((paragraph) => (
                 <li key={paragraph.id}>
                   <div className={styles.paragraphRow}>
-                    <textarea
+                    <TextareaAutosize
                       className={styles.textarea}
                       value={paragraph.content}
                       onChange={(e) =>
@@ -513,6 +515,7 @@ const ProjectView: React.FC = () => {
                       placeholder="Edit paragraph content"
                       onClick={() => setActiveParagraphId(paragraph.id)}
                       readOnly={project?.mode === 3}
+                      minRows={5}
                     />
                     <div className={styles.paragraphActions}>
                       <button
