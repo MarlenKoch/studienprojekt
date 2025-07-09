@@ -7,7 +7,6 @@ const Header: React.FC = () => {
       <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
         <img className={styles.logo} src="/logo-test.svg" alt="KI-Logo" />
       </Link>
-      <h2 className={styles.headerText}>Schreibassistent</h2>
     </div>
   );
 };

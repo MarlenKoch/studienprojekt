@@ -9,9 +9,6 @@ const Footer: React.FC = () => {
         <Link to="/impressum" className="white-link">
           Impressum
         </Link>
-        <Link to="/" className="white-link">
-          Warum Pizza toll ist
-        </Link>
         <Link to="/ueberUns" className="white-link">
           Über uns
         </Link>
