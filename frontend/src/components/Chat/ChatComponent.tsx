@@ -326,8 +326,27 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
 
   return (
     <div className={chatStyles.wrapper}>
-      <Splitter>
-        <SplitterPanel size={activeChat || isNewChatActive ? 50 : 100}>
+      <Splitter
+        className={chatStyles.splitter}
+        style={{
+          height: "100%",
+          width: "100%",
+        }}
+        gutterSize={activeChat || isNewChatActive ? 5 : 0}
+      >
+        <SplitterPanel
+          size={activeChat || isNewChatActive ? 50 : 100000}
+          style={{
+            height: "100%",
+            flex: activeChat || isNewChatActive ? 1 : 2,
+            minHeight: 0,
+            display: "flex",
+            flexDirection: "column",
+            // minWidth: 200,
+            width: "100%",
+          }}
+          className={chatStyles.sectionCard}
+        >
           <div className={chatStyles.heading}>
             AI Chat für Paragraph-ID: {paragraphId}
           </div>
@@ -362,9 +381,25 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
             </ul>
           </div>
         </SplitterPanel>
-        <SplitterPanel size={activeChat || isNewChatActive ? 50 : 0}>
+        <SplitterPanel
+          size={activeChat || isNewChatActive ? 1 : 0}
+          style={{
+            height: "100%",
+            flex: activeChat || isNewChatActive ? 1 : 0,
+            minHeight: 0,
+            display: "flex",
+            flexDirection: "column",
+            //minWidth: activeChat || isNewChatActive ? 450 : 0,
+            width: "100%",
+          }}
+          className={
+            activeChat || isNewChatActive
+              ? chatStyles.sectionCard
+              : chatStyles.none
+          }
+        >
           {(activeChat || isNewChatActive) && (
-            <div>
+            <>
               {/* Answers */}
               <div
                 className={chatStyles.scrollableContainer}
@@ -585,7 +620,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                   </div>
                 </div>
               )}
-            </div>
+            </>
           )}
         </SplitterPanel>
       </Splitter>

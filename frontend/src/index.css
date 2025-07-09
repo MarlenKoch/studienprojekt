@@ -41,7 +41,6 @@ button:hover {
   transform: scale(1.05);
 }
 
-
 /* Links:  */
 a {
   color: white;
@@ -53,8 +52,9 @@ a:hover {
   color: var(--accent);
 }
 
-
-
-
-
-
+main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* wichtig für inneres flex-grow */
+}

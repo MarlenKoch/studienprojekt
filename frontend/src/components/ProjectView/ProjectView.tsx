@@ -264,7 +264,7 @@ const ProjectView: React.FC = () => {
       }
       // 4. Aus localem State entfernen
       setParagraphs(paragraphs.filter((p) => p.id !== paragraphId));
-      setActiveParagraphId(null);
+      if (activeParagraphId === paragraphId) setActiveParagraphId(null);
 
       toast.success(
         "Paragraph (inkl. aller Chats und Answers) wurde gelöscht!"
@@ -434,6 +434,15 @@ const ProjectView: React.FC = () => {
           </>
         )}
         <button
+          className={styles.actionBtn}
+          onClick={() => setIsCreatingPromptJson(true)}
+        >
+          Generate Prompt PDF
+        </button>
+        <button className={styles.actionBtn} onClick={handleGeneratePDF}>
+          Generate Text PDF
+        </button>
+        <button
           className={[styles.actionBtn, styles.danger].join(" ")}
           onClick={handleDeleteProject}
         >
@@ -441,10 +450,54 @@ const ProjectView: React.FC = () => {
         </button>
       </div>
 
-      <Splitter>
-        <SplitterPanel size={activeParagraphId ? 50 : 100} minSize={10}>
-          <div className={styles.sectionCard}>
-            <h3>Paragraphs</h3>
+      <Splitter
+        className={styles.splitter}
+        gutterSize={activeParagraphId ? 5 : 0}
+        style={{
+          flex: 1,
+          minHeight: 0,
+          height: "100%",
+          width: "100%",
+          minWidth: "min-content",
+        }}
+      >
+        <SplitterPanel
+          size={activeParagraphId ? 50 : 100000}
+          // size={100000}
+          minSize={10}
+          style={{
+            height: "100%",
+            flex: activeParagraphId ? 1 : 2,
+            // minWidth: 470,
+            minHeight: 0,
+            display: "flex",
+          }}
+        >
+          <div
+            className={styles.sectionCard}
+            style={{
+              flex: 1,
+              height: "100%",
+              minHeight: 0,
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <h3>Paragraphs</h3>
+              {activeParagraphId && (
+                <button onClick={() => setActiveParagraphId(null)}>
+                  {"<"}
+                </button>
+              )}
+            </div>
+
             <ul className={styles.paragraphList}>
               {paragraphs.map((paragraph) => (
                 <li key={paragraph.id}>
@@ -522,7 +575,18 @@ const ProjectView: React.FC = () => {
             )}
           </div>
         </SplitterPanel>
-        <SplitterPanel size={activeParagraphId ? 50 : 0}>
+        <SplitterPanel
+          size={activeParagraphId ? 50 : 0}
+          // size={0}
+          // className={styles.splitterPanel}
+          style={{
+            height: "100%",
+            flex: activeParagraphId ? 1 : 0,
+            // minWidth: activeParagraphId ? 600 : 0,
+            minHeight: 0,
+            display: "flex",
+          }}
+        >
           {activeParagraphId !== null && (
             <ChatComponent
               paragraphId={activeParagraphId}
@@ -533,17 +597,7 @@ const ProjectView: React.FC = () => {
         </SplitterPanel>
       </Splitter>
 
-      <div className={styles.projectActionBar}>
-        <button
-          className={styles.actionBtn}
-          onClick={() => setIsCreatingPromptJson(true)}
-        >
-          Generate Prompt PDF
-        </button>
-        <button className={styles.actionBtn} onClick={handleGeneratePDF}>
-          Generate Text PDF
-        </button>
-      </div>
+      {/* <div className={styles.projectActionBar}></div> */}
 
       <div>
         {(project?.mode === 1 || project?.mode === 2) && (
