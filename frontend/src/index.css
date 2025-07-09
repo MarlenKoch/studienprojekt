@@ -41,6 +41,12 @@ button:hover {
   transform: scale(1.05);
 }
 
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
 /* Links:  */
 a {
   color: white;

@@ -7,11 +7,31 @@ import { toast } from "react-toastify";
 import { InfoPopUp } from "../InfoPopUp/InfoPopUp";
 import styles from "./Home.module.css";
 
+
+const modeLabel = (mode: number) => {
+  switch (mode) {
+    case 0:
+      return "normaler Modus";
+    case 1:
+      return "Schülermodus";
+    case 2:
+      return "Arbeiten schreiben";
+    case 3:
+      return "abgegeben";
+    default:
+      return "unbekannt";
+  }
+  
+};
+
+
 const Home: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [newProjectTitle, setNewProjectTitle] = useState("");
   const [newProjectMode, setNewProjectMode] = useState<number>(0); // Initiale Mode-Auswahl
   const [showInfoPopUp, setShowInfoPopUp] = useState(false); // Popup-Status
+  const [addMode, setAddMode] = useState(false);
+
 
   const {
     currentProjectId,
@@ -72,43 +92,59 @@ const Home: React.FC = () => {
   return (
     <div>
       {showInfoPopUp && <InfoPopUp onClose={() => setShowInfoPopUp(false)} />}
-      <input
-        type="text"
-        value={newProjectTitle}
-        onChange={(e) => setNewProjectTitle(e.target.value)}
-        placeholder="Enter new project title"
-        style={{ marginRight: "10px" }}
-      />
-      <select
-        value={newProjectMode}
-        onChange={(e) => setNewProjectMode(Number(e.target.value))}
-        style={{ marginRight: "10px" }}
-      >
-        <option value={0}>Mode 0</option>
-        <option value={1}>Mode 1</option>
-        <option value={2}>Mode 2</option>
-      </select>
-      <button onClick={handleAddProject}>Add Project</button>
-      <h3>Existing Projects:</h3>
-      <ul>
-        {projects.map((project) => (
-          <div className={styles.containerBox} key={project.id}>
+      <div className={styles.scrollableContainer}>
+        <ul className={styles.projectGrid}>
+          <li>
+            {!addMode ? (
+              <button className={styles.projectBox} onClick={() => setAddMode(true)}>
+                + Neues Projekt
+              </button>
+            ) : (
+              <div className={`${styles.projectBox} ${styles.addProjectBox}`}>
+                <input
+                  type="text"
+                  value={newProjectTitle}
+                  onChange={(e) => setNewProjectTitle(e.target.value)}
+                  placeholder="Projektname"
+                  className={styles.addInput}
+                />
+                <select
+                  value={newProjectMode}
+                  onChange={(e) => setNewProjectMode(Number(e.target.value))}
+                  className={styles.addSelect}
+                >
+                  <option value={0}>normaler Modus</option>
+                  <option value={1}>Schülermodus</option>
+                  <option value={2}>Arbeiten schreiben</option>
+                </select>
+                <div className={styles.buttonRow}>
+                  <button onClick={handleAddProject} className={styles.miniButton}>Erstellen</button>
+                  <button onClick={() => setAddMode(false)} className={styles.miniButton}>X</button>
+                </div>
+              </div>
+            )}
+          </li>
+          {projects.map((project) => (
             <li key={project.id}>
               <Link
+                className={styles.projectBox}
+
                 to={`/project/${project.id}`}
                 onClick={() => {
                   setCurrentProjectId(project.id);
                   setProjectMode(project.id, project.mode);
                 }}
               >
-                {project.title} (Mode: {project.mode})
+
+                {project.title}
+                <span className={styles.modeFont} style={{ fontSize: "80%", marginTop: "8px" }}>({modeLabel(project.mode)})</span>
               </Link>
             </li>
-          </div>
-        ))}
-      </ul>
+          ))}
+        </ul>
+      </div>
+
     </div>
   );
 };
-
 export default Home;
