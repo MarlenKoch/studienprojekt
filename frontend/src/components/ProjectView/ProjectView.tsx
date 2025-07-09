@@ -492,7 +492,6 @@ const ProjectView: React.FC = () => {
                 justifyContent: "space-between",
               }}
             >
-              <h3>Paragraphs</h3>
               {activeParagraphId && (
                 <button onClick={() => setActiveParagraphId(null)}>
                   {"<"}
@@ -515,7 +514,7 @@ const ProjectView: React.FC = () => {
                       placeholder="Edit paragraph content"
                       onClick={() => setActiveParagraphId(paragraph.id)}
                       readOnly={project?.mode === 3}
-                      minRows={5}
+                      minRows={7}
                     />
                     <div className={styles.paragraphActions}>
                       <button
