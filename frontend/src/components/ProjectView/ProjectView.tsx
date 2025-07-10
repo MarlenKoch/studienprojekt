@@ -509,11 +509,18 @@ const ProjectView: React.FC = () => {
                             : undefined
                         }
                         placeholder="Edit paragraph content"
-                        onClick={() => setActiveParagraphId(paragraph.id)}
+                        // onClick={() => setActiveParagraphId(paragraph.id)}
                         readOnly={project?.mode === 3}
-                        minRows={7}
+                        minRows={8}
                       />
                       <div className={styles.paragraphActions}>
+                        <button
+                          className={styles.iconBtn}
+                          onClick={() => setActiveParagraphId(paragraph.id)}
+                          title="AI Chat"
+                        >
+                          🚀
+                        </button>
                         <button
                           className={styles.iconBtn}
                           onClick={(e) => {
