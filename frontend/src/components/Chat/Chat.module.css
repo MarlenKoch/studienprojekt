@@ -35,6 +35,7 @@
   /* margin-top: 24px; */
   padding: 24px;
   height: 100%;
+  gap: 12px;
 }
 
 .scrollableContainer {

@@ -342,45 +342,69 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
             flex: activeChat || isNewChatActive ? 1 : 2,
             minHeight: 0,
             display: "flex",
-            flexDirection: "column",
+            flexDirection: "row",
             // minWidth: 200,
             width: "100%",
+            paddingRight: activeChat || isNewChatActive ? "0px" : "24px",
           }}
           className={chatStyles.sectionCard}
         >
-          <div className={chatStyles.heading}>
-            AI Chat für Paragraph-ID: {paragraphId}
+          <div
+            style={{
+              flex: 1,
+              height: "100%",
+              minHeight: 0,
+              display: "flex",
+              flexDirection: "column",
+              position: "relative",
+              gap: "12px",
+            }}
+          >
+            {(currentMode === 0 || currentMode === 1 || currentMode === 2) && (
+              <button className={chatStyles.btn} onClick={handleNewChat}>
+                + Neuer Chat
+              </button>
+            )}
+            <div className={chatStyles.scrollableContainer}>
+              <ul className={chatStyles.chatList}>
+                {chats.map((chat) => (
+                  <li
+                    key={chat.id}
+                    onClick={() => handleChatTitleClick(chat)}
+                    className={activeChat?.id === chat.id ? "active" : ""}
+                  >
+                    <span>{chat.title}</span>
+                    {currentMode === 0 && (
+                      <button
+                        className={chatStyles.iconBtn}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteChat(chat.id);
+                        }}
+                      >
+                        🗑
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-          {(currentMode === 0 || currentMode === 1 || currentMode === 2) && (
-            <button className={chatStyles.btn} onClick={handleNewChat}>
-              + Neuer Chat
+          {(activeChat || isNewChatActive) && (
+            <button
+              style={{
+                margin: 0,
+                padding: 0,
+                background: "none",
+              }}
+              onClick={() => {
+                setActiveChat(null);
+                setIsNewChatActive(false);
+              }}
+            >
+              {"<"}
             </button>
           )}
-          <h4 style={{ marginTop: "17px" }}>Gespeicherte Chats</h4>
-          <div className={chatStyles.scrollableContainer}>
-            <ul className={chatStyles.chatList}>
-              {chats.map((chat) => (
-                <li
-                  key={chat.id}
-                  onClick={() => handleChatTitleClick(chat)}
-                  className={activeChat?.id === chat.id ? "active" : ""}
-                >
-                  <span>{chat.title}</span>
-                  {currentMode === 0 && (
-                    <button
-                      className={chatStyles.iconBtn}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteChat(chat.id);
-                      }}
-                    >
-                      🗑
-                    </button>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
         </SplitterPanel>
         <SplitterPanel
           size={activeChat || isNewChatActive ? 1 : 0}

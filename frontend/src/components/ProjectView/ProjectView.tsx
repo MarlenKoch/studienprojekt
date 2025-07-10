@@ -482,98 +482,114 @@ const ProjectView: React.FC = () => {
               height: "100%",
               minHeight: 0,
               display: "flex",
-              flexDirection: "column",
+              flexDirection: "row",
+              position: "relative",
+              paddingRight: activeParagraphId ? "0px" : "8px",
             }}
           >
             <div
               style={{
+                flex: 1,
+                height: "100%",
+                minHeight: 0,
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
+                flexDirection: "column",
+                position: "relative",
               }}
             >
-              {activeParagraphId && (
-                <button onClick={() => setActiveParagraphId(null)}>
-                  {"<"}
-                </button>
+              <ul className={styles.paragraphList}>
+                {paragraphs.map((paragraph) => (
+                  <li key={paragraph.id}>
+                    <div className={styles.paragraphRow}>
+                      <TextareaAutosize
+                        className={styles.textarea}
+                        value={paragraph.content}
+                        onChange={(e) =>
+                          project?.mode !== 3
+                            ? handleParagraphChange(
+                                paragraph.id,
+                                e.target.value
+                              )
+                            : undefined
+                        }
+                        placeholder="Edit paragraph content"
+                        onClick={() => setActiveParagraphId(paragraph.id)}
+                        readOnly={project?.mode === 3}
+                        minRows={7}
+                      />
+                      <div className={styles.paragraphActions}>
+                        <button
+                          className={styles.iconBtn}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigator.clipboard.writeText(
+                              paragraph.content || ""
+                            );
+                          }}
+                          title="Copy"
+                        >
+                          📋
+                        </button>
+                        {project?.mode !== 3 && (
+                          <>
+                            <button
+                              className={styles.iconBtn}
+                              onClick={() => handleSaveParagraph(paragraph.id)}
+                            >
+                              💾
+                            </button>
+                            <button
+                              className={[styles.iconBtn, styles.danger].join(
+                                " "
+                              )}
+                              onClick={() =>
+                                handleDeleteParagraph(paragraph.id)
+                              }
+                            >
+                              🗑
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+
+              {(project?.mode === 0 ||
+                project?.mode === 1 ||
+                project?.mode === 2) && (
+                <form
+                  className={styles.addParagraphForm}
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleAddParagraph();
+                  }}
+                >
+                  <input
+                    className={styles.input}
+                    type="text"
+                    value={newParagraphContent}
+                    onChange={(e) => setNewParagraphContent(e.target.value)}
+                    placeholder="Neuen Paragraph-Inhalt eingeben"
+                  />
+                  <button className={styles.actionBtn} type="submit">
+                    Paragraph hinzufügen
+                  </button>
+                </form>
               )}
             </div>
-
-            <ul className={styles.paragraphList}>
-              {paragraphs.map((paragraph) => (
-                <li key={paragraph.id}>
-                  <div className={styles.paragraphRow}>
-                    <TextareaAutosize
-                      className={styles.textarea}
-                      value={paragraph.content}
-                      onChange={(e) =>
-                        project?.mode !== 3
-                          ? handleParagraphChange(paragraph.id, e.target.value)
-                          : undefined
-                      }
-                      placeholder="Edit paragraph content"
-                      onClick={() => setActiveParagraphId(paragraph.id)}
-                      readOnly={project?.mode === 3}
-                      minRows={7}
-                    />
-                    <div className={styles.paragraphActions}>
-                      <button
-                        className={styles.iconBtn}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigator.clipboard.writeText(
-                            paragraph.content || ""
-                          );
-                        }}
-                        title="Copy"
-                      >
-                        📋
-                      </button>
-                      {project?.mode !== 3 && (
-                        <>
-                          <button
-                            className={styles.iconBtn}
-                            onClick={() => handleSaveParagraph(paragraph.id)}
-                          >
-                            💾
-                          </button>
-                          <button
-                            className={[styles.iconBtn, styles.danger].join(
-                              " "
-                            )}
-                            onClick={() => handleDeleteParagraph(paragraph.id)}
-                          >
-                            🗑
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-
-            {(project?.mode === 0 ||
-              project?.mode === 1 ||
-              project?.mode === 2) && (
-              <form
-                className={styles.addParagraphForm}
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleAddParagraph();
+            {activeParagraphId && (
+              <button
+                style={{
+                  margin: 0,
+                  padding: 0,
+                  background: "none",
                 }}
+                onClick={() => setActiveParagraphId(null)}
               >
-                <input
-                  className={styles.input}
-                  type="text"
-                  value={newParagraphContent}
-                  onChange={(e) => setNewParagraphContent(e.target.value)}
-                  placeholder="Neuen Paragraph-Inhalt eingeben"
-                />
-                <button className={styles.actionBtn} type="submit">
-                  Paragraph hinzufügen
-                </button>
-              </form>
+                {"<"}
+              </button>
             )}
           </div>
         </SplitterPanel>

@@ -74,6 +74,7 @@
   margin-bottom: 18px;
   margin-top: 24px;
   padding: 24px;
+
   /* height: calc(100vw-600px); */
   height: 100%;
   min-height: 0;
@@ -91,8 +92,8 @@
 
 .input,
 .textarea {
-  background: #f6faff;
-  border: 1px solid #b2e6e0;
+  background: #dc45d2;
+  border: 1px solid #ff00b7;
   border-radius: 9px;
   font-size: 1rem;
   padding: 8px 11px;
@@ -113,33 +114,38 @@
   height: 100%;
 }
 .paragraphList li {
-  margin-bottom: 18px;
+  /* margin-bottom: 18px; */
   padding-bottom: 8px;
-  border-bottom: 1px solid #ececec;
+  /* border-bottom: 1px solid #000000; */
 }
 .paragraphRow {
   display: flex;
-  gap: 8px;
+  gap: 4px;
   align-items: flex-start;
 }
 .paragraphActions {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  margin-top: 5px;
+  /* border-top: #0ddcc4 solid 1px; */
+  /* border-right: #0ddcc4 solid 1px; */
+  /* box-shadow: inset 0 5px 5px -5px rgba(6, 227, 223); */
 }
 .iconBtn {
-  background: #e8f5fb;
+  background: none;
   color: #2c5282;
   border: none;
-  padding: 6px 10px;
+  padding: 0px 4px;
   border-radius: 9px;
-  font-size: 18px;
+  font-size: 30px;
   cursor: pointer;
   margin: 5px;
-  transition: background 0.16s;
+  transition: transform 0.16s;
 }
 .iconBtn:hover {
-  background: #b2e6e0;
+  /* background: #b2e6e0; */
+  transform: scale(1.2);
 }
 .scrollableContainer {
   max-height: 45vh;
