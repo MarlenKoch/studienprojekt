@@ -550,7 +550,7 @@ const ProjectView: React.FC = () => {
                               className={styles.iconBtn}
                               onClick={() => handleSaveParagraph(paragraph.id)}
                             >
-                              💾
+                              📂
                             </button>
                             <button
                               className={[styles.iconBtn, styles.danger].join(
