@@ -425,66 +425,176 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
         >
           {(activeChat || isNewChatActive) && (
             <>
-              {/* Answers */}
-              <div
-                className={chatStyles.scrollableContainer}
-                style={{ marginBottom: "13px" }}
-              >
-                {answers.map((ans, index) => (
-                  <div
-                    key={ans.id ?? `local-${index}`}
-                    className={chatStyles.answerBlock}
-                  >
-                    <div>
-                      <strong>User:</strong>{" "}
-                      <text>
-                        {
-                          taskOptions.find((option) => option.id === ans.task)
-                            ?.label
-                        }
-                        {"; "}
-                      </text>
-                      <text>{ans.userPrompt}</text>
-                      {/* //ans.task */}
-                      <br />
-                      <strong>AI:</strong>
-                      <span
-                        style={{
-                          cursor: currentMode !== 3 ? "pointer" : "default",
-                          color: currentMode !== 3 ? "#505087" : "inherit",
-                        }}
-                        onClick={
-                          currentMode !== 3
-                            ? () => {
-                                setOpenNoteAnswerIndex(index);
-                                setNoteDraft(ans.userNote || "");
-                                setUserNoteEnabledDraft(ans.userNoteEnabled);
-                              }
-                            : undefined
-                        }
-                        title={
-                          currentMode !== 3
-                            ? "Kommentar hinzufügen/bearbeiten"
-                            : ""
+              {/* Chat-Verlauf/Fragen & Antworten (WhatsApp-Style) */}
+              <div className={chatStyles.bubbleChatContainer}>
+                {answers.map((ans, i) => (
+                  <React.Fragment key={ans.id ?? `local-${i}`}>
+                    {/* User-Frage als Sprechblase (rechts) */}
+                    <div className={chatStyles.bubbleRowRight}>
+                      <div
+                        className={
+                          chatStyles.bubble + " " + chatStyles.userBubble
                         }
                       >
-                        <button
-                          className={chatStyles.iconBtn}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigator.clipboard.writeText(ans.aiAnswer || "");
-                          }}
-                        >
-                          📋
-                        </button>
-                        <div className={chatStyles.markdown}>
-                          <ReactMarkdown>{ans.aiAnswer}</ReactMarkdown>
+                        <div className={chatStyles.bubbleMeta}>
+                          <span className={chatStyles.bubbleAvatar}>👤</span>
+                          <span>
+                            {taskOptions.find((t) => t.id === ans.task)?.label}
+                          </span>
                         </div>
-                      </span>
+                        <div className={chatStyles.bubbleText}>
+                          {ans.userPrompt}
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                    {/* AI-Antwort als Sprechblase (links) */}
+                    <div className={chatStyles.bubbleRowLeft}>
+                      <div
+                        className={
+                          chatStyles.bubble + " " + chatStyles.aiBubble
+                        }
+                      >
+                        <div className={chatStyles.bubbleMeta}>
+                          <span className={chatStyles.bubbleAvatar}>🤖</span>
+                          <span>AI</span>
+                        </div>
+                        <div className={chatStyles.bubbleText}>
+                          <span
+                            style={{
+                              cursor: currentMode !== 3 ? "pointer" : "default",
+                              color: currentMode !== 3 ? "#505087" : "inherit",
+                            }}
+                            onClick={
+                              currentMode !== 3
+                                ? () => {
+                                    setOpenNoteAnswerIndex(i);
+                                    setNoteDraft(ans.userNote || "");
+                                    setUserNoteEnabledDraft(
+                                      ans.userNoteEnabled
+                                    );
+                                  }
+                                : undefined
+                            }
+                            title={
+                              currentMode !== 3
+                                ? "Kommentar hinzufügen/bearbeiten"
+                                : ""
+                            }
+                          >
+                            <button
+                              className={chatStyles.iconBtn}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(
+                                  ans.aiAnswer || ""
+                                );
+                              }}
+                            >
+                              📋
+                            </button>
+                            <div className={chatStyles.markdown}>
+                              <ReactMarkdown>{ans.aiAnswer}</ReactMarkdown>
+                            </div>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </React.Fragment>
                 ))}
               </div>
+
+              {/* Aufgaben-Auswahl und Absenden-Button */}
+              {currentMode !== 3 && (
+                <div className={chatStyles.chatControlBox}>
+                  <div className={chatStyles.controlRow}>
+                    <select
+                      className={chatStyles.taskSelector}
+                      value={task}
+                      onChange={(e) => setTask(Number(e.target.value))}
+                    >
+                      <option value="">Aufgabe wählen</option>
+                      {filteredTaskOptions.map(({ id, label }) => (
+                        <option key={id} value={id}>
+                          {label}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      className={chatStyles.sendIconBtn}
+                      onClick={handleSend}
+                      title="Anfrage senden"
+                    >
+                      <span role="img" aria-label="send">
+                        📨
+                      </span>
+                    </button>
+                  </div>
+
+                  {/* Zusätzliche Anpassungsfelder */}
+                  <div className={chatStyles.controlRowFields}>
+                    <input
+                      className={chatStyles.field}
+                      type="text"
+                      value={userPrompt}
+                      onChange={(e) => setUserPrompt(e.target.value)}
+                      placeholder="Deine Frage an die KI"
+                    />
+                    <input
+                      className={chatStyles.field}
+                      type="text"
+                      value={writingStyle}
+                      onChange={(e) => setWritingStyle(e.target.value)}
+                      placeholder="Stil (optional)"
+                    />
+                    {isShowingSynonym && (
+                      <input
+                        className={chatStyles.field + " " + chatStyles.syninput}
+                        type="text"
+                        value={synonym}
+                        onChange={(e) => setSynonym(e.target.value)}
+                        placeholder="Wort/Synonym"
+                      />
+                    )}
+                    <input
+                      className={chatStyles.field}
+                      type="text"
+                      value={userContext}
+                      onChange={(e) => setUserContext(e.target.value)}
+                      placeholder="Zusatztipp o. Kontext"
+                    />
+
+                    <select
+                      className={chatStyles.taskSelector}
+                      value={aiModel}
+                      onChange={(e) => setAiModel(e.target.value)}
+                    >
+                      {aiModelList.map((model) => (
+                        <option key={model} value={model}>
+                          {model}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {/* Chat-Titel & Speichern, ganz unten */}
+              <div className={chatStyles.saveChatRow}>
+                <input
+                  className={chatStyles.field}
+                  type="text"
+                  value={chatTitle}
+                  onChange={(e) => setChatTitle(e.target.value)}
+                  placeholder="Chat-Titel"
+                />
+                <button
+                  className={chatStyles.btn}
+                  onClick={() => saveChatWithAnswers()}
+                >
+                  Chat speichern
+                </button>
+              </div>
+
               {/* Kommentar Popup */}
               {openNoteAnswerIndex !== null && (
                 <>
@@ -567,92 +677,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                     </div>
                   </div>
                 </>
-              )}
-              {/* Felder nur wenn nicht Modus 3 */}
-              {currentMode !== 3 && (
-                <div style={{ marginTop: "20px" }}>
-                  <div className={chatStyles.chatControlRow}>
-                    {currentMode === 0 && (
-                      <input
-                        className={chatStyles.field}
-                        type="text"
-                        value={userPrompt}
-                        onChange={(e) => setUserPrompt(e.target.value)}
-                        placeholder="Deine Frage an die KI"
-                      />
-                    )}
-
-                    <label className={chatStyles.label}>Modell:</label>
-                    <select
-                      className={chatStyles.taskSelector}
-                      value={aiModel}
-                      onChange={(e) => setAiModel(e.target.value)}
-                    >
-                      {aiModelList.map((model) => (
-                        <option key={model} value={model}>
-                          {model}
-                        </option>
-                      ))}
-                    </select>
-
-                    <input
-                      className={chatStyles.field}
-                      type="text"
-                      value={writingStyle}
-                      onChange={(e) => setWritingStyle(e.target.value)}
-                      placeholder="Stil (optional)"
-                    />
-
-                    <select
-                      className={chatStyles.taskSelector}
-                      value={task}
-                      onChange={(e) => setTask(Number(e.target.value))}
-                    >
-                      <option value="">Task wählen</option>
-                      {filteredTaskOptions.map(({ id, label }) => (
-                        <option key={id} value={id}>
-                          {label}
-                        </option>
-                      ))}
-                    </select>
-                    {isShowingSynonym && (
-                      <input
-                        className={`${chatStyles.field} ${chatStyles.syninput}`}
-                        type="text"
-                        value={synonym}
-                        onChange={(e) => setSynonym(e.target.value)}
-                        placeholder="Wort/Synonym"
-                      />
-                    )}
-                    <input
-                      className={chatStyles.field}
-                      type="text"
-                      value={userContext}
-                      onChange={(e) => setUserContext(e.target.value)}
-                      placeholder="Zusatztipp o. Kontext"
-                    />
-                  </div>
-                  <div
-                    style={{ display: "flex", gap: "10px", marginTop: "14px" }}
-                  >
-                    <button className={chatStyles.btn} onClick={handleSend}>
-                      AI Antwort anfordern
-                    </button>
-                    <input
-                      className={chatStyles.field}
-                      type="text"
-                      value={chatTitle}
-                      onChange={(e) => setChatTitle(e.target.value)}
-                      placeholder="Chat-Titel"
-                    />
-                    <button
-                      className={chatStyles.btn}
-                      onClick={() => saveChatWithAnswers()}
-                    >
-                      Chat speichern
-                    </button>
-                  </div>
-                </div>
               )}
             </>
           )}
