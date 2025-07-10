@@ -436,7 +436,15 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                     className={chatStyles.answerBlock}
                   >
                     <div>
-                      <strong>User:</strong> {ans.task}
+                      <strong>User:</strong>{" "}
+                      <text>
+                        {
+                          taskOptions.find((option) => option.id === ans.task)
+                            ?.label
+                        }{" "}
+                      </text>
+                      <text>{ans.userPrompt}</text>
+                      {/* //ans.task */}
                       <br />
                       <strong>AI:</strong>
                       <span

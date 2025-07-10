@@ -313,9 +313,6 @@ const ProjectView: React.FC = () => {
       return;
     }
     try {
-      // await axios.put(`http://localhost:8000/projects/${project.id}`, {
-      //   mode: newMode,
-      // });
       setProject({ ...project, mode: newMode });
       setProjectMode(project.id, 3);
       toast.success(`Project mode set to ${newMode}.`);
@@ -465,7 +462,6 @@ const ProjectView: React.FC = () => {
       >
         <SplitterPanel
           size={activeParagraphId ? 50 : 100000}
-          // size={100000}
           minSize={10}
           style={{
             height: "100%",
@@ -559,24 +555,6 @@ const ProjectView: React.FC = () => {
               {(project?.mode === 0 ||
                 project?.mode === 1 ||
                 project?.mode === 2) && (
-                // <form
-                //   className={styles.addParagraphForm}
-                //   onSubmit={(e) => {
-                //     e.preventDefault();
-                //     handleAddParagraph();
-                //   }}
-                // >
-                //   <input
-                //     className={styles.input}
-                //     type="text"
-                //     value={newParagraphContent}
-                //     onChange={(e) => setNewParagraphContent(e.target.value)}
-                //     placeholder="Neuen Paragraph-Inhalt eingeben"
-                //   />
-                //   <button className={styles.actionBtn} type="submit">
-                //     Paragraph hinzufügen
-                //   </button>
-                // </form>
                 <button
                   className={styles.actionBtn}
                   onClick={handleAddParagraph}
@@ -601,12 +579,10 @@ const ProjectView: React.FC = () => {
         </SplitterPanel>
         <SplitterPanel
           size={activeParagraphId ? 50 : 0}
-          // size={0}
           // className={styles.splitterPanel}
           style={{
             height: "100%",
             flex: activeParagraphId ? 1 : 0,
-            // minWidth: activeParagraphId ? 600 : 0,
             minHeight: 0,
             display: "flex",
           }}
@@ -620,9 +596,6 @@ const ProjectView: React.FC = () => {
           )}
         </SplitterPanel>
       </Splitter>
-
-      {/* <div className={styles.projectActionBar}></div> */}
-
       <div>
         {(project?.mode === 1 || project?.mode === 2) && (
           <span className={styles.tag}>Im Schülermodus</span>
