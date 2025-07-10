@@ -5,7 +5,7 @@
   /* max-width: calc(100vw - 200px); */
   /* margin: 12px 12px 12px 12px; */
   padding: 24px;
-  background: #00fb1d;
+  background: var(--background);
   border-radius: 18px;
   box-shadow: 0 5px 35px rgba(40, 80, 140, 0.09);
   /* min-height: 70vh; */
@@ -19,6 +19,7 @@
   display: flex;
   /* gap: 16px; */
   align-items: center;
+  justify-content: right;
   background: #c5502d;
   padding: 14px 20px;
   border-radius: 12px;
@@ -153,6 +154,7 @@
   max-height: 45vh;
   overflow-y: auto;
   margin-top: 0;
+  box-shadow: inset;
 }
 
 .projectActionBar {

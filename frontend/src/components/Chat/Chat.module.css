@@ -6,7 +6,7 @@
   position: relative;
   min-height: 340px; */
   /* padding: 0px; */
-  background: #ceff7e;
+  background: var(--background);
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(80, 80, 120, 0.045);
   margin-bottom: 18px;
@@ -36,6 +36,7 @@
   padding: 24px;
   height: 100%;
   gap: 12px;
+  min-height: 0;
 }
 
 .scrollableContainer {
@@ -90,6 +91,12 @@
 }
 .answerBlock .markdown {
   margin-top: 5px;
+  max-width: 100%;
+}
+
+.markdown {
+  margin: 0 auto;
+  word-break: break-word;
 }
 
 .answerNotePopBg {
@@ -136,6 +143,9 @@
 
 .btn {
   background: linear-gradient(90deg, #4ccfc9, #ef476f);
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+    rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
+    rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
   color: #fff;
   border: none;
   padding: 8px 16px;
@@ -150,6 +160,9 @@
   background: #dbe3ea;
   color: #434355;
 }
+.btn:hover {
+  box-shadow: none;
+}
 
 .syninput {
   width: 144px;
@@ -159,4 +172,32 @@
 .none {
   padding: 0px;
   margin: 0px;
+}
+
+.markdown {
+  max-width: 100%;
+  overflow-x: auto;
+  word-break: break-word;
+  /* für superlange Links & Wörter! */
+}
+
+/* Für Codeblöcke und Inline-Code */
+.markdown pre,
+.markdown code {
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: pre-wrap; /* oder pre-line, je nach Geschmack */
+  word-break: break-word; /* gibt's in den meisten Browsern */
+}
+
+/* Für Tabellen */
+.markdown table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Notfalls für <a> (Links), falls die mal superlang sind */
+.markdown a {
+  word-break: break-all;
 }

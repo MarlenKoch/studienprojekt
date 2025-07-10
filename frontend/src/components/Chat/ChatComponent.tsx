@@ -441,7 +441,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                         {
                           taskOptions.find((option) => option.id === ans.task)
                             ?.label
-                        }{" "}
+                        }
+                        {"; "}
                       </text>
                       <text>{ans.userPrompt}</text>
                       {/* //ans.task */}
@@ -476,9 +477,9 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                         >
                           📋
                         </button>
-                        <span className="markdown">
+                        <div className={chatStyles.markdown}>
                           <ReactMarkdown>{ans.aiAnswer}</ReactMarkdown>
-                        </span>
+                        </div>
                       </span>
                     </div>
                   </div>

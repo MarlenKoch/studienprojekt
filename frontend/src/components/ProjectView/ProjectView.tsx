@@ -419,7 +419,16 @@ const ProjectView: React.FC = () => {
           </>
         ) : (
           <>
-            <span className={styles.topBarTitle}>{project?.title}</span>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-start",
+                flex: 1,
+                textAlign: "left",
+              }}
+            >
+              <span className={styles.topBarTitle}>{project?.title}</span>
+            </div>
             <button
               className={styles.actionBtn}
               onClick={() => {
@@ -431,21 +440,23 @@ const ProjectView: React.FC = () => {
             </button>
           </>
         )}
-        <button
-          className={styles.actionBtn}
-          onClick={() => setIsCreatingPromptJson(true)}
-        >
-          Generate Prompt PDF
-        </button>
-        <button className={styles.actionBtn} onClick={handleGeneratePDF}>
-          Generate Text PDF
-        </button>
-        <button
-          className={[styles.actionBtn, styles.danger].join(" ")}
-          onClick={handleDeleteProject}
-        >
-          Delete Project
-        </button>
+        <div>
+          <button
+            className={styles.actionBtn}
+            onClick={() => setIsCreatingPromptJson(true)}
+          >
+            Generate Prompt PDF
+          </button>
+          <button className={styles.actionBtn} onClick={handleGeneratePDF}>
+            Generate Text PDF
+          </button>
+          <button
+            className={[styles.actionBtn, styles.danger].join(" ")}
+            onClick={handleDeleteProject}
+          >
+            Delete Project
+          </button>
+        </div>
       </div>
 
       <Splitter
