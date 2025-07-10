@@ -23,7 +23,7 @@ const ProjectView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [project, setProject] = useState<Project | null>(null);
   const [paragraphs, setParagraphs] = useState<Paragraph[]>([]);
-  const [newParagraphContent, setNewParagraphContent] = useState("");
+  // const [newParagraphContent, setNewParagraphContent] = useState("");
   const [activeParagraphId, setActiveParagraphId] = useState<number | null>(
     null
   );
@@ -196,10 +196,10 @@ const ProjectView: React.FC = () => {
 
   // Handles adding a new paragraph
   const handleAddParagraph = async () => {
-    if (newParagraphContent.trim() === "") {
-      toast.warn("Please enter the paragraph content.");
-      return;
-    }
+    // if (newParagraphContent.trim() === "") {
+    //   toast.warn("Please enter the paragraph content.");
+    //   return;
+    // }
 
     if (!id) {
       toast.error("Project ID is undefined.");
@@ -209,7 +209,7 @@ const ProjectView: React.FC = () => {
     try {
       const newParagraph = {
         projectId: parseInt(id, 10),
-        content: newParagraphContent,
+        content: "",
       };
 
       const response = await axios.post<Paragraph>(
@@ -219,7 +219,7 @@ const ProjectView: React.FC = () => {
       );
 
       setParagraphs([...paragraphs, response.data]);
-      setNewParagraphContent("");
+      // setNewParagraphContent("");
       toast.success("Paragraph added!");
     } catch (error) {
       toast.error("Error creating paragraph.");
@@ -559,24 +559,30 @@ const ProjectView: React.FC = () => {
               {(project?.mode === 0 ||
                 project?.mode === 1 ||
                 project?.mode === 2) && (
-                <form
-                  className={styles.addParagraphForm}
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    handleAddParagraph();
-                  }}
+                // <form
+                //   className={styles.addParagraphForm}
+                //   onSubmit={(e) => {
+                //     e.preventDefault();
+                //     handleAddParagraph();
+                //   }}
+                // >
+                //   <input
+                //     className={styles.input}
+                //     type="text"
+                //     value={newParagraphContent}
+                //     onChange={(e) => setNewParagraphContent(e.target.value)}
+                //     placeholder="Neuen Paragraph-Inhalt eingeben"
+                //   />
+                //   <button className={styles.actionBtn} type="submit">
+                //     Paragraph hinzufügen
+                //   </button>
+                // </form>
+                <button
+                  className={styles.actionBtn}
+                  onClick={handleAddParagraph}
                 >
-                  <input
-                    className={styles.input}
-                    type="text"
-                    value={newParagraphContent}
-                    onChange={(e) => setNewParagraphContent(e.target.value)}
-                    placeholder="Neuen Paragraph-Inhalt eingeben"
-                  />
-                  <button className={styles.actionBtn} type="submit">
-                    Paragraph hinzufügen
-                  </button>
-                </form>
+                  Paragraph hinzufügen
+                </button>
               )}
             </div>
             {activeParagraphId && (
