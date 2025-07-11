@@ -205,8 +205,9 @@
   padding: 3px 14px;
   border-radius: 15px;
   font-size: 1rem;
-  margin-top: 7px;
+  /* margin-top: 7px; */
   display: inline-block;
+  margin-bottom: 12px;
 }
 
 .timerPopBg {

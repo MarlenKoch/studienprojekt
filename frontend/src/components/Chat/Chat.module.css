@@ -208,7 +208,7 @@
   gap: 12px;
   margin-bottom: 12px;
   animation: slideInUp 0.6s;
-  min-height: 200px;
+  min-height: 0px;
   overflow-y: auto;
   flex: 2;
 }

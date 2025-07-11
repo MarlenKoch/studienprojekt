@@ -12,6 +12,7 @@ import { Splitter, SplitterPanel } from "primereact/splitter";
 // import styles from "./Chat.module.css";
 import chatStyles from "./Chat.module.css";
 import Tooltip from "../Tooltip/Tooltip";
+import InfoTip from "../InfoTip/InfoTip";
 
 interface ChatComponentProps {
   paragraphId: number | null;
@@ -531,15 +532,17 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                       </select>
                     </Tooltip>
                     <Tooltip text="Anfrage an die KI senden">
-                      <button
-                        className={chatStyles.iconBtn}
-                        onClick={handleSend}
-                        title="Anfrage senden"
-                      >
-                        <span role="img" aria-label="send">
-                          🚀
-                        </span>
-                      </button>
+                      <InfoTip text="Sehr langer text zum testen jwnvwj vwrjv jrhnv rwjhv wrhgnw ehnew ewjnv ewgnew gjewh ewjng ew">
+                        <button
+                          className={chatStyles.iconBtn}
+                          onClick={handleSend}
+                          title="Anfrage senden"
+                        >
+                          <span role="img" aria-label="send">
+                            🚀
+                          </span>
+                        </button>
+                      </InfoTip>
                     </Tooltip>
                   </div>
 
