@@ -11,6 +11,7 @@
   --white: #ffffff;
   --contrast-text: #232353;
   --wuerstchen: #e6fff7;
+  --red: rgb(118, 47, 95);
   color: var(--white);
   background-color: var(--background);
   overflow: hidden;

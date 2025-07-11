@@ -13,6 +13,7 @@ import { Splitter, SplitterPanel } from "primereact/splitter";
 import chatStyles from "./Chat.module.css";
 import Tooltip from "../Tooltip/Tooltip";
 import InfoTip from "../InfoTip/InfoTip";
+import TextareaAutosize from "react-textarea-autosize";
 
 interface ChatComponentProps {
   paragraphId: number | null;
@@ -637,13 +638,14 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                   >
                     <h4>Kommentar bearbeiten</h4>
                     <Tooltip text="Kommentar-Text bearbeiten">
-                      <textarea
+                      <TextareaAutosize
                         rows={5}
+                        maxRows={13}
                         className={chatStyles.textarea}
                         style={{ width: "100%" }}
                         value={noteDraft}
                         onChange={(e) => setNoteDraft(e.target.value)}
-                        disabled={isSavingNote}
+                        disabled={isSavingNote || currentMode === 3}
                       />
                     </Tooltip>
                     <div style={{ margin: "10px 0" }}>
