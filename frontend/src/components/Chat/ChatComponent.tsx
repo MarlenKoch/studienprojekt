@@ -531,19 +531,17 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                         ))}
                       </select>
                     </Tooltip>
-                    <Tooltip text="Anfrage an die KI senden">
-                      <InfoTip text="Sehr langer text zum testen jwnvwj vwrjv jrhnv rwjhv wrhgnw ehnew ewjnv ewgnew gjewh ewjng ew">
-                        <button
-                          className={chatStyles.iconBtn}
-                          onClick={handleSend}
-                          title="Anfrage senden"
-                        >
-                          <span role="img" aria-label="send">
-                            🚀
-                          </span>
-                        </button>
-                      </InfoTip>
-                    </Tooltip>
+                    <InfoTip text="Sehr langer text zum testen jwnvwj vwrjv jrhnv rwjhv wrhgnw ehnew ewjnv ewgnew gjewh ewjng ew">
+                      <button
+                        className={chatStyles.iconBtn}
+                        onClick={handleSend}
+                        title="Anfrage senden"
+                      >
+                        <span role="img" aria-label="send">
+                          🚀
+                        </span>
+                      </button>
+                    </InfoTip>
                   </div>
 
                   {/* Zusätzliche Anpassungsfelder */}

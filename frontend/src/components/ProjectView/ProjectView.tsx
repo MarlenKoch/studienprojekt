@@ -380,14 +380,11 @@ const ProjectView: React.FC = () => {
   return (
     <div className={styles.wrapper}>
       <ToastContainer position="top-center" autoClose={2400} />
-      {/* {timeLeft !== null && (
+      {timeLeft !== null && (
         <div className={styles.tag}>
           Verbleibende Zeit: <strong>{formatTimeLeft(timeLeft)}</strong>
         </div>
-      )} */}
-      <div className={styles.tag}>
-        Verbleibende Zeit: <strong>{formatTimeLeft(3084)}</strong>
-      </div>
+      )}
 
       {/* Top-Bar: Titel + Edit/Delete */}
       <div className={styles.topBar}>
