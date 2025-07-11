@@ -75,7 +75,7 @@
   margin-bottom: 18px;
   margin-top: 24px;
   padding: 24px;
-
+  align-items: center;
   /* height: calc(100vw-600px); */
   height: 100%;
   min-height: 0;

@@ -388,35 +388,39 @@ const ProjectView: React.FC = () => {
               onChange={(e) => setEditableTitle(e.target.value)}
               style={{ fontSize: "1.5rem" }}
             />
-            <button
-              className={styles.actionBtn}
-              onClick={async () => {
-                if (!project) return;
-                try {
-                  await axios.put(
-                    `http://localhost:8000/projects/${project.id}`,
-                    { title: editableTitle }
-                  );
-                  setProject({ ...project, title: editableTitle });
+            <Tooltip text="Speichern">
+              <button
+                className={styles.actionBtn}
+                onClick={async () => {
+                  if (!project) return;
+                  try {
+                    await axios.put(
+                      `http://localhost:8000/projects/${project.id}`,
+                      { title: editableTitle }
+                    );
+                    setProject({ ...project, title: editableTitle });
+                    setIsEditingTitle(false);
+                    toast.success("Title updated!");
+                  } catch (err) {
+                    toast.error("Error updating title");
+                    console.error("Error updating title:", err);
+                  }
+                }}
+              >
+                Save
+              </button>
+            </Tooltip>
+            <Tooltip text="Abbrechen">
+              <button
+                className={[styles.actionBtn, styles.danger].join(" ")}
+                onClick={() => {
                   setIsEditingTitle(false);
-                  toast.success("Title updated!");
-                } catch (err) {
-                  toast.error("Error updating title");
-                  console.error("Error updating title:", err);
-                }
-              }}
-            >
-              Save
-            </button>
-            <button
-              className={[styles.actionBtn, styles.danger].join(" ")}
-              onClick={() => {
-                setIsEditingTitle(false);
-                setEditableTitle(project?.title ?? "");
-              }}
-            >
-              Cancel
-            </button>
+                  setEditableTitle(project?.title ?? "");
+                }}
+              >
+                Cancel
+              </button>
+            </Tooltip>
           </>
         ) : (
           <>
@@ -430,33 +434,41 @@ const ProjectView: React.FC = () => {
             >
               <span className={styles.topBarTitle}>{project?.title}</span>
             </div>
-            <button
-              className={styles.actionBtn}
-              onClick={() => {
-                setIsEditingTitle(true);
-                setEditableTitle(project?.title ?? "");
-              }}
-            >
-              Edit
-            </button>
+            <Tooltip text="Bearbeiten">
+              <button
+                className={styles.actionBtn}
+                onClick={() => {
+                  setIsEditingTitle(true);
+                  setEditableTitle(project?.title ?? "");
+                }}
+              >
+                Edit
+              </button>
+            </Tooltip>
           </>
         )}
         <div>
-          <button
-            className={styles.actionBtn}
-            onClick={() => setIsCreatingPromptJson(true)}
-          >
-            Generate Prompt PDF
-          </button>
-          <button className={styles.actionBtn} onClick={handleGeneratePDF}>
-            Generate Text PDF
-          </button>
-          <button
-            className={[styles.actionBtn, styles.danger].join(" ")}
-            onClick={handleDeleteProject}
-          >
-            Delete Project
-          </button>
+          <Tooltip text="Prompt PDF erstellen">
+            <button
+              className={styles.actionBtn}
+              onClick={() => setIsCreatingPromptJson(true)}
+            >
+              Generate Prompt PDF
+            </button>
+          </Tooltip>
+          <Tooltip text="Text PDF erstellen">
+            <button className={styles.actionBtn} onClick={handleGeneratePDF}>
+              Generate Text PDF
+            </button>
+          </Tooltip>
+          <Tooltip text="Projekt löschen">
+            <button
+              className={[styles.actionBtn, styles.danger].join(" ")}
+              onClick={handleDeleteProject}
+            >
+              Delete Project
+            </button>
+          </Tooltip>
         </div>
       </div>
 
@@ -478,7 +490,6 @@ const ProjectView: React.FC = () => {
           style={{
             height: "100%",
             flex: activeParagraphId ? 1 : 2,
-            // minWidth: 470,
             minHeight: 0,
             display: "flex",
           }}
@@ -529,28 +540,32 @@ const ProjectView: React.FC = () => {
                         minRows={8}
                       />
                       <div className={styles.paragraphActions}>
-                        <button
-                          className={styles.iconBtn}
-                          onClick={() => setActiveParagraphId(paragraph.id)}
-                          title="AI Chat"
-                        >
-                          🚀
-                        </button>
-                        <button
-                          className={styles.iconBtn}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigator.clipboard.writeText(
-                              paragraph.content || ""
-                            );
-                          }}
-                          title="Copy"
-                        >
-                          📋
-                        </button>
+                        <Tooltip text="KI Chat">
+                          <button
+                            className={styles.iconBtn}
+                            onClick={() => setActiveParagraphId(paragraph.id)}
+                            title="AI Chat"
+                          >
+                            🚀
+                          </button>
+                        </Tooltip>
+                        <Tooltip text="Kopieren">
+                          <button
+                            className={styles.iconBtn}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigator.clipboard.writeText(
+                                paragraph.content || ""
+                              );
+                            }}
+                            title="Copy"
+                          >
+                            📋
+                          </button>
+                        </Tooltip>
                         {project?.mode !== 3 && (
                           <>
-                            <Tooltip text="Speichern">
+                            <Tooltip text="Absatz speichern">
                               <button
                                 className={styles.iconBtn}
                                 onClick={() =>
@@ -560,16 +575,18 @@ const ProjectView: React.FC = () => {
                                 📂
                               </button>
                             </Tooltip>
-                            <button
-                              className={[styles.iconBtn, styles.danger].join(
-                                " "
-                              )}
-                              onClick={() =>
-                                handleDeleteParagraph(paragraph.id)
-                              }
-                            >
-                              🗑
-                            </button>
+                            <Tooltip text="Absatz löschen">
+                              <button
+                                className={[styles.iconBtn, styles.danger].join(
+                                  " "
+                                )}
+                                onClick={() =>
+                                  handleDeleteParagraph(paragraph.id)
+                                }
+                              >
+                                🗑
+                              </button>
+                            </Tooltip>
                           </>
                         )}
                       </div>
@@ -581,31 +598,36 @@ const ProjectView: React.FC = () => {
               {(project?.mode === 0 ||
                 project?.mode === 1 ||
                 project?.mode === 2) && (
-                <button
-                  className={styles.actionBtn}
-                  onClick={handleAddParagraph}
-                >
-                  Paragraph hinzufügen
-                </button>
+                <div>
+                  <Tooltip text="Absatz hinzufügen">
+                    <button
+                      className={styles.actionBtn}
+                      onClick={handleAddParagraph}
+                    >
+                      Paragraph hinzufügen
+                    </button>
+                  </Tooltip>
+                </div>
               )}
             </div>
             {activeParagraphId && (
-              <button
-                style={{
-                  margin: 0,
-                  padding: 0,
-                  background: "none",
-                }}
-                onClick={() => setActiveParagraphId(null)}
-              >
-                {"◀"}
-              </button>
+              <Tooltip text="Chats schließen">
+                <button
+                  style={{
+                    margin: 0,
+                    padding: 0,
+                    background: "none",
+                  }}
+                  onClick={() => setActiveParagraphId(null)}
+                >
+                  {"◀"}
+                </button>
+              </Tooltip>
             )}
           </div>
         </SplitterPanel>
         <SplitterPanel
           size={activeParagraphId ? 50 : 0}
-          // className={styles.splitterPanel}
           style={{
             height: "100%",
             flex: activeParagraphId ? 1 : 0,
@@ -627,15 +649,17 @@ const ProjectView: React.FC = () => {
           <span className={styles.tag}>Im Schülermodus</span>
         )}
         {project?.mode === 2 && (
-          <button
-            className={styles.actionBtn}
-            onClick={() => {
-              setIsChangingMode(true);
-              stopTimer();
-            }}
-          >
-            abgeben
-          </button>
+          <Tooltip text="Abgeben">
+            <button
+              className={styles.actionBtn}
+              onClick={() => {
+                setIsChangingMode(true);
+                stopTimer();
+              }}
+            >
+              abgeben
+            </button>
+          </Tooltip>
         )}
       </div>
 
@@ -673,12 +697,14 @@ const ProjectView: React.FC = () => {
               />{" "}
               Sekunden
             </div>
-            <button
-              className={styles.actionBtn}
-              onClick={handleStartTimerFromPopUp}
-            >
-              Starten
-            </button>
+            <Tooltip text="Timer starten">
+              <button
+                className={styles.actionBtn}
+                onClick={handleStartTimerFromPopUp}
+              >
+                Starten
+              </button>
+            </Tooltip>
           </div>
         </div>
       )}

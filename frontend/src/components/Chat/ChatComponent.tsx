@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import { Splitter, SplitterPanel } from "primereact/splitter";
 // import styles from "./Chat.module.css";
 import chatStyles from "./Chat.module.css";
+import Tooltip from "../Tooltip/Tooltip";
 
 interface ChatComponentProps {
   paragraphId: number | null;
@@ -682,30 +683,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           )}
         </SplitterPanel>
       </Splitter>
-      {/* {isInfoPopUpOpen && (
-        <>
-          <div
-            className={chatStyles.answerNotePopBg}
-            onClick={() => setIsInfoPopUpOpen(false)}
-          />
-          <div
-            className={chatStyles.answerNotePopContent}
-            style={{ background: "#f9dede" }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <p>
-              <b>AI Warnung:</b> Die AI kann auch falsche Informationen liefern.
-              Bitte eigenständig den Output prüfen.
-            </p>
-            <button
-              className={chatStyles.btn}
-              onClick={() => setIsInfoPopUpOpen(false)}
-            >
-              Schließen
-            </button>
-          </div>
-        </>
-      )} */}
     </div>
   );
 };
