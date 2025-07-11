@@ -210,6 +210,7 @@
   animation: slideInUp 0.6s;
   min-height: 200px;
   overflow-y: auto;
+  flex: 2;
 }
 
 @keyframes slideInUp {

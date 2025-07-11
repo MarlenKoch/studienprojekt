@@ -44,7 +44,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const [noteDraft, setNoteDraft] = useState("");
   const [userNoteEnabledDraft, setUserNoteEnabledDraft] = useState(false); // <-- NEU
   const [isSavingNote, setIsSavingNote] = useState(false);
-  const [isInfoPopUpOpen, setIsInfoPopUpOpen] = useState(false);
+  // const [isInfoPopUpOpen, setIsInfoPopUpOpen] = useState(false);
 
   const fetchChats = async () => {
     if (paragraphId === null) return;
@@ -402,7 +402,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                 setIsNewChatActive(false);
               }}
             >
-              {"<"}
+              {"◀"}
             </button>
           )}
         </SplitterPanel>
@@ -682,7 +682,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           )}
         </SplitterPanel>
       </Splitter>
-      {isInfoPopUpOpen && (
+      {/* {isInfoPopUpOpen && (
         <>
           <div
             className={chatStyles.answerNotePopBg}
@@ -705,7 +705,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
             </button>
           </div>
         </>
-      )}
+      )} */}
     </div>
   );
 };

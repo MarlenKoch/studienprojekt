@@ -16,6 +16,7 @@ import { generatePDF } from "../GeneratePDF/GeneratePDF";
 import { useNavigate } from "react-router-dom";
 import { Splitter, SplitterPanel } from "primereact/splitter";
 import TextareaAutosize from "react-textarea-autosize";
+import Tooltip from "../Tooltip/Tooltip";
 
 import styles from "./ProjectView.module.css";
 
@@ -520,7 +521,10 @@ const ProjectView: React.FC = () => {
                             : undefined
                         }
                         placeholder="Edit paragraph content"
-                        // onClick={() => setActiveParagraphId(paragraph.id)}
+                        onClick={() => {
+                          if (activeParagraphId)
+                            setActiveParagraphId(paragraph.id);
+                        }}
                         readOnly={project?.mode === 3}
                         minRows={8}
                       />
@@ -546,12 +550,16 @@ const ProjectView: React.FC = () => {
                         </button>
                         {project?.mode !== 3 && (
                           <>
-                            <button
-                              className={styles.iconBtn}
-                              onClick={() => handleSaveParagraph(paragraph.id)}
-                            >
-                              📂
-                            </button>
+                            <Tooltip text="Speichern">
+                              <button
+                                className={styles.iconBtn}
+                                onClick={() =>
+                                  handleSaveParagraph(paragraph.id)
+                                }
+                              >
+                                📂
+                              </button>
+                            </Tooltip>
                             <button
                               className={[styles.iconBtn, styles.danger].join(
                                 " "
@@ -590,7 +598,7 @@ const ProjectView: React.FC = () => {
                 }}
                 onClick={() => setActiveParagraphId(null)}
               >
-                {"<"}
+                {"◀"}
               </button>
             )}
           </div>
