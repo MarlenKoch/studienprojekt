@@ -126,7 +126,7 @@
 }
 
 .field {
-  border: 1px solid #ff0000;
+  /* border: 1px solid #ff0000; */
   border-radius: 7px;
   padding: 7px;
   font-size: 1rem;

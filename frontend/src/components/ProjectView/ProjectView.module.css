@@ -114,7 +114,7 @@
   padding: 14px 16px;
   border-radius: 14px;
   /* border: 1.8px solid #eeb8ed; */
-  background: var(--accent);
+  background: var(--wuerstchen);
   color: var(--contrast-text);
   font-family: inherit;
   outline: none;
@@ -125,7 +125,7 @@
 
 .textarea:focus {
   background: var(--white);
-  /* border-color: #6fcde0; */
+  border-color: red;
   box-shadow: 0 3px 18px 2px rgba(155, 200, 238, 0.14);
 }
 
@@ -200,8 +200,8 @@
 }
 
 .tag {
-  background: #e6fff7;
-  color: #16b994;
+  background: var(--wuerstchen);
+  color: var(--HeadFoodBar);
   padding: 3px 14px;
   border-radius: 15px;
   font-size: 1rem;
@@ -222,14 +222,20 @@
   z-index: 11000;
 }
 .timerPopContent {
-  background: #fff;
+  background: var(--button);
+  color: var(--white);
   padding: 30px 22px;
+  padding-top: 0px;
+  padding-bottom: 12px;
   border-radius: 18px;
   min-width: 320px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   box-shadow: 0 5px 24px rgba(80, 40, 120, 0.08);
+}
+.timerPopContent button {
+  background-color: var(--HeadFoodBar);
 }
 .timerInputs {
   display: flex;

@@ -10,6 +10,7 @@
   --accent: #a6cbbe;
   --white: #ffffff;
   --contrast-text: #232353;
+  --wuerstchen: #e6fff7;
   color: var(--white);
   background-color: var(--background);
   overflow: hidden;
