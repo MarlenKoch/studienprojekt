@@ -9,6 +9,7 @@
   --button: #89aaa9;
   --accent: #a6cbbe;
   --white: #ffffff;
+  --contrast-text: #232353;
   color: var(--white);
   background-color: var(--background);
   overflow: hidden;

@@ -94,7 +94,7 @@
 .input,
 .textarea {
   /* background: #dc45d2; */
-  border: 1px solid #ff00b7;
+  /* border: 1px solid #ff00b7; */
   border-radius: 9px;
   font-size: 1rem;
   padding: 8px 11px;
@@ -113,9 +113,9 @@
   font-size: 1.07rem;
   padding: 14px 16px;
   border-radius: 14px;
-  border: 1.8px solid #eeb8ed;
-  background: linear-gradient(97deg, #ff41ef 80%, #ffd724 140%);
-  color: #232353;
+  /* border: 1.8px solid #eeb8ed; */
+  background: var(--accent);
+  color: var(--contrast-text);
   font-family: inherit;
   outline: none;
   box-shadow: 0 3px 21px rgba(120, 200, 238, 0.065);
@@ -124,21 +124,21 @@
 }
 
 .textarea:focus {
-  background: linear-gradient(97deg, #d3ad05 44%, #f88f0e 150%);
-  border-color: #6fcde0;
+  background: var(--white);
+  /* border-color: #6fcde0; */
   box-shadow: 0 3px 18px 2px rgba(155, 200, 238, 0.14);
 }
 
 .textarea[readonly] {
-  background: #f7f7f9;
-  color: #aaa;
-  cursor: not-allowed;
-  border-style: dashed;
-  opacity: 0.95;
+  background: var(--white);
+  /* color: #aaa; */
+  /* cursor: not-allowed; */
+  /* border-style: dashed; */
+  /* opacity: 0.95; */
 }
 
 .textarea::placeholder {
-  color: #c39ecb;
+  color: var(--box);
   opacity: 0.85;
   font-style: italic;
 }

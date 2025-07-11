@@ -368,12 +368,21 @@ const ProjectView: React.FC = () => {
     toast.success("PDF wurde erstellt!");
   };
 
+  function formatTimeLeft(seconds: number) {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return [h ? `${h}h` : null, m ? `${m}m` : null, `${s}s`]
+      .filter(Boolean)
+      .join(" ");
+  }
+
   return (
     <div className={styles.wrapper}>
       <ToastContainer position="top-center" autoClose={2400} />
       {timeLeft !== null && (
         <div className={styles.tag}>
-          Verbleibende Zeit: <strong>{timeLeft}s</strong>
+          Verbleibende Zeit: <strong>{formatTimeLeft(timeLeft)}</strong>
         </div>
       )}
 
@@ -432,7 +441,12 @@ const ProjectView: React.FC = () => {
                 textAlign: "left",
               }}
             >
-              <span className={styles.topBarTitle}>{project?.title}</span>
+              <div>
+                <span className={styles.topBarTitle}>{project?.title}</span>
+                {(project?.mode === 1 || project?.mode === 2) && (
+                  <span className={styles.tag}>Im Schülermodus</span>
+                )}
+              </div>
             </div>
             <Tooltip text="Bearbeiten">
               <button
@@ -469,6 +483,20 @@ const ProjectView: React.FC = () => {
               Delete Project
             </button>
           </Tooltip>
+
+          {project?.mode === 2 && (
+            <Tooltip text="Abgeben">
+              <button
+                className={styles.actionBtn}
+                onClick={() => {
+                  setIsChangingMode(true);
+                  stopTimer();
+                }}
+              >
+                abgeben
+              </button>
+            </Tooltip>
+          )}
         </div>
       </div>
 
@@ -644,24 +672,6 @@ const ProjectView: React.FC = () => {
           )}
         </SplitterPanel>
       </Splitter>
-      <div>
-        {(project?.mode === 1 || project?.mode === 2) && (
-          <span className={styles.tag}>Im Schülermodus</span>
-        )}
-        {project?.mode === 2 && (
-          <Tooltip text="Abgeben">
-            <button
-              className={styles.actionBtn}
-              onClick={() => {
-                setIsChangingMode(true);
-                stopTimer();
-              }}
-            >
-              abgeben
-            </button>
-          </Tooltip>
-        )}
-      </div>
 
       {/* TIMER POPUP */}
       {showTimerPopup && (
