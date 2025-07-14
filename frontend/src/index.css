@@ -9,6 +9,9 @@
   --button: #89aaa9;
   --accent: #a6cbbe;
   --white: #ffffff;
+  --contrast-text: #232353;
+  --wuerstchen: #e6fff7;
+  --red: rgb(118, 47, 95);
   color: var(--white);
   background-color: var(--background);
   overflow: hidden;
@@ -58,5 +61,9 @@ a:hover {
   color: var(--accent);
 }
 
-
-
+main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* wichtig für inneres flex-grow */
+}

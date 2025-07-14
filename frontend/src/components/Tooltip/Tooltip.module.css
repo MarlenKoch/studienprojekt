@@ -1,0 +1,22 @@
+.tooltipContainer {
+  position: relative;
+  display: inline-block;
+}
+
+/* Tooltip wird per Portal völlig außerhalb, daher fixed! */
+.tooltipTextPortal {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  /* Styling wie gehabt: */
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 4px;
+  padding: 4px 8px;
+  z-index: 9999;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.1s;
+}

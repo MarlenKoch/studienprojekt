@@ -1,11 +1,391 @@
+.wrapper {
+  /* margin-top: 10px;
+  border-radius: 14px;
+  padding: 16px;
+  background: #f6fcff;
+  position: relative;
+  min-height: 340px; */
+  /* padding: 0px; */
+  background: var(--background);
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(80, 80, 120, 0.045);
+  margin-bottom: 18px;
+  margin-top: 24px;
+  width: 100%;
+  height: 100%;
+}
+
+.heading {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.splitter {
+  /* height: calc(100vh - 275px); */
+  height: 100%;
+  flex: 1;
+  min-height: 0;
+}
+
+.sectionCard {
+  background: var(--box);
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(80, 80, 120, 0.045);
+  /* margin-bottom: 18px; */
+  /* margin-top: 24px; */
+  padding: 24px;
+  height: 100%;
+  /* gap: 12px; */
+  min-height: 0;
+}
+
 .scrollableContainer {
+  /* max-height: calc(100vh - 700px); */
+  /* overflow-y: auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(44, 100, 180, 0.045);
+  padding: 8px 0 8px 8px;
+  margin-bottom: 15px; */
+
   overflow-y: auto;
-  overflow-x: hidden;
-  max-height: calc(100vh - 700px);
-  font-size: large;
-  padding: 0;
-  margin: 0;
-  outline-width: 1px;
-  outline-color: deeppink;
-  outline-style: solid;
+  /* background: #3e0629; */
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(44, 100, 180, 0.045);
+  /* padding: 8px 0 8px 8px; */
+  margin-bottom: 15px;
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.chatList li {
+  margin-bottom: 11px;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: background 0.14s;
+}
+.chatList li:hover,
+.chatList li.active {
+  background: #6fcde0;
+  font-weight: 500;
+}
+
+.chatControlRow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+  margin-top: 12px;
+}
+
+.answerBlock {
+  background: #000000;
+  border-radius: 11px;
+  padding: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 6px rgba(44, 44, 99, 0.04);
+  font-size: 0.99rem;
+  position: relative;
+}
+.answerBlock .markdown {
+  margin-top: 5px;
+  max-width: 100%;
+}
+
+.markdown {
+  margin: 0 auto;
+  word-break: break-word;
+}
+
+.answerNotePopBg {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.16);
+  z-index: 9000;
+}
+.answerNotePopContent {
+  position: fixed;
+  top: 32%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--button);
+  /* border: 2px solid #be91fa; */
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(141, 89, 255, 0.13);
+  z-index: 9999;
+  padding: 24px;
+  /* min-width: 310px; */
+}
+
+.label {
+  font-size: 1rem;
+  margin-right: 7px;
+  font-weight: 450;
+}
+
+.field {
+  /* border: 1px solid #ff0000; */
+  border-radius: 7px;
+  padding: 7px;
+  font-size: 1rem;
+}
+
+.taskSelector {
+  margin-left: 7px;
+  padding: 7px 11px;
+  border-radius: 7px;
+  border: 1px solid #b3b3b3;
+  font-size: 1rem;
+  background: #fff;
+}
+
+.btn {
+  background: var(--wuerstchen);
+  /* box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+    rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
+    rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset; */
+  color: var(--contrast-text);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 23px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin: 4px 0;
+  transition: background 0.23s;
+}
+.btn.cancel {
+  background: var(--HeadFoodBar);
+  color: var(--white);
+}
+.btn:hover {
+  box-shadow: none;
+}
+
+.syninput {
+  width: 144px;
+  background: var(--white);
+}
+
+.none {
+  padding: 0px;
+  margin: 0px;
+}
+
+.markdown {
+  max-width: 100%;
+  overflow-x: auto;
+  word-break: break-word;
+  /* für superlange Links & Wörter! */
+}
+
+/* Für Codeblöcke und Inline-Code */
+.markdown pre,
+.markdown code {
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: pre-wrap; /* oder pre-line, je nach Geschmack */
+  word-break: break-word; /* gibt's in den meisten Browsern */
+}
+
+/* Für Tabellen */
+.markdown table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Notfalls für <a> (Links), falls die mal superlang sind */
+.markdown a {
+  word-break: break-all;
+}
+
+.bubbleChatContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 12px;
+  animation: slideInUp 0.6s;
+  min-height: 0px;
+  overflow-y: auto;
+  flex: 2;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bubbleRowRight,
+.bubbleRowLeft {
+  display: flex;
+  width: 100%;
+}
+.bubbleRowRight {
+  justify-content: flex-end;
+}
+.bubbleRowLeft {
+  justify-content: flex-start;
+}
+
+.bubble {
+  max-width: 70%;
+  background: #f1f7fa;
+  border-radius: 17px;
+  box-shadow: 0 2px 10px rgba(44, 80, 160, 0.08);
+  padding: 12px 16px 12px 16px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  animation: popIn 0.44s;
+  min-width: 80px;
+  margin-bottom: 0px;
+  word-break: break-word;
+}
+@keyframes popIn {
+  from {
+    opacity: 0;
+    scale: 0.96;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+.userBubble {
+  align-items: flex-end;
+  background: var(--accent);
+  color: var(--contrast-text);
+  border-bottom-right-radius: 3px;
+  margin-left: 1%;
+}
+.aiBubble {
+  align-items: flex-start;
+  background: var(--HeadFoodBar);
+  /* color: #00ff0d; */
+  border-bottom-left-radius: 3px;
+  margin-right: 12%;
+}
+.bubbleMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.91rem;
+  font-weight: 400;
+  opacity: 0.82;
+  margin-bottom: 2px;
+}
+.bubbleAvatar {
+  font-size: 1.1rem;
+}
+.bubbleText {
+  word-break: break-word;
+  font-size: 1.07rem;
+  margin-top: 1px;
+}
+
+.chatControlBox {
+  background: transparent;
+  padding: 8px 0 0 0;
+  margin-bottom: 12px;
+  /* Moderne slideIn-Animation optional */
+  animation: controlFadeIn 0.7s;
+}
+
+@keyframes controlFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.controlRow,
+.controlRowFields {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.controlRow {
+  justify-content: flex-start;
+}
+.controlRowFields {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.iconBtn {
+  background: none;
+  color: #2c5282;
+  border: none;
+  padding: 0px 4px;
+  border-radius: 9px;
+  font-size: 30px;
+  cursor: pointer;
+  margin: 0px;
+  margin-left: 5px;
+  margin-right: 5px;
+  transition: transform 0.16s;
+}
+.iconBtn:hover {
+  /* background: #b2e6e0; */
+  transform: scale(1.2);
+}
+
+.saveChatRow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 13px;
+  border-top: 1px solid #edecef;
+}
+
+@media (max-width: 800px) {
+  .bubble {
+    max-width: 87%;
+    font-size: 1rem;
+  }
+}
+
+.textarea {
+  width: 100%;
+  min-height: 120px;
+  font-size: 1.07rem;
+  padding: 14px 16px;
+  border-radius: 14px;
+  /* border: 1.8px solid #eeb8ed; */
+  background: var(--wuerstchen);
+  color: var(--contrast-text);
+  font-family: inherit;
+  outline: none;
+  box-shadow: 0 3px 21px rgba(120, 200, 238, 0.065);
+  resize: none;
+  transition: background 0.28s, box-shadow 0.18s, border-color 0.2s;
+}
+
+.textarea:focus {
+  background: var(--white);
+  border-color: red;
+  box-shadow: 0 3px 18px 2px rgba(155, 200, 238, 0.14);
+}
+
+.textarea[readonly] {
+  background: var(--white);
+  /* color: #aaa; */
+  /* cursor: not-allowed; */
+  /* border-style: dashed; */
+  /* opacity: 0.95; */
 }
