@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import autoTable, { HookData } from "jspdf-autotable";
-import { TableData } from "../types/TableData";
+import { TableData } from "../../types/TableData";
 import { toast } from "react-toastify";
 
 export const generatePDF = async (
