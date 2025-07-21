@@ -117,3 +117,16 @@ a.projectBox {
   margin-top: 8px;
   opacity: 0.85; /* Optional für dezenteren Look */
 }
+
+.title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5; /* Anzahl erlaubter Zeilen */
+  line-clamp: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word; /* Lange Wörter umbrechen */
+  white-space: normal;
+  padding: 12px;
+  padding-bottom: 0;
+}

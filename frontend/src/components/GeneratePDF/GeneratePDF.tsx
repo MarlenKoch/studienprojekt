@@ -59,7 +59,7 @@ export const generatePDF = async (
       ]),
       startY: 120,
       styles: { fontSize: 10, cellPadding: 5 },
-      headStyles: { fillColor: [191, 170, 5] }, ////HIER FARBE ÄNDERNN
+      headStyles: { fillColor: [95, 106, 114] }, ////HIER FARBE ÄNDERNN
       theme: "striped",
       margin: { left: 30, right: 30, top: 50 },
       didDrawPage: (data: HookData) => {

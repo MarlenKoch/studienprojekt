@@ -147,7 +147,7 @@ const ProjectView: React.FC = () => {
           generatePDF(
             JSON.stringify(response.data),
             `Promptverzeichnis ${project?.title ?? "Projekt"}`,
-            "/logo-test.png"
+            "/logo.png"
           );
           toast.success("PDF generated and downloaded!");
         } catch (error) {
@@ -283,12 +283,12 @@ const ProjectView: React.FC = () => {
       return;
     }
 
-    if (
-      !window.confirm(
-        "Möchtest du das Projekt und alle Paragraphen wirklich löschen?"
-      )
-    )
-      return;
+    // if (
+    //   !window.confirm(
+    //     "Möchtest du das Projekt und alle Paragraphen wirklich löschen?"
+    //   )
+    // )
+    //   return;
 
     try {
       // 2. Projekt löschen
@@ -390,46 +390,55 @@ const ProjectView: React.FC = () => {
       <div className={styles.topBar}>
         {isEditingTitle ? (
           <>
-            <input
-              className={styles.input}
-              type="text"
-              value={editableTitle}
-              onChange={(e) => setEditableTitle(e.target.value)}
-              style={{ fontSize: "1.5rem" }}
-            />
-            <Tooltip text="Speichern">
-              <button
-                className={styles.actionBtn}
-                onClick={async () => {
-                  if (!project) return;
-                  try {
-                    await axios.put(
-                      `http://localhost:8000/projects/${project.id}`,
-                      { title: editableTitle }
-                    );
-                    setProject({ ...project, title: editableTitle });
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-start",
+                flex: 1,
+                textAlign: "left",
+              }}
+            >
+              <input
+                className={styles.input}
+                type="text"
+                value={editableTitle}
+                onChange={(e) => setEditableTitle(e.target.value)}
+                style={{ fontSize: "1.5rem" }}
+              />
+              <Tooltip text="Speichern">
+                <button
+                  className={styles.actionBtn}
+                  onClick={async () => {
+                    if (!project) return;
+                    try {
+                      await axios.put(
+                        `http://localhost:8000/projects/${project.id}`,
+                        { title: editableTitle }
+                      );
+                      setProject({ ...project, title: editableTitle });
+                      setIsEditingTitle(false);
+                      toast.success("Title updated!");
+                    } catch (err) {
+                      toast.error("Error updating title");
+                      console.error("Error updating title:", err);
+                    }
+                  }}
+                >
+                  Save
+                </button>
+              </Tooltip>
+              <Tooltip text="Abbrechen">
+                <button
+                  className={[styles.actionBtn, styles.danger].join(" ")}
+                  onClick={() => {
                     setIsEditingTitle(false);
-                    toast.success("Title updated!");
-                  } catch (err) {
-                    toast.error("Error updating title");
-                    console.error("Error updating title:", err);
-                  }
-                }}
-              >
-                Save
-              </button>
-            </Tooltip>
-            <Tooltip text="Abbrechen">
-              <button
-                className={[styles.actionBtn, styles.danger].join(" ")}
-                onClick={() => {
-                  setIsEditingTitle(false);
-                  setEditableTitle(project?.title ?? "");
-                }}
-              >
-                Cancel
-              </button>
-            </Tooltip>
+                    setEditableTitle(project?.title ?? "");
+                  }}
+                >
+                  Cancel
+                </button>
+              </Tooltip>
+            </div>
           </>
         ) : (
           <>
@@ -559,6 +568,7 @@ const ProjectView: React.FC = () => {
                               )
                             : undefined
                         }
+                        onBlur={() => handleSaveParagraph(paragraph.id)}
                         placeholder="Edit paragraph content"
                         onClick={() => {
                           if (activeParagraphId)
