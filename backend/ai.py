@@ -104,7 +104,7 @@ async def pullModel(model_name: str = Body(..., embed=True)):
 REQUIRED_MODELS = ["gemma3:12b", "jobautomation/OpenEuroLLM-German:latest", "mayflowergmbh/wiederchat:latest" ]
 
 @app.get("/requiredAiModels")
-async def getModels():
+async def checkModels():
     async with httpx.AsyncClient() as client:
         try:
             resp = await client.get("http://localhost:11434/api/tags")

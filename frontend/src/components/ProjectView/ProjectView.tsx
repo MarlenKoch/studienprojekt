@@ -168,7 +168,7 @@ const ProjectView: React.FC = () => {
   useEffect(() => {
     const fetchOllamaModelNames = async () => {
       try {
-        const response = await fetch("http://localhost:8000/aimodels");
+        const response = await fetch("http://localhost:8000/aiModels");
 
         if (!response.ok) {
           throw new Error(`Error fetching model names: ${response.statusText}`);
