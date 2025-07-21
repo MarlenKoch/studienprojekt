@@ -1,0 +1,84 @@
+.container {
+  max-width: 450px;
+  margin: 32px auto;
+  padding: 24px 20px;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #ececec;
+  box-shadow: 0 2px 8px rgba(30,30,90,0.08);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.label {
+  font-weight: 600;
+}
+
+.input {
+  padding: 9px 10px;
+  font-size: 1rem;
+  border: 1px solid #bbb;
+  border-radius: 5px;
+}
+
+.button {
+  background: #2450a8;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 9px 0;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.15s;
+}
+
+.button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.statusOk {
+  color: #267b1a;
+  margin: 18px 0 10px 0;
+  font-weight: bold;
+}
+
+.statusError {
+  color: #ce2020;
+  margin: 18px 0 10px 0;
+  font-weight: bold;
+}
+
+.loading {
+  color: #2450a8;
+  margin: 18px 0 10px 0;
+  font-style: italic;
+}
+
+.infoSection {
+  margin-top: 36px;
+}
+
+.infoCard {
+  background: #f4f7fb;
+  border-radius: 7px;
+  padding: 13px 15px;
+  margin: 10px 0;
+}
+
+.infoTitle {
+  font-size: 1.07rem;
+  font-weight: bold;
+}
+
+.infoText {
+  font-size: 0.97rem;
+  margin-top: 2px;
+  color: #333;
+}

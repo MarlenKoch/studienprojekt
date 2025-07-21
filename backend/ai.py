@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from ollama import chat
 from aiSchemas import ContextInputs, UserPromptInputs, AiResponse, AiRequest
 import httpx
+import json
 
 
 app = FastAPI()
@@ -84,20 +85,33 @@ async def getModels():
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
 
-@app.get("/pullAiModel")
+@app.post("/pullAiModel")
 async def pullModel(model_name: str = Body(..., embed=True)):
     try:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=300) as client:
             response = await client.post(
                 "http://localhost:11434/api/pull",
                 json={"name": model_name}
             )
             response.raise_for_status()
+            body = response.text 
+            print(body)
+            for line in body.splitlines():
+                if not line.strip():
+                    continue
+                try:
+                    data = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if 'error' in data:
+                    raise HTTPException(status_code=400, detail=data["error"])
             return {"status": "success", "detail": f"Model '{model_name}' wird geladen..."}
     except httpx.HTTPStatusError as exc:
         raise HTTPException(status_code=exc.response.status_code, detail=f"{exc.response.text}")
+        # raise HTTPException(status_code=333, detail="Python ist blöd, der schuppen ist kaputt und ich will nach hause")
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
+
     
     
 
