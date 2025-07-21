@@ -6,6 +6,7 @@ import { useProjectTimer } from "../../context/ProjectTimerContext";
 import { toast } from "react-toastify";
 import { InfoPopUp } from "../InfoPopUp/InfoPopUp";
 import styles from "./Home.module.css";
+import Tooltip from "../Tooltip/Tooltip";
 
 const modeLabel = (mode: number) => {
   switch (mode) {
@@ -144,7 +145,9 @@ const Home: React.FC = () => {
                 }}
               >
                 {/* {project.title} */}
-                <div className={styles.title}>{project.title}</div>
+                <Tooltip text={project.title}>
+                  <div className={styles.title}>{project.title}</div>
+                </Tooltip>
                 <span
                   className={styles.modeFont}
                   style={{ fontSize: "80%", marginTop: "8px" }}

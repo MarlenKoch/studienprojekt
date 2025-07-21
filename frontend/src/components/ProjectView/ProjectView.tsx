@@ -451,7 +451,9 @@ const ProjectView: React.FC = () => {
               }}
             >
               <div>
-                <span className={styles.topBarTitle}>{project?.title}</span>
+                <Tooltip text={project?.title || ""}>
+                  <span className={styles.topBarTitle}>{project?.title}</span>
+                </Tooltip>
                 {(project?.mode === 1 || project?.mode === 2) && (
                   <span className={styles.tag}>Im Schülermodus</span>
                 )}

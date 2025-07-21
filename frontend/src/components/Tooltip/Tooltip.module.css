@@ -3,7 +3,6 @@
   display: inline-block;
 }
 
-/* Tooltip wird per Portal völlig außerhalb, daher fixed! */
 .tooltipTextPortal {
   position: absolute;
   transform: translate(-50%, -100%);
@@ -19,4 +18,17 @@
   pointer-events: none;
   opacity: 1;
   transition: opacity 0.1s;
+}
+
+.title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  /* -webkit-line-clamp: 5; Anzahl erlaubter Zeilen */
+  /* line-clamp: 0; */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word; /* Lange Wörter umbrechen */
+  white-space: normal;
+  /* padding: 12px; */
+  /* padding-bottom: 0; */
 }
