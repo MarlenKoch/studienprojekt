@@ -47,7 +47,7 @@ const Tooltip: React.FC<TooltipProps> = ({ children, text }) => {
               left: coords.left,
             }}
           >
-            {text}
+            <div className={styles.title}>{text}</div>
           </span>,
           document.body
         )}
