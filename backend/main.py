@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from db import Base, engine
 from routers import chats, paragraphs, projects, answers
 from sourceDocument import generateSourceDocument
-from ai import aiChat, getModels
+from ai import aiChat, getModels, pullModel
 
 
 Base.metadata.create_all(bind=engine)
@@ -35,3 +35,6 @@ app.add_api_route(
     methods=["GET"],
     tags=["promptverzeichnis"],
 )
+
+app.add_api_route("/pullAiModel", pullModel, methods=["POST"],tags=["ai"])
+app.add_api_route("/requiredAiModels", getModels, methods=["GET"],tags=["ai"])
