@@ -9,7 +9,6 @@ import { useProjectTimer } from "../../context/ProjectTimerContext";
 import Switch from "react-switch";
 import { toast } from "react-toastify";
 import { Splitter, SplitterPanel } from "primereact/splitter";
-// import styles from "./Chat.module.css";
 import chatStyles from "./Chat.module.css";
 import Tooltip from "../Tooltip/Tooltip";
 import InfoTip from "../InfoTip/InfoTip";
@@ -509,17 +508,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                             style={{
                               cursor: currentMode !== 3 ? "pointer" : "default",
                             }}
-                            // onClick={
-                            //   currentMode !== 3
-                            //     ? () => {
-                            //         setOpenNoteAnswerIndex(i);
-                            //         setNoteDraft(ans.userNote || "");
-                            //         setUserNoteEnabledDraft(
-                            //           ans.userNoteEnabled
-                            //         );
-                            //       }
-                            //     : undefined
-                            // }
                             title={
                               currentMode !== 3
                                 ? "Kommentar hinzufügen/bearbeiten"
@@ -556,12 +544,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                       </select>
                     </Tooltip>
                     <InfoTip text="Sehr langer text zum testen jwnvwj vwrjv jrhnv rwjhv wrhgnw ehnew ewjnv ewgnew gjewh ewjng ew TODO">
-                      {/* <button
-                        className={chatStyles.iconBtn}
-                        onClick={handleSend}
-                      >
-                        <span role="img">🚀</span>
-                      </button> */}
                       <button
                         className={chatStyles.sendBtn}
                         onClick={handleSend}
@@ -637,27 +619,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                   </div>
                 </div>
               )}
-
-              {/* Chat-Titel & Speichern, ganz unten */}
-              {/* <div className={chatStyles.saveChatRow}>
-                <Tooltip text="Chat-Titel bearbeiten">
-                  <input
-                    className={chatStyles.field}
-                    type="text"
-                    value={chatTitle}
-                    onChange={(e) => setChatTitle(e.target.value)}
-                    placeholder="Chat-Titel"
-                  />
-                </Tooltip>
-                <Tooltip text="Chat speichern">
-                  <button
-                    className={chatStyles.btn}
-                    onClick={() => saveChatWithAnswers()}
-                  >
-                    Chat speichern
-                  </button>
-                </Tooltip>
-              </div> */}
 
               <div className={chatStyles.saveChatRow}>
                 {isEditingChatTitle ? (

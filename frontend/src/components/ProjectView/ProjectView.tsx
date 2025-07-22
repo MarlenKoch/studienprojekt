@@ -6,9 +6,6 @@ import { Paragraph } from "../../types/Paragraph";
 import ChatComponent from "../Chat/ChatComponent";
 import { useProjectTimer } from "../../context/ProjectTimerContext";
 import "jspdf-autotable";
-// import jsPDF from "jspdf";
-
-//import primereact from "primereact";
 
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -26,14 +23,10 @@ const ProjectView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [project, setProject] = useState<Project | null>(null);
   const [paragraphs, setParagraphs] = useState<Paragraph[]>([]);
-  // const [newParagraphContent, setNewParagraphContent] = useState("");
   const [activeParagraphId, setActiveParagraphId] = useState<number | null>(
     null
   );
   const [aiModelList, setaiModelList] = useState<string[]>([]);
-  //const [promptsJson, setPromptsJson] = useState<string>("");
-  // const [isCreatingPromptJson, setIsCreatingPromptJson] =
-  //   useState<boolean>(false);
   const navigate = useNavigate();
   // Timer Popup
   const [showTimerPopup, setShowTimerPopup] = useState(false);
@@ -138,36 +131,6 @@ const ProjectView: React.FC = () => {
     }
   }, [isChangingMode]);
 
-  // Fetches prompts and generates PDF when requested.
-  // useEffect(() => {
-  //   if (!isCreatingPromptJson) return;
-  //   const getPromptsGeneratePDF = async () => {
-  //     if (project?.id !== undefined) {
-  //       try {
-  //         const response = await axios.get<string>(
-  //           `http://localhost:8000/promptverzeichnis/`,
-  //           { params: { projectId: project.id } }
-  //         );
-  //         generatePDF(
-  //           JSON.stringify(response.data),
-  //           `Promptverzeichnis ${project?.title ?? "Projekt"}`,
-  //           "/logo.png"
-  //         );
-  //         toast.success("PDF generated and downloaded!");
-  //       } catch (error) {
-  //         toast.error("Error fetching chats for PDF");
-  //         console.error("Error fetching chats:", error);
-  //       }
-  //     } else {
-  //       if (isCreatingPromptJson === true) {
-  //         toast.error("Project ID is undefined");
-  //       }
-  //     }
-  //   };
-  //   setIsCreatingPromptJson(false);
-  //   getPromptsGeneratePDF();
-  // }, [isCreatingPromptJson]);
-
   const getPromptsGeneratePDF = async () => {
     if (project?.id !== undefined) {
       try {
@@ -187,9 +150,6 @@ const ProjectView: React.FC = () => {
         console.error("Error fetching chats:", error);
       }
     } else {
-      // if (isCreatingPromptJson === true) {
-      //   toast.error("Project ID is undefined");
-      // }
       toast.error("Project ID is undefined");
     }
   };
@@ -227,11 +187,6 @@ const ProjectView: React.FC = () => {
 
   // Handles adding a new paragraph
   const handleAddParagraph = async () => {
-    // if (newParagraphContent.trim() === "") {
-    //   toast.warn("Please enter the paragraph content.");
-    //   return;
-    // }
-
     if (!id) {
       toast.error("Project ID is undefined.");
       return;
@@ -312,13 +267,6 @@ const ProjectView: React.FC = () => {
       toast.error("Kein Projekt geladen.");
       return;
     }
-
-    // if (
-    //   !window.confirm(
-    //     "Möchtest du das Projekt und alle Paragraphen wirklich löschen?"
-    //   )
-    // )
-    //   return;
 
     try {
       // 2. Projekt löschen
