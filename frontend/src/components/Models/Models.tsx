@@ -119,29 +119,60 @@ export const Models: React.FC = () => {
             {expandedIndex1 === i && (
               <div className={styles.modelDescription}>{m.description}</div>
             )}
-          </div>
-        ))}
-      </div>
-      <h2>Weitere Modelle</h2>
-      <div className={styles.modelList}>
-        {MODELS2.map((m, i) => (
-          <div
-            key={m.name}
-            className={`${styles.modelCard} ${
-              expandedIndex2 === i ? styles.active : ""
-            }`}
-            onClick={() => handleExpand2(i)}
-            tabIndex={0}
-          >
-            <div className={styles.modelName}>{m.name}</div>
-            {expandedIndex2 === i && (
-              <div className={styles.modelDescription}>{m.description}</div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+
+            <div>
+                <form onSubmit={handlePull} className={styles.formGroup}>
+                    <input
+                        id="modelInput"
+                        type="text"
+                        value={modelName}
+                        onChange={(e) => setModelName(e.target.value)}
+                        className={styles.inputBox}
+                        placeholder="Modellname eingeben"
+                        autoComplete="off"
+                    />
+                    <InfoTip text="Das Modell wird über die Ollama API auf deinem Gerät installiert und steht dann lokal zur Verfügung. Je nach Größe des Modells kann das Herunterladen eine Weile dauern. Eine Übersicht unterschiedlicher Modelle findest du auch auf der offiziellen Ollama Seite.">
+                    <button type="submit">
+                        Modell herunterladen
+                    </button>
+                    </InfoTip>
+                </form>
+            </div>
+
+            <h2>vorinstallierte Modelle</h2>
+            <div className={styles.modelList}>
+                {MODELS1.map((m, i) => (
+                    <div
+                        key={m.name}
+                        className={`${styles.modelCard} ${expandedIndex1 === i ? styles.active : ""}`}
+                        onClick={() => handleExpand1(i)}
+                        tabIndex={0}
+                    >
+                        <div className={styles.modelName}>{m.name}</div>
+                        {expandedIndex1 === i && (
+                            <div className={styles.modelDescription}>{m.description}</div>
+                        )}
+                    </div>
+                ))}
+            </div>
+            <h2>Weitere Modelle</h2>
+            <div className={styles.modelList}>
+                {MODELS2.map((m, i) => (
+                    <div
+                        key={m.name}
+                        className={`${styles.modelCard} ${expandedIndex2 === i ? styles.active : ""}`}
+                        onClick={() => handleExpand2(i)}
+                        tabIndex={0}
+                    >
+                        <div className={styles.modelName}>{m.name}</div>
+                        {expandedIndex2 === i && (
+                            <div className={styles.modelDescription}>{m.description}</div>
+                        )}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
 };
 
 export default Models;

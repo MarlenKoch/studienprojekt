@@ -82,7 +82,7 @@ export const generatePDF = async (
     parsed = contentJson ? JSON.parse(contentJson) : {};
   } catch (e) {
     parsed = {};
-    toast.error("Ungültiges Content-Format!");
+    toast.error("Ungültiges Format");
     console.error(e);
   }
 
@@ -97,7 +97,7 @@ export const generatePDF = async (
       doc.text("Keine KI verwendet", margin, contentStartY + 20);
     } else {
       autoTable(doc, {
-        head: [["ID", "AI-Modell", "Task", "Prompt", "Zeit"]],
+        head: [["Nr.", "KI-Modell", "Aufgabe", "Prompt", "Datum"]],
         body: chatsArr.map((row: TableData) => [
           row.id,
           row.aiModel,

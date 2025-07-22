@@ -39,13 +39,15 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const [isShowingSynonym, setIsShowingSynonym] = useState(false);
   const [synonym, setSynonym] = useState("");
   const [isEditingChatTitle, setIsEditingChatTitle] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
 
   // States für das Kommentar-Popup
   const [openNoteAnswerIndex, setOpenNoteAnswerIndex] = useState<number | null>(
     null
   );
   const [noteDraft, setNoteDraft] = useState("");
-  const [userNoteEnabledDraft, setUserNoteEnabledDraft] = useState(false); // <-- NEU
+  const [userNoteEnabledDraft, setUserNoteEnabledDraft] = useState(false); // <-- NEU 
   const [isSavingNote, setIsSavingNote] = useState(false);
   // const [isInfoPopUpOpen, setIsInfoPopUpOpen] = useState(false);
 
@@ -118,13 +120,16 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const handleSend = async () => {
     if (currentMode === 3) return; // Sicherheit
     if (paragraphId === null) {
-      toast.warn("ID des Absatzes fehlt");
+      console.error("ID des Absatzes fehlt");
       return;
     }
     if (task === 0 || (task === 8 && currentMode != 0)) {
       toast.warn("Bitte wähle eine zulässige Anfrage!");
       return;
     }
+
+    toast.success("Anfrage gesendet");
+    setIsLoading(true);
 
     const newAnswer: Answer = {
       task: task,
@@ -187,6 +192,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     } catch (error) {
       console.error("Error:", error);
       toast.warn("Beim generieren der KI-Antwort ist ein Fehler aufgetreten");
+    } finally {
+      setIsLoading(false); // auch wenn error weg
     }
   };
 
@@ -500,7 +507,12 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           }
         >
           {(activeChat || isNewChatActive) && (
-            <>
+            <> {isLoading && (
+              <div className={chatStyles.loadingOverlay}>
+                <div className={chatStyles.loader}></div>
+                <div className={chatStyles.loadingText}>KI wird befragt...</div>
+              </div>
+            )}
               {/* Chat-Verlauf/Fragen & Antworten (WhatsApp-Style) */}
               <div className={chatStyles.bubbleChatContainer}>
                 {answers.map((ans, i) => (
@@ -593,7 +605,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
               {currentMode !== 3 && (
                 <div className={chatStyles.chatControlBox}>
                   <div className={chatStyles.controlRow}>
-                    <InfoTip text="Je nach gewählter Aufgabe bekommt das KI-Modell eine andere Aufgabenstellung. Dieser sogenannte Prompt wird im Hintergrund zusammengesetzt und sagt der KI, wie sie antworten soll. Der Prompt umfasst sowohl das gewünschte Format der Antwort, z.B. Stichpunkte oder Flieptext, als auch Hinweise zum Inhalt.">
+                    <InfoTip text="Je nach gewählter Aufgabe bekommt das KI-Modell eine andere Aufgabenstellung. Dieser sogenannte Prompt wird im Hintergrund zusammengesetzt und sagt der KI, wie sie antworten soll. Der Prompt umfasst sowohl das gewünschte Format der Antwort, z.B. Stichpunkte oder Fließtext, als auch Hinweise zum Inhalt.">
                       <select
                         className={chatStyles.taskSelector}
                         value={task}
@@ -758,12 +770,12 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                       <label className={chatStyles.label}>
                         Kommentar aktivieren:
                       </label>
-                      <Tooltip text="Kommentar aktivieren/deaktivieren">
+                      <InfoTip text="Ist ein Kommentar aktiviert, wird er dem KI-Modell bei der nächsten Anfrage als Kontext mitgegeben. Das Bedeutet, die KI kann alle Informationen und Hinweise aus dem Kommentar bei der nächsten Antwort beachten.">
                         <Switch
                           checked={userNoteEnabledDraft}
                           onChange={setUserNoteEnabledDraft}
                         />
-                      </Tooltip>
+                      </InfoTip>
                     </div>
                     <div style={{ marginTop: 10 }}>
                       <Tooltip text="Kommentar speichern">

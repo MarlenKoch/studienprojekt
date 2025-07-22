@@ -150,7 +150,7 @@ const ProjectView: React.FC = () => {
         console.error("Error fetching chats:", error);
       }
     } else {
-      toast.error("ID des Projektes ist nicht definiert");
+      console.error("ID des Projektes ist nicht definiert");
     }
   };
 
@@ -188,7 +188,7 @@ const ProjectView: React.FC = () => {
   // Handles adding a new paragraph
   const handleAddParagraph = async () => {
     if (!id) {
-      toast.error("ID des Projektes ist nicht definiert");
+      console.error("ID des Projektes ist nicht definiert");
       return;
     }
 
@@ -294,7 +294,7 @@ const ProjectView: React.FC = () => {
       setProjectMode(project.id, 3);
       toast.success(`Modus geändert zu: ${newMode}.`);
     } catch (error) {
-      toast.error("Fehler beim Änder des Projektmodus");
+      toast.error("Fehler beim Ändern des Projektmodus");
       console.error("Error updating project mode:", error);
     }
   };
