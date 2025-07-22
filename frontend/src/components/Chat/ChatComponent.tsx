@@ -343,6 +343,42 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       ? taskOptions.filter((opt) => opt.label !== "eigener Prompt")
       : taskOptions;
 
+  const handleSaveNote = async () => {
+    if (typeof openNoteAnswerIndex !== "number") return;
+    setIsSavingNote(true);
+    try {
+      const answerToUpdate = answers[openNoteAnswerIndex];
+      const newAnswers = [...answers];
+      newAnswers[openNoteAnswerIndex] = {
+        ...answerToUpdate,
+        userNote: noteDraft,
+        userNoteEnabled: userNoteEnabledDraft,
+      };
+      setAnswers(newAnswers);
+
+      if (answerToUpdate.id) {
+        await axios.put(
+          `http://localhost:8000/answers/${answerToUpdate.id}`,
+          {
+            ...answerToUpdate,
+            userNote: noteDraft,
+            userNoteEnabled: userNoteEnabledDraft,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      }
+      setOpenNoteAnswerIndex(null);
+    } catch (err) {
+      toast.warn("Fehler beim Speichern des Kommentars");
+      console.error(err);
+    }
+    setIsSavingNote(false);
+  };
+
   // ========== RENDER ==========
 
   return (
@@ -385,7 +421,10 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           >
             {(currentMode === 0 || currentMode === 1 || currentMode === 2) && (
               <div>
-                <InfoTip text="Wenn ein KI-Chat zu einem Absatz erstellt wird, wird dem KI-Modell bei Anfragen der Inhalt des Absatzes mitgegeben, sodass es diesen Inhalt für die Antwort verwenden kann. Damit kann z.B. ein Absatze umformuliert oder zusammengefasst werden.">
+                <InfoTip
+                  top={true}
+                  text="Wenn ein KI-Chat zu einem Absatz erstellt wird, wird dem KI-Modell bei Anfragen der Inhalt des Absatzes mitgegeben, sodass es diesen Inhalt für die Antwort verwenden kann. Damit kann z.B. ein Absatze umformuliert oder zusammengefasst werden."
+                >
                   <button className={chatStyles.btn} onClick={handleNewChat}>
                     + Neuer Chat
                   </button>
@@ -707,7 +746,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                   >
                     <h4 style={{ marginTop: 0 }}>Kommentar bearbeiten</h4>
                     <TextareaAutosize
-                      rows={5}
+                      rows={13}
                       maxRows={13}
                       className={chatStyles.textarea}
                       style={{ width: "100%" }}
@@ -729,43 +768,10 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                     <div style={{ marginTop: 10 }}>
                       <Tooltip text="Kommentar speichern">
                         <button
-                          className={chatStyles.btn}
-                          onClick={async () => {
-                            setIsSavingNote(true);
-                            try {
-                              const answerToUpdate =
-                                answers[openNoteAnswerIndex];
-                              const newAnswers = [...answers];
-                              newAnswers[openNoteAnswerIndex] = {
-                                ...answerToUpdate,
-                                userNote: noteDraft,
-                                userNoteEnabled: userNoteEnabledDraft,
-                              };
-                              setAnswers(newAnswers);
-                              if (answerToUpdate.id) {
-                                await axios.put(
-                                  `http://localhost:8000/answers/${answerToUpdate.id}`,
-                                  {
-                                    ...answerToUpdate,
-                                    userNote: noteDraft,
-                                    userNoteEnabled: userNoteEnabledDraft,
-                                  },
-                                  {
-                                    headers: {
-                                      "Content-Type": "application/json",
-                                    },
-                                  }
-                                );
-                              }
-                              setOpenNoteAnswerIndex(null);
-                            } catch (err) {
-                              toast.warn(
-                                "Fehler beim Speichern des Kommentars"
-                              );
-                              console.error(err);
-                            }
-                            setIsSavingNote(false);
-                          }}
+                          className={
+                            chatStyles.saveCommentBtn + " " + chatStyles.btn
+                          }
+                          onClick={handleSaveNote}
                           disabled={isSavingNote}
                         >
                           Speichern
