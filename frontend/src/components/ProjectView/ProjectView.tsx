@@ -411,12 +411,12 @@ const ProjectView: React.FC = () => {
                 textAlign: "left",
               }}
             >
-              <div>
+              <div className={styles.topBarTitleContainer}>
                 <Tooltip text={project?.title || ""}>
                   <span className={styles.topBarTitle}>{project?.title}</span>
                 </Tooltip>
                 {(project?.mode === 1 || project?.mode === 2) && (
-                  <span className={styles.tag}>Im Schülermodus</span>
+                  <span className={styles.tag}>Schülermodus</span>
                 )}
               </div>
             </div>

@@ -363,6 +363,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
               flexDirection: "column",
               position: "relative",
               gap: "12px",
+              minWidth: 0,
             }}
           >
             {(currentMode === 0 || currentMode === 1 || currentMode === 2) && (
@@ -380,9 +381,16 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                   <li
                     key={chat.id}
                     onClick={() => handleChatTitleClick(chat)}
-                    className={activeChat?.id === chat.id ? "active" : ""}
+                    className={[
+                      chatStyles.chatItem,
+                      activeChat?.id === chat.id && "active",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
                   >
-                    <span>{chat.title}</span>
+                    <div className={chatStyles.chatTitle} title={chat.title}>
+                      {chat.title}
+                    </div>
                     {currentMode === 0 && (
                       <Tooltip text="Diesen Chat löschen">
                         <button
