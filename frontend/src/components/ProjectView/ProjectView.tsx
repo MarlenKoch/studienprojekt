@@ -67,7 +67,7 @@ const ProjectView: React.FC = () => {
         }
       } catch (error) {
         // 2. Use toast for error
-        toast.error("Error fetching project");
+        toast.error("Fehler beim Laden des Projekts");
         console.error("Error fetching project:", error);
       }
     };
@@ -79,7 +79,7 @@ const ProjectView: React.FC = () => {
         );
         setParagraphs(response.data);
       } catch (error) {
-        toast.error("Error fetching paragraphs");
+        toast.error("Fehler beim Laden der Textabschnitte");
         console.error("Error fetching paragraphs:", error);
       }
     };
@@ -106,13 +106,13 @@ const ProjectView: React.FC = () => {
     });
     startTimer(totalSeconds);
     setShowTimerPopup(false);
-    toast.success("Timer started!");
+    toast.success("Timer gestartet!");
   };
 
   // Sets a callback for when the timer runs out.
   useEffect(() => {
     setOnTimeout(() => {
-      toast.info("Timer finished!");
+      toast.info("Timer abgelaufen!");
       setIsChangingMode(true);
     });
   }, [setOnTimeout]);
@@ -144,13 +144,13 @@ const ProjectView: React.FC = () => {
           "/logo.png",
           true
         );
-        toast.success("PDF generated and downloaded!");
+        toast.success("PDF heruntergeladen");
       } catch (error) {
-        toast.error("Error fetching chats for PDF");
+        toast.error("Fehler beim Laden der Chats");
         console.error("Error fetching chats:", error);
       }
     } else {
-      toast.error("Project ID is undefined");
+      toast.error("ID des Projektes ist nicht definiert");
     }
   };
 
@@ -172,7 +172,7 @@ const ProjectView: React.FC = () => {
         });
         setaiModelList(modelNames);
       } catch (error) {
-        toast.error("Failed to fetch model names");
+        toast.error("Namen der KI-Modelle konnten nicht abgerufen werden");
         console.error("Failed to fetch model names:", error);
       }
     };
@@ -188,7 +188,7 @@ const ProjectView: React.FC = () => {
   // Handles adding a new paragraph
   const handleAddParagraph = async () => {
     if (!id) {
-      toast.error("Project ID is undefined.");
+      toast.error("ID des Projektes ist nicht definiert");
       return;
     }
 
@@ -206,9 +206,9 @@ const ProjectView: React.FC = () => {
 
       setParagraphs([...paragraphs, response.data]);
       // setNewParagraphContent("");
-      toast.success("Paragraph added!");
+      toast.success("Textabschnitt hinzugefügt");
     } catch (error) {
-      toast.error("Error creating paragraph.");
+      toast.error("Fehler beim Erstellen des Absatzes");
       console.error("Error creating paragraph:", error);
     }
   };
@@ -233,9 +233,9 @@ const ProjectView: React.FC = () => {
       await axios.put(`http://localhost:8000/paragraphs/${paragraphId}`, {
         content: paragraph.content,
       });
-      toast.success("Paragraph saved!");
+      toast.success("Absatz gespeichert");
     } catch (error) {
-      toast.error("Error saving paragraph.");
+      toast.error("Fehler beim Speichern des Absatzes");
       console.error("Error saving paragraph:", error);
     }
   };
@@ -253,11 +253,9 @@ const ProjectView: React.FC = () => {
       setParagraphs(paragraphs.filter((p) => p.id !== paragraphId));
       if (activeParagraphId === paragraphId) setActiveParagraphId(null);
 
-      toast.success(
-        "Paragraph (inkl. aller Chats und Answers) wurde gelöscht!"
-      );
+      toast.success("Absatz und dazugehörige Chats gelöscht");
     } catch (error) {
-      toast.error("Fehler beim Löschen eines Paragraphen, Chat oder Answers.");
+      toast.error("Fehler beim Löschen eines Absatzes oder Chats.");
       console.error(error);
     }
   };
@@ -288,15 +286,15 @@ const ProjectView: React.FC = () => {
   // Update mode
   const updateProjectMode = async (newMode: number) => {
     if (!project) {
-      toast.warn("No project loaded.");
+      toast.warn("Kein Projekt geladen");
       return;
     }
     try {
       setProject({ ...project, mode: newMode });
       setProjectMode(project.id, 3);
-      toast.success(`Project mode set to ${newMode}.`);
+      toast.success(`Modus geändert zu: ${newMode}.`);
     } catch (error) {
-      toast.error("Error updating project mode.");
+      toast.error("Fehler beim Änder des Projektmodus");
       console.error("Error updating project mode:", error);
     }
   };
@@ -378,9 +376,9 @@ const ProjectView: React.FC = () => {
                       );
                       setProject({ ...project, title: editableTitle });
                       setIsEditingTitle(false);
-                      toast.success("Title updated!");
+                      toast.success("Titel aktualisiert");
                     } catch (err) {
-                      toast.error("Error updating title");
+                      toast.error("Fehler beim Aktualisieren des Titels");
                       console.error("Error updating title:", err);
                     }
                   }}
@@ -420,42 +418,34 @@ const ProjectView: React.FC = () => {
                 )}
               </div>
             </div>
-            <Tooltip text="Bearbeiten">
-              <button
-                className={styles.actionBtn}
-                onClick={() => {
-                  setIsEditingTitle(true);
-                  setEditableTitle(project?.title ?? "");
-                }}
-              >
-                Edit
-              </button>
-            </Tooltip>
+            <button
+              className={styles.actionBtn}
+              onClick={() => {
+                setIsEditingTitle(true);
+                setEditableTitle(project?.title ?? "");
+              }}
+            >
+              Titel bearbeiten
+            </button>
           </>
         )}
         <div>
-          <Tooltip text="Prompt PDF erstellen">
-            <button
-              className={styles.actionBtn}
-              // onClick={() => setIsCreatingPromptJson(true)}
-              onClick={() => getPromptsGeneratePDF()}
-            >
-              Generate Prompt PDF
-            </button>
-          </Tooltip>
-          <Tooltip text="Text PDF erstellen">
-            <button className={styles.actionBtn} onClick={handleGeneratePDF}>
-              Generate Text PDF
-            </button>
-          </Tooltip>
-          <Tooltip text="Projekt löschen">
-            <button
-              className={[styles.actionBtn, styles.danger].join(" ")}
-              onClick={handleDeleteProject}
-            >
-              Delete Project
-            </button>
-          </Tooltip>
+          <button
+            className={styles.actionBtn}
+            // onClick={() => setIsCreatingPromptJson(true)}
+            onClick={() => getPromptsGeneratePDF()}
+          >
+            KI-Nutzungsverzeichnis herunterladen
+          </button>
+          <button className={styles.actionBtn} onClick={handleGeneratePDF}>
+            Text herunterladen
+          </button>
+          <button
+            className={[styles.actionBtn, styles.danger].join(" ")}
+            onClick={handleDeleteProject}
+          >
+            Projekt löschen
+          </button>
 
           {project?.mode === 2 && (
             <Tooltip text="Abgeben">
@@ -466,7 +456,7 @@ const ProjectView: React.FC = () => {
                   stopTimer();
                 }}
               >
-                abgeben
+                Bearbeiten beenden
               </button>
             </Tooltip>
           )}
@@ -533,7 +523,7 @@ const ProjectView: React.FC = () => {
                             : undefined
                         }
                         onBlur={() => handleSaveParagraph(paragraph.id)}
-                        placeholder="Edit paragraph content"
+                        placeholder="Textabschnitt hinzufügen..."
                         onClick={() => {
                           if (activeParagraphId)
                             setActiveParagraphId(paragraph.id);
@@ -542,7 +532,7 @@ const ProjectView: React.FC = () => {
                         minRows={8}
                       />
                       <div className={styles.paragraphActions}>
-                        <Tooltip text="KI Chat">
+                        <Tooltip text="KI-Chat">
                           <button
                             className={styles.iconBtn}
                             onClick={() => setActiveParagraphId(paragraph.id)}
@@ -601,14 +591,12 @@ const ProjectView: React.FC = () => {
                 project?.mode === 1 ||
                 project?.mode === 2) && (
                 <div>
-                  <Tooltip text="Absatz hinzufügen">
-                    <button
-                      className={styles.actionBtn}
-                      onClick={handleAddParagraph}
-                    >
-                      Paragraph hinzufügen
-                    </button>
-                  </Tooltip>
+                  <button
+                    className={styles.actionBtn}
+                    onClick={handleAddParagraph}
+                  >
+                    Absatz hinzufügen
+                  </button>
                 </div>
               )}
             </div>

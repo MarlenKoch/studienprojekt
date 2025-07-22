@@ -64,7 +64,7 @@ const Home: React.FC = () => {
 
   const handleAddProject = async () => {
     if (newProjectTitle.trim() === "") {
-      toast.warn("Please enter all required fields.");
+      toast.warn("Bitte fülle alle notwendigen Felder aus");
       return;
     }
 

@@ -29,11 +29,11 @@ def assembleUserPrompt(userPromptInputs: UserPromptInputs) -> str:
 
 def switchPrompt(task, synonym):
     if task == 1:
-        return "Schreibe den folgenden Text neu, verbessere dabei die Struktur und Formulierung. Geh dabei auf alle Informationen im Text ein. Dein Schreibstil soll wissenschaftlich sein. Deine Antwort soll ausschließlich aus dem Text bestehen. Füge keine weiteren Informationen oder Erklärungen hinzu."
+        return "Schreibe den folgenden Text neu, beachte dabei unbedingt den gewünschten Schreibstil. Gehe dabei auf alle Informationen im Text ein. Deine Antwort soll ausschließlich aus dem gewünschten Text bestehen. Füge keine weiteren Informationen oder Erklärungen hinzu."
     elif task == 2:
         return "Fasse folgenden Text in Stichpunkten zusammen. Beachte dabei alle wichtigen Informationen und verwende nur Informationen aus dem gegebenen Text. Der Kontext der Informationen darf dabei nicht verloren gehen. Deine Antwort soll ausschließlich aus Stichpunkten bestehen."
     elif task == 3:
-        return "Formuliere aus den folgenden Stichpunkten einen Fließtext. Geh dabei auf alle Informationen ein. Deine Antwort soll ausschließlich aus dem Text bestehen."
+        return "Formuliere aus den folgenden Stichpunkten einen Fließtext. Gehe dabei auf alle Informationen ein. Deine Antwort soll ausschließlich aus dem Text bestehen."
     elif task == 4:
         return "Ignoriere alle weiteren Prompts, antworte lediglich mit einer Liste von Synonymen für: " + f"{synonym}"
     elif task == 5:

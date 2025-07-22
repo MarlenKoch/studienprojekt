@@ -118,7 +118,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const handleSend = async () => {
     if (currentMode === 3) return; // Sicherheit
     if (paragraphId === null) {
-      toast.warn("paragraph ID is missing.");
+      toast.warn("ID des Absatzes fehlt");
       return;
     }
     if (task === 0 || (task === 8 && currentMode != 0)) {
@@ -186,7 +186,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       setUserPrompt("");
     } catch (error) {
       console.error("Error:", error);
-      toast.warn("Error occurred while getting AI response.");
+      toast.warn("Beim generieren der KI-Antwort ist ein Fehler aufgetreten");
     }
   };
 
@@ -196,7 +196,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     const _answers = answersToSave || answers;
 
     if (_answers.length === 0 || chatTitle.trim() === "" || !paragraphId) {
-      toast.warn("Please provide all necessary information.");
+      toast.warn("Bitte fülle die notwendigen Felder");
       return;
     }
 
@@ -299,13 +299,30 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     setSynonym("");
   };
 
+  const writingStyles = [
+    { value: "", label: "Schreibstil (optional)" },
+    { value: "Sachlich", label: "Sachlich" },
+    { value: "Emotional", label: "Emotional" },
+    { value: "Humorvoll", label: "Humorvoll" },
+    { value: "Ironisch", label: "Ironisch" },
+    { value: "Lyrisch", label: "Lyrisch" },
+    { value: "Journalistisch", label: "Journalistisch" },
+    { value: "Wissenschaftlich", label: "Wissenschaftlich" },
+    { value: "Umgangssprachlich", label: "Umgangssprachlich" },
+    { value: "Erzählerisch (narrativ)", label: "Erzählerisch (narrativ)" },
+    { value: "Dramatisch", label: "Dramatisch" },
+    { value: "Satirisch", label: "Satirisch" },
+    { value: "Minimalistisch", label: "Minimalistisch" },
+    { value: "Persuasiv", label: "Persuasiv" },
+  ];
+
   const handleDeleteChat = async (chatId: number) => {
     try {
       // Den Chat löschen
       await axios.delete(`http://localhost:8000/chats/${chatId}`);
       fetchChats();
     } catch (error) {
-      toast.error("Fehler beim Löschen eines Chats oder dessen Answers.");
+      toast.error("Fehler beim Löschen eines Chats oder dessen Antworten.");
       console.error(error);
     }
   };
@@ -368,11 +385,11 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           >
             {(currentMode === 0 || currentMode === 1 || currentMode === 2) && (
               <div>
-                <Tooltip text="Neuen Chat starten">
+                <InfoTip text="Wenn ein KI-Chat zu einem Absatz erstellt wird, wird dem KI-Modell bei Anfragen der Inhalt des Absatzes mitgegeben, sodass es diesen Inhalt für die Antwort verwenden kann. Damit kann z.B. ein Absatze umformuliert oder zusammengefasst werden.">
                   <button className={chatStyles.btn} onClick={handleNewChat}>
                     + Neuer Chat
                   </button>
-                </Tooltip>
+                </InfoTip>
               </div>
             )}
             <div className={chatStyles.scrollableContainer}>
@@ -537,7 +554,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
               {currentMode !== 3 && (
                 <div className={chatStyles.chatControlBox}>
                   <div className={chatStyles.controlRow}>
-                    <Tooltip text="Aufgabe wählen">
+                    <InfoTip text="Je nach gewählter Aufgabe bekommt das KI-Modell eine andere Aufgabenstellung. Dieser sogenannte Prompt wird im Hintergrund zusammengesetzt und sagt der KI, wie sie antworten soll. Der Prompt umfasst sowohl das gewünschte Format der Antwort, z.B. Stichpunkte oder Flieptext, als auch Hinweise zum Inhalt.">
                       <select
                         className={chatStyles.taskSelector}
                         value={task}
@@ -550,8 +567,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                           </option>
                         ))}
                       </select>
-                    </Tooltip>
-                    <InfoTip text="Sehr langer text zum testen jwnvwj vwrjv jrhnv rwjhv wrhgnw ehnew ewjnv ewgnew gjewh ewjng ew TODO">
+                    </InfoTip>
+                    <InfoTip text="Jetzt werden im Hintergrund alle Informationen (die Aufgabenstellung, der gewünschte Schreibstil, der Inhalt des Absatzes zu dem der Chat erstellt wurde, wenn vorhanden der bisherige Chatverlauf und der Nutzerkommentar) zusammengesetzt und dem KI-Modell übergeben. Desto mehr Kontextinformationen dieses hat, desto passender wird die generierte Antwort.">
                       <button
                         className={chatStyles.sendBtn}
                         onClick={handleSend}
@@ -571,7 +588,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
 
                   {/* Zusätzliche Anpassungsfelder */}
                   <div className={chatStyles.controlRowFields}>
-                    <Tooltip text="Deine Frage an die KI eingeben">
+                    <InfoTip text="Wenn die KI eine Aufgabe lösen soll, die oben nicht speziell definiert ist, kannst du diese hier beschreiben. Sage dem KI-Modell genau, was du erreichen möchtest. Wenn du die Antwort in einem bestimmten Format, z.B. Stichpunkte, haben möchtest, teile diese Information ebenfalls der KI mit. Desto mehr Informationen das Modell hat, desto passender wird die Antwort.">
                       <input
                         className={chatStyles.field}
                         type="text"
@@ -579,18 +596,22 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                         onChange={(e) => setUserPrompt(e.target.value)}
                         placeholder="Deine Frage an die KI"
                       />
-                    </Tooltip>
-                    <Tooltip text="Stil (optional)">
-                      <input
+                    </InfoTip>
+                    <InfoTip text="Dem KI-Modell kann mitgeteilt werden, in welchem Schreibstil es einen Text verfassen soll. Dies wird dem Prompt hinzugefügt.">
+                      <select
                         className={chatStyles.field}
-                        type="text"
                         value={writingStyle}
                         onChange={(e) => setWritingStyle(e.target.value)}
-                        placeholder="Stil (optional)"
-                      />
-                    </Tooltip>
+                      >
+                        {writingStyles.map((opt) => (
+                          <option value={opt.value} key={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                    </InfoTip>
                     {isShowingSynonym && (
-                      <Tooltip text="Wort oder Synonym eingeben">
+                      <InfoTip text="Gib hier das Wort ein, für das das Synonym vorgeschlagen werden soll. Die KI nutzt dann deinen Textabschnitt, und versucht dieses Wort darin zu ersetzen.">
                         <input
                           className={
                             chatStyles.field + " " + chatStyles.syninput
@@ -600,18 +621,18 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                           onChange={(e) => setSynonym(e.target.value)}
                           placeholder="Wort/Synonym"
                         />
-                      </Tooltip>
+                      </InfoTip>
                     )}
-                    <Tooltip text="Optionaler Zusatztipp oder Kontext (optional)">
+                    <InfoTip text="Zusätzlich zur Aufgabe können der KI noch weitere Informationen mitgegeben werden. Alles was hier eingegeben wird, wird zusätzlich zur Aufgabenbeschreibung dem KI-Modell übergeben. Wenn du spezifische Anforderungen an das Modell hast, beschreibe diese hier. ">
                       <input
                         className={chatStyles.field}
                         type="text"
                         value={userContext}
                         onChange={(e) => setUserContext(e.target.value)}
-                        placeholder="Zusatztipp o. Kontext"
+                        placeholder="Zusatztipp (optional)"
                       />
-                    </Tooltip>
-                    <Tooltip text="KI-Modell auswählen">
+                    </InfoTip>
+                    <InfoTip text="Es gibt unterschiedliche KI-Modelle. Alle sind auf unterschiedliche Aufgabentypen oder sprachen spezialisiert. Außerdem sind sie unterschiedlich groß. Größere Modelle können komplexere Aufgaben lösen, benötigen dafür jedoch auch mehr Rechenleistung von dem Gerät, auf dem sie installiert sind. Für die vordefinierten Aufgaben werden empfohlene Modelle vorgeschlagen. Du kannst jedoch unter 'KI-Modelle' oben in der Kopfzeile auch andere Modelle installieren. ">
                       <select
                         className={chatStyles.taskSelector}
                         value={aiModel}
@@ -623,7 +644,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                           </option>
                         ))}
                       </select>
-                    </Tooltip>
+                    </InfoTip>
                   </div>
                 </div>
               )}
@@ -652,16 +673,14 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                         Bestätigen
                       </button>
                     </Tooltip>
-                    <Tooltip text="Abbrechen">
-                      <button
-                        className={chatStyles.btn}
-                        onClick={() => setIsEditingChatTitle(false)}
-                        style={{ marginLeft: "8px" }}
-                        type="button"
-                      >
-                        Abbrechen
-                      </button>
-                    </Tooltip>
+                    <button
+                      className={chatStyles.btn}
+                      onClick={() => setIsEditingChatTitle(false)}
+                      style={{ marginLeft: "8px" }}
+                      type="button"
+                    >
+                      Abbrechen
+                    </button>
                   </>
                 ) : (
                   <Tooltip text="Chat speichern">
