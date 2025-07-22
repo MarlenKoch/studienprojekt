@@ -8,7 +8,7 @@ const Header: React.FC = () => {
         <img className={styles.logo} src="/logo-test.svg" alt="KI-Logo" />
       </Link>
       <Link to="/KIModelle" style={{ textDecoration: "none", color: "inherit" }}>
-        <p>wer das liest ist dumm</p>
+        <button>KI-Modelle</button>
       </Link>
     </div>
   );

@@ -1,87 +1,140 @@
 import React, { useState } from "react";
 import axios from "axios";
-// import styles from "./Models.module.css";
+import styles from "./Models.module.css";
 import { Ladebildschirm } from "../Ladebildschirm/Ladebildschirm";
 import { toast } from "react-toastify";
 
 
-const MODELS = [
+const MODELS1 = [
     {
         name: "Gemma3",
         description:
-            "Gemma3 ist ein leistungsfähiges KI-Sprachmodell mit Fokus auf umfangreiche Textverarbeitung und Vielseitigkeit.",
+            "Gemma3 ist ein von Google entwickeltes Open Source KI-Modell, welches aufgrund seiner Architektur auch auf Laptops performant läuf.",
     },
     {
-        name: "openeurollm-jobautomation",
+        name: "jobautomation/OpenEuroLLM-German",
         description:
-            "OpenEuRollm Jobautomation unterstützt bei der Automatisierung von Aufgaben und Prozessen mithilfe künstlicher Intelligenz.",
+            "jobautomation/OpenEuroLLM-German ist eine für deutschsprachige Antworten optimierte Version von Gemma 3, welche trainiert wurde, grammatikalisch korrekte Antworten ohne fremdsprachige Fachwörter zu geben."
     },
     {
-        name: "wiederchat",
+        name: "mayflowergmbh/wiederchat",
         description:
-            "Wiederchat ist spezialisiert auf dialogorientierte Aufgaben und ermöglicht fortgeschrittene Chatbot-Anwendungen.",
+            "Wiederchat ist die Kombination aus mehreren auf Mistral-basierenden KI-Modellen und ebenfalls auf die deutsche Sprache abgestimmt.",
     },
+];
+
+const MODELS2 = [
+    {
+        name: "deepseek-r1",
+        description:
+            "Deepseek-r1 ist eine Familie von frei verfügbaren Open-Source-Sprachmodellen mit besonders starken Fähigkeiten im logischen Denken und Problemlösen. Um sie zu installieren gib 'deepseek-r1:7b' in das Eingabefeld ein.",
+    },
+    {
+        name: "Llama 3.2",
+        description:
+            "Llama 3.2 sind kleine, mehrsprachige Open-Source-Sprachmodelle, die besonders für Dialog, Zusammenfassungen und Wissensabfragen optimiert sind. Nutze 'llama3.2:latest' zum installieren."
+    },
+    {
+        name: "mistral",
+        description:
+            "Mistral ist ein Open-Source-Sprachmodell von Mistral AI, das für Textgenerierung und Instruktionsverarbeitung optimiert ist. Du kannst es dir mit 'mistral:latest' installieren. ",
+    },
+    
 ];
 
 export const Models: React.FC = () => {
     const [modelName, setModelName] = useState("");
     const [ladeBildschirm, setLadeBildschirm] = useState(false);
+    const [expandedIndex1, setExpandedIndex1] = useState<number | null>(null);
+    const [expandedIndex2, setExpandedIndex2] = useState<number | null>(null);
+
+
 
 
     const handlePull = async (e?: React.FormEvent) => {
-    e?.preventDefault();
+        e?.preventDefault();
 
-    if (!modelName.trim()) {
-        toast.warn("Gib einen gültigen Namen ein");
-        return;
-    }
-    setLadeBildschirm(true);
-    try {
-        await axios.post("http://localhost:8000/pullAiModel", { model_name: modelName });
-        setLadeBildschirm(false);  
-        toast.success("Modell erfolgreich geladen!");
-    } catch (err: any) {
-        console.log("In den Schuppen regnets rein")
-        setLadeBildschirm(false);  
-        toast.error("Fehler beim Laden des Modells. Ist der Modellname korrekt?");
-    }
-};
+        if (!modelName.trim()) {
+            toast.warn("Gib einen gültigen Namen ein");
+            return;
+        }
+        setLadeBildschirm(true);
+        try {
+            await axios.post("http://localhost:8000/pullAiModel", { model_name: modelName });
+            setLadeBildschirm(false);
+            toast.success("Modell erfolgreich geladen!");
+        } catch (err: any) {
+            console.log("In den Schuppen regnets rein")
+            setLadeBildschirm(false);
+            toast.error("Fehler beim Laden des Modells. Ist der Modellname korrekt?");
+        }
+    };
+    const handleExpand1 = (i: number) => {
+        setExpandedIndex1(expandedIndex1 === i ? null : i);
+    };
+    const handleExpand2 = (i: number) => {
+        setExpandedIndex2(expandedIndex2 === i ? null : i);
+    };
 
 
     return (
-        <div>
+        <div className={styles.scrollable}>
             {ladeBildschirm && (
                 <Ladebildschirm message="Das KI-Modell wird geladen, dies kann einige Zeit dauern" />
             )}
+
             <div>
-                <h1>KI-Modell herunterladen</h1>
-                <form onSubmit={handlePull}>
-                    <label htmlFor="modelInput" >
-                        Modellname eingeben:
-                    </label>
+                <form onSubmit={handlePull} className={styles.formGroup}>
                     <input
                         id="modelInput"
+                        type="text"
                         value={modelName}
                         onChange={(e) => setModelName(e.target.value)}
-                        placeholder="z.B.: mistral"
+                        className={styles.inputBox}
+                        placeholder="Modellname eingeben"
+                        autoComplete="off"
                     />
-                    <button type="submit" >
+                    <button type="submit">
                         Modell herunterladen
                     </button>
                 </form>
+            </div>
 
-                <div >
-                    <h2>Empfohlene Modelle</h2>
-                    {MODELS.map((m) => (
-                        <div key={m.name} >
-                            <div >{m.name}</div>
-                            <div >{m.description}</div>
-                        </div>
-                    ))}
-                </div>
+            <h2>Bereits installierte Modelle</h2>
+            <div className={styles.modelList}>
+                {MODELS1.map((m, i) => (
+                    <div
+                        key={m.name}
+                        className={`${styles.modelCard} ${expandedIndex1 === i ? styles.active : ""}`}
+                        onClick={() => handleExpand1(i)}
+                        tabIndex={0}
+                    >
+                        <div className={styles.modelName}>{m.name}</div>
+                        {expandedIndex1 === i && (
+                            <div className={styles.modelDescription}>{m.description}</div>
+                        )}
+                    </div>
+                ))}
+            </div>
+            <h2>Weitere Modelle</h2>
+            <div className={styles.modelList}>
+                {MODELS2.map((m, i) => (
+                    <div
+                        key={m.name}
+                        className={`${styles.modelCard} ${expandedIndex2 === i ? styles.active : ""}`}
+                        onClick={() => handleExpand2(i)}
+                        tabIndex={0}
+                    >
+                        <div className={styles.modelName}>{m.name}</div>
+                        {expandedIndex2 === i && (
+                            <div className={styles.modelDescription}>{m.description}</div>
+                        )}
+                    </div>
+                ))}
             </div>
         </div>
     );
 };
+
 
 export default Models;
