@@ -1,15 +1,39 @@
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import autoTable, { HookData } from "jspdf-autotable";
-import { TableData } from "../../types/TableData";
 import { toast } from "react-toastify";
+import {
+  TableData,
+  ParagraphString,
+  PromptVerzeichnisContent,
+  ParagraphsContent,
+} from "../../types/TableData";
 
+type ContentJsonType = Partial<PromptVerzeichnisContent & ParagraphsContent>;
+
+function truncateTextToWidth(
+  doc: jsPDF,
+  text: string,
+  maxWidth: number
+): string {
+  if (doc.getTextWidth(text) <= maxWidth) return text;
+  let truncated = text;
+  while (
+    doc.getTextWidth(truncated + "...") > maxWidth &&
+    truncated.length > 0
+  ) {
+    truncated = truncated.slice(0, -1);
+  }
+  return truncated + "...";
+}
+
+// === Funktion ===
 export const generatePDF = async (
-  promptsJson: string,
+  contentJson: string,
   pdfTitle: string,
-  logoUrl: string
+  logoUrl: string,
+  isPromptVerzeichnis: boolean
 ) => {
-  // Logo als Base64-Datenurl
   async function getImgDataUrl(url: string): Promise<string> {
     const res = await fetch(url);
     const blob = await res.blob();
@@ -27,53 +51,114 @@ export const generatePDF = async (
     format: "a4",
   });
 
-  // === Seite 1: Großer Titel und Logo oben
-  doc.setFontSize(20);
-  doc.text(pdfTitle, 40, 60);
+  // ===== TITEL & LOGO =====
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const margin = 40;
+  const titleMaxWidth = pageWidth - 2 * margin - 100;
+  doc.setFontSize(32);
+  doc.setFont("helvetica", "bold");
+  const splitTitle: string[] = doc.splitTextToSize(
+    pdfTitle,
+    titleMaxWidth
+  ) as string[];
+  const titleHeight = splitTitle.length * 24;
+  const titleY = 60;
+  doc.text(splitTitle, margin, titleY, { maxWidth: titleMaxWidth });
 
-  if (logoDataUrl)
-    doc.addImage(
-      logoDataUrl,
-      "PNG",
-      doc.internal.pageSize.getWidth() - 120,
-      20,
-      80,
-      80
-    );
+  let logoHeight = 0;
+  if (logoDataUrl) {
+    const logoY = 20;
+    const logoW = 80;
+    const logoH = 80;
+    doc.addImage(logoDataUrl, "PNG", pageWidth - 120, logoY, logoW, logoH);
+    logoHeight = logoY + logoH;
+  }
+  const topElementBottom = Math.max(titleY + titleHeight, logoHeight);
+  const contentStartY = topElementBottom + 30;
 
-  const parsed = JSON.parse(promptsJson);
-  if (parsed.chats && parsed.chats.length !== 0) {
-    const promptsArray: TableData[] = Array.isArray(parsed.chats)
+  // ==== PARSING (typisiert) ====
+  let parsed: ContentJsonType = {};
+  try {
+    parsed = contentJson ? JSON.parse(contentJson) : {};
+  } catch (e) {
+    parsed = {};
+    toast.error("Ungültiges Content-Format!");
+    console.error(e);
+  }
+
+  if (isPromptVerzeichnis) {
+    // === Tabelle ===
+    const chatsArr: TableData[] = Array.isArray(parsed.chats)
       ? parsed.chats
       : [];
+    if (chatsArr.length === 0) {
+      doc.setFontSize(18);
+      doc.setFont("helvetica", "normal");
+      doc.text("Keine KI verwendet", margin, contentStartY + 20);
+    } else {
+      autoTable(doc, {
+        head: [["ID", "AI-Modell", "Task", "Prompt", "Zeit"]],
+        body: chatsArr.map((row: TableData) => [
+          row.id,
+          row.aiModel,
+          row.task,
+          row.prompt ?? "",
+          row.timestamp ? new Date(row.timestamp).toLocaleString("de-DE") : "",
+        ]),
+        startY: contentStartY,
+        styles: { fontSize: 10, cellPadding: 5 },
+        headStyles: { fillColor: [95, 106, 114] },
+        theme: "striped",
+        margin: { left: 30, right: 30, top: 50 },
+        didDrawPage: (data: HookData) => {
+          if (data.pageNumber > 1) {
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(60);
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const margin = 40;
+            const titleMaxWidth = pageWidth - 2 * margin;
 
-    // === Tabelle
-    autoTable(doc, {
-      head: [["ID", "AI-Modell", "Task", "Prompt", "Zeit"]],
-      body: promptsArray.map((row) => [
-        row.id,
-        row.aiModel,
-        row.task,
-        row.prompt ?? "",
-        row.timestamp ? new Date(row.timestamp).toLocaleString("de-DE") : "",
-      ]),
-      startY: 120,
-      styles: { fontSize: 10, cellPadding: 5 },
-      headStyles: { fillColor: [95, 106, 114] }, ////HIER FARBE ÄNDERNN
-      theme: "striped",
-      margin: { left: 30, right: 30, top: 50 },
-      didDrawPage: (data: HookData) => {
-        if (data.pageNumber > 1) {
-          doc.setFontSize(12);
-          doc.setTextColor(60);
-          doc.text(pdfTitle, 40, 40);
-        }
-      },
-    });
+            // Hier den Titel genau passend kürzen:
+            const truncatedTitle = truncateTextToWidth(
+              doc,
+              pdfTitle,
+              titleMaxWidth
+            );
+
+            doc.text(truncatedTitle, margin, 40, { maxWidth: titleMaxWidth });
+          }
+        },
+      });
+    }
   } else {
-    toast.warn("Keine gespeicherten Chats gefunden. ");
-    doc.setFontSize(18);
-    doc.text("Keine KI verwendet", 200, 300);
+    // ==== Paragraphen ====
+    const paragraphsArr: ParagraphString[] = Array.isArray(parsed.paragraphs)
+      ? parsed.paragraphs
+      : [];
+    if (paragraphsArr.length > 0) {
+      let y = contentStartY;
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "normal");
+      const usableWidth = pageWidth - 2 * margin;
+
+      paragraphsArr.forEach((para: ParagraphString) => {
+        if (!para.content) return;
+        const lines: string[] = doc.splitTextToSize(
+          para.content,
+          usableWidth
+        ) as string[];
+        lines.forEach((line: string) => {
+          if (y > doc.internal.pageSize.getHeight() - margin) {
+            doc.addPage();
+            y = margin;
+          }
+          doc.text(line, margin, y);
+          y += 18;
+        });
+        y += 8;
+      });
+    }
   }
 
   doc.save(`${pdfTitle}.pdf`);
