@@ -9,7 +9,6 @@ import { useProjectTimer } from "../../context/ProjectTimerContext";
 import Switch from "react-switch";
 import { toast } from "react-toastify";
 import { Splitter, SplitterPanel } from "primereact/splitter";
-// import styles from "./Chat.module.css";
 import chatStyles from "./Chat.module.css";
 import Tooltip from "../Tooltip/Tooltip";
 import InfoTip from "../InfoTip/InfoTip";
@@ -40,13 +39,15 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const [isShowingSynonym, setIsShowingSynonym] = useState(false);
   const [synonym, setSynonym] = useState("");
   const [isEditingChatTitle, setIsEditingChatTitle] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
 
   // States für das Kommentar-Popup
   const [openNoteAnswerIndex, setOpenNoteAnswerIndex] = useState<number | null>(
     null
   );
   const [noteDraft, setNoteDraft] = useState("");
-  const [userNoteEnabledDraft, setUserNoteEnabledDraft] = useState(false); // <-- NEU
+  const [userNoteEnabledDraft, setUserNoteEnabledDraft] = useState(false); // <-- NEU 
   const [isSavingNote, setIsSavingNote] = useState(false);
   // const [isInfoPopUpOpen, setIsInfoPopUpOpen] = useState(false);
 
@@ -128,7 +129,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     }
 
     toast.success("Anfrage gesendet");
-
+    setIsLoading(true);
 
     const newAnswer: Answer = {
       task: task,
@@ -191,6 +192,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     } catch (error) {
       console.error("Error:", error);
       toast.warn("Beim generieren der KI-Antwort ist ein Fehler aufgetreten");
+    } finally {
+      setIsLoading(false); // auch wenn error weg
     }
   };
 
@@ -458,7 +461,12 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           }
         >
           {(activeChat || isNewChatActive) && (
-            <>
+            <> {isLoading && (
+              <div className={chatStyles.loadingOverlay}>
+                <div className={chatStyles.loader}></div>
+                <div className={chatStyles.loadingText}>KI wird befragt...</div>
+              </div>
+            )}
               {/* Chat-Verlauf/Fragen & Antworten (WhatsApp-Style) */}
               <div className={chatStyles.bubbleChatContainer}>
                 {answers.map((ans, i) => (
