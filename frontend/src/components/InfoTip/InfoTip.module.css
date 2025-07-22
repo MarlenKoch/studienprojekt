@@ -39,7 +39,7 @@
 
 .bigInfoTipPopup {
   position: absolute;
-  top: 24px; /* Direkt UNTER das i-Icon, ggf. anpassen */
+  bottom: 40px; /* Direkt UNTER das i-Icon, ggf. anpassen */
   right: 0;
   min-width: 220px;
   max-width: 340px;

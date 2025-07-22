@@ -3,6 +3,7 @@ import axios from "axios";
 import styles from "./Models.module.css";
 import { Ladebildschirm } from "../Ladebildschirm/Ladebildschirm";
 import { toast } from "react-toastify";
+import InfoTip from "../InfoTip/InfoTip";
 
 
 const MODELS1 = [
@@ -94,9 +95,11 @@ export const Models: React.FC = () => {
                         placeholder="Modellname eingeben"
                         autoComplete="off"
                     />
+                    <InfoTip text="Das Modell wird über die Ollama API auf deinem Gerät installiert und steht dann lokal zur Verfügung. Je nach Größe des Modells kann das Herunterladen eine Weile dauern. Eine Übersicht unterschiedlicher Modelle findest du auch auf der offiziellen Ollama Seite.">
                     <button type="submit">
                         Modell herunterladen
                     </button>
+                    </InfoTip>
                 </form>
             </div>
 
