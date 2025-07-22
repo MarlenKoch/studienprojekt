@@ -127,6 +127,9 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       return;
     }
 
+    toast.success("Anfrage gesendet");
+
+
     const newAnswer: Answer = {
       task: task,
       aiAnswer: "",
@@ -559,7 +562,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
               {currentMode !== 3 && (
                 <div className={chatStyles.chatControlBox}>
                   <div className={chatStyles.controlRow}>
-                    <InfoTip text="Je nach gewählter Aufgabe bekommt das KI-Modell eine andere Aufgabenstellung. Dieser sogenannte Prompt wird im Hintergrund zusammengesetzt und sagt der KI, wie sie antworten soll. Der Prompt umfasst sowohl das gewünschte Format der Antwort, z.B. Stichpunkte oder Flieptext, als auch Hinweise zum Inhalt.">
+                    <InfoTip text="Je nach gewählter Aufgabe bekommt das KI-Modell eine andere Aufgabenstellung. Dieser sogenannte Prompt wird im Hintergrund zusammengesetzt und sagt der KI, wie sie antworten soll. Der Prompt umfasst sowohl das gewünschte Format der Antwort, z.B. Stichpunkte oder Fließtext, als auch Hinweise zum Inhalt.">
                       <select
                         className={chatStyles.taskSelector}
                         value={task}
@@ -744,12 +747,12 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                       <label className={chatStyles.label}>
                         Kommentar aktivieren:
                       </label>
-                      <Tooltip text="Kommentar aktivieren/deaktivieren">
+                      <InfoTip text="Ist ein Kommentar aktiviert, wird er dem KI-Modell bei der nächsten Anfrage als Kontext mitgegeben. Das Bedeutet, die KI kann alle Informationen und Hinweise aus dem Kommentar bei der nächsten Antwort beachten.">
                         <Switch
                           checked={userNoteEnabledDraft}
                           onChange={setUserNoteEnabledDraft}
                         />
-                      </Tooltip>
+                      </InfoTip>
                     </div>
                     <div style={{ marginTop: 10 }}>
                       <Tooltip text="Kommentar speichern">
