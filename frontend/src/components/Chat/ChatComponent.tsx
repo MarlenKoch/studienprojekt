@@ -119,7 +119,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const handleSend = async () => {
     if (currentMode === 3) return; // Sicherheit
     if (paragraphId === null) {
-      toast.warn("ID des Absatzes fehlt");
+      console.error("ID des Absatzes fehlt");
       return;
     }
     if (task === 0 || (task === 8 && currentMode != 0)) {
