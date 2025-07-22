@@ -555,7 +555,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                         ))}
                       </select>
                     </Tooltip>
-                    <InfoTip text="Sehr langer text zum testen jwnvwj vwrjv jrhnv rwjhv wrhgnw ehnew ewjnv ewgnew gjewh ewjng ew">
+                    <InfoTip text="Sehr langer text zum testen jwnvwj vwrjv jrhnv rwjhv wrhgnw ehnew ewjnv ewgnew gjewh ewjng ew TODO">
                       {/* <button
                         className={chatStyles.iconBtn}
                         onClick={handleSend}

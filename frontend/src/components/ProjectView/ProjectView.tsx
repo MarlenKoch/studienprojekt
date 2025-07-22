@@ -6,12 +6,14 @@ import { Paragraph } from "../../types/Paragraph";
 import ChatComponent from "../Chat/ChatComponent";
 import { useProjectTimer } from "../../context/ProjectTimerContext";
 import "jspdf-autotable";
-import jsPDF from "jspdf";
+// import jsPDF from "jspdf";
+
 //import primereact from "primereact";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { generatePDF } from "../GeneratePDF/GeneratePDF";
+import { ParagraphString } from "../../types/TableData";
 
 import { useNavigate } from "react-router-dom";
 import { Splitter, SplitterPanel } from "primereact/splitter";
@@ -30,8 +32,8 @@ const ProjectView: React.FC = () => {
   );
   const [aiModelList, setaiModelList] = useState<string[]>([]);
   //const [promptsJson, setPromptsJson] = useState<string>("");
-  const [isCreatingPromptJson, setIsCreatingPromptJson] =
-    useState<boolean>(false);
+  // const [isCreatingPromptJson, setIsCreatingPromptJson] =
+  //   useState<boolean>(false);
   const navigate = useNavigate();
   // Timer Popup
   const [showTimerPopup, setShowTimerPopup] = useState(false);
@@ -127,7 +129,9 @@ const ProjectView: React.FC = () => {
     if (isChangingMode === true) {
       if (project?.mode === 2) {
         updateProjectMode(3);
-        setIsCreatingPromptJson(true);
+        // setIsCreatingPromptJson(true);
+        getPromptsGeneratePDF();
+        getPromptsGeneratePDF();
         handleGeneratePDF();
       }
       setIsChangingMode(false);
@@ -135,34 +139,60 @@ const ProjectView: React.FC = () => {
   }, [isChangingMode]);
 
   // Fetches prompts and generates PDF when requested.
-  useEffect(() => {
-    if (!isCreatingPromptJson) return;
-    const getPromptsGeneratePDF = async () => {
-      if (project?.id !== undefined) {
-        try {
-          const response = await axios.get<string>(
-            `http://localhost:8000/promptverzeichnis/`,
-            { params: { projectId: project.id } }
-          );
-          generatePDF(
-            JSON.stringify(response.data),
-            `Promptverzeichnis ${project?.title ?? "Projekt"}`,
-            "/logo.png"
-          );
-          toast.success("PDF generated and downloaded!");
-        } catch (error) {
-          toast.error("Error fetching chats for PDF");
-          console.error("Error fetching chats:", error);
-        }
-      } else {
-        if (isCreatingPromptJson === true) {
-          toast.error("Project ID is undefined");
-        }
+  // useEffect(() => {
+  //   if (!isCreatingPromptJson) return;
+  //   const getPromptsGeneratePDF = async () => {
+  //     if (project?.id !== undefined) {
+  //       try {
+  //         const response = await axios.get<string>(
+  //           `http://localhost:8000/promptverzeichnis/`,
+  //           { params: { projectId: project.id } }
+  //         );
+  //         generatePDF(
+  //           JSON.stringify(response.data),
+  //           `Promptverzeichnis ${project?.title ?? "Projekt"}`,
+  //           "/logo.png"
+  //         );
+  //         toast.success("PDF generated and downloaded!");
+  //       } catch (error) {
+  //         toast.error("Error fetching chats for PDF");
+  //         console.error("Error fetching chats:", error);
+  //       }
+  //     } else {
+  //       if (isCreatingPromptJson === true) {
+  //         toast.error("Project ID is undefined");
+  //       }
+  //     }
+  //   };
+  //   setIsCreatingPromptJson(false);
+  //   getPromptsGeneratePDF();
+  // }, [isCreatingPromptJson]);
+
+  const getPromptsGeneratePDF = async () => {
+    if (project?.id !== undefined) {
+      try {
+        const response = await axios.get<string>(
+          `http://localhost:8000/promptverzeichnis/`,
+          { params: { projectId: project.id } }
+        );
+        generatePDF(
+          JSON.stringify(response.data),
+          `Promptverzeichnis ${project?.title ?? "Projekt"}`,
+          "/logo.png",
+          true
+        );
+        toast.success("PDF generated and downloaded!");
+      } catch (error) {
+        toast.error("Error fetching chats for PDF");
+        console.error("Error fetching chats:", error);
       }
-    };
-    setIsCreatingPromptJson(false);
-    getPromptsGeneratePDF();
-  }, [isCreatingPromptJson]);
+    } else {
+      // if (isCreatingPromptJson === true) {
+      //   toast.error("Project ID is undefined");
+      // }
+      toast.error("Project ID is undefined");
+    }
+  };
 
   // Fetches the available AI model names
   useEffect(() => {
@@ -323,7 +353,7 @@ const ProjectView: React.FC = () => {
     }
   };
 
-  const handleGeneratePDF = () => {
+  const handleGeneratePDF = async () => {
     if (!project) {
       toast.error("Kein Projekt geladen");
       return;
@@ -333,38 +363,22 @@ const ProjectView: React.FC = () => {
       return;
     }
 
-    const doc = new jsPDF("p", "mm", "a4");
+    // Paragraphs korrekt vorbereiten
+    const formattedParagraphs: ParagraphString[] = paragraphs.map((para) => ({
+      content: para.content,
+    }));
 
-    // Titel
-    let y = 20;
-    doc.setFontSize(22);
-    doc.setFont("helvetica", "bold");
-    doc.text(project.title || "Projekt", 20, y);
+    // ContentJson korrekt strukturieren
+    const contentJson = JSON.stringify({ paragraphs: formattedParagraphs });
 
-    // Abstand unter Titel
-    y += 16;
-
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "normal");
-
-    paragraphs.forEach((para) => {
-      const lines: string[] = doc.splitTextToSize(para.content, 170);
-      lines.forEach((line: string) => {
-        doc.text(line, 20, y);
-        y += 7;
-        if (y > 280) {
-          doc.addPage();
-          y = 20;
-        }
-      });
-      y += 3; // Wenig Abstand zum nächsten Paragraphen
-    });
-
-    doc.save(
-      `${
-        project.title ? project.title.replace(/[^a-z0-9]/gi, "_") : "Projekt"
-      }.pdf`
+    // PDF generieren
+    await generatePDF(
+      contentJson,
+      project.title || "Projekt",
+      "/logo.png", // Falls du kein Logo hast, setze ""
+      false // Kein Promptverzeichnis, sondern Text-Export!
     );
+
     toast.success("PDF wurde erstellt!");
   };
 
@@ -476,7 +490,8 @@ const ProjectView: React.FC = () => {
           <Tooltip text="Prompt PDF erstellen">
             <button
               className={styles.actionBtn}
-              onClick={() => setIsCreatingPromptJson(true)}
+              // onClick={() => setIsCreatingPromptJson(true)}
+              onClick={() => getPromptsGeneratePDF()}
             >
               Generate Prompt PDF
             </button>
