@@ -6,6 +6,7 @@ import { useProjectTimer } from "../../context/ProjectTimerContext";
 import { toast } from "react-toastify";
 import { InfoPopUp } from "../InfoPopUp/InfoPopUp";
 import styles from "./Home.module.css";
+import { Ladebildschirm } from "../Ladebildschirm/Ladebildschirm";  
 import Tooltip from "../Tooltip/Tooltip";
 
 const modeLabel = (mode: number) => {
@@ -29,6 +30,8 @@ const Home: React.FC = () => {
   const [newProjectMode, setNewProjectMode] = useState<number>(0); // Initiale Mode-Auswahl
   const [showInfoPopUp, setShowInfoPopUp] = useState(false); // Popup-Status
   const [addMode, setAddMode] = useState(false);
+  const [ladeBildschirm, setLadeBildschirm] = useState(false);
+
 
   const {
     currentProjectId,
@@ -65,6 +68,15 @@ const Home: React.FC = () => {
       return;
     }
 
+    setLadeBildschirm(true);
+    try {
+      await axios.get("http://localhost:8000/requiredAiModels")
+    } catch (error){
+      console.error("Error checking required AI models:", error);
+      setLadeBildschirm(false);
+      toast.warn("Beim Laden der notwendigen Modelle ist ein Fehler aufgetreten.")
+    }
+
     try {
       const newProject = {
         title: newProjectTitle,
@@ -84,9 +96,14 @@ const Home: React.FC = () => {
     } catch (error) {
       console.error("Error creating project:", error);
     }
+    setLadeBildschirm(false);
   };
 
   return (
+    <div>
+      {ladeBildschirm && (
+      <Ladebildschirm message="Die benötigten KI-Modelle werden geladen, dies kann einige Zeit dauern" />
+    )}
     <div>
       {showInfoPopUp && <InfoPopUp onClose={() => setShowInfoPopUp(false)} />}
       <div className={styles.scrollableContainer}>
@@ -159,6 +176,7 @@ const Home: React.FC = () => {
           ))}
         </ul>
       </div>
+    </div>
     </div>
   );
 };

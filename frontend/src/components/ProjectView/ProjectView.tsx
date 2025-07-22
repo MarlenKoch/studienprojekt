@@ -198,7 +198,7 @@ const ProjectView: React.FC = () => {
   useEffect(() => {
     const fetchOllamaModelNames = async () => {
       try {
-        const response = await fetch("http://localhost:8000/aimodels");
+        const response = await fetch("http://localhost:8000/aiModels");
 
         if (!response.ok) {
           throw new Error(`Error fetching model names: ${response.statusText}`);
@@ -393,7 +393,6 @@ const ProjectView: React.FC = () => {
 
   return (
     <div className={styles.wrapper}>
-      <ToastContainer position="top-center" autoClose={2400} />
       {timeLeft !== null && (
         <div className={styles.tag}>
           Verbleibende Zeit: <strong>{formatTimeLeft(timeLeft)}</strong>

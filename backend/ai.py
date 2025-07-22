@@ -1,8 +1,9 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Body
 from pydantic import BaseModel
 from ollama import chat
 from aiSchemas import ContextInputs, UserPromptInputs, AiResponse, AiRequest
 import httpx
+import json
 
 
 app = FastAPI()
@@ -68,7 +69,7 @@ async def aiChat(request: AiRequest):
         )
 
 
-@app.get("/aimodels")
+@app.get("/aiModels")
 async def getModels():
     try:
         async with httpx.AsyncClient() as client:
@@ -83,3 +84,74 @@ async def getModels():
         )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
+
+@app.post("/pullAiModel")
+async def pullModel(model_name: str = Body(..., embed=True)):
+    try:
+        async with httpx.AsyncClient(timeout=300) as client:
+            response = await client.post(
+                "http://localhost:11434/api/pull",
+                json={"name": model_name}
+            )
+            response.raise_for_status()
+            body = response.text 
+            print(body)
+            for line in body.splitlines():
+                if not line.strip():
+                    continue
+                try:
+                    data = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if 'error' in data:
+                    raise HTTPException(status_code=400, detail=data["error"])
+            return {"status": "success", "detail": f"Model '{model_name}' wird geladen..."}
+    except httpx.HTTPStatusError as exc:
+        raise HTTPException(status_code=exc.response.status_code, detail=f"{exc.response.text}")
+        # raise HTTPException(status_code=333, detail="Python ist blöd, der schuppen ist kaputt und ich will nach hause")
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+    
+    
+
+REQUIRED_MODELS = ["gemma3:12b", "jobautomation/OpenEuroLLM-German:latest", "mayflowergmbh/wiederchat:latest" ]
+
+@app.get("/requiredAiModels")
+async def checkModels():
+    async with httpx.AsyncClient() as client:
+        try:
+            resp = await client.get("http://localhost:11434/api/tags")
+            resp.raise_for_status()
+            data = resp.json()
+        except httpx.HTTPStatusError as http_exc:
+            raise HTTPException(
+                status_code=http_exc.response.status_code,
+                detail="Failed to retrieve model tags",
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=500, detail=str(exc))
+
+        # vorhandene Modelle
+        available = [m["name"] for m in data.get("models", [])]
+
+        # fehlende Modelle
+        missing = [m for m in REQUIRED_MODELS if m not in available]
+
+        results = {"available": available}
+
+        # Fehlende Modelle laden
+        if missing:
+            results["pulled"] = []
+            for model_name in missing:
+                try:
+                    res = await client.post(
+                        "http://localhost:11434/api/pull",
+                        json={"name": model_name}
+                    )
+                    res.raise_for_status()
+                    results["pulled"].append(model_name)
+                except Exception as ex:
+                    results.setdefault("errors", []).append({model_name: str(ex)})
+
+        return results

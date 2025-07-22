@@ -14,6 +14,9 @@ const Header: React.FC = () => {
           }}
         />
       </Link>
+      <Link to="/KIModelle" style={{ textDecoration: "none", color: "inherit" }}>
+        <button>KI-Modelle</button>
+      </Link>
     </div>
   );
 };
