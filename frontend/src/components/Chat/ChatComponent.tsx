@@ -104,7 +104,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   }, [activeChat, isNewChatActive]);
 
   useEffect(() => {
-    if (task === 4 || task === 6 || task === 8 || task === 5)
+    if (task === 4 || task === 6 || task === 8 || task === 5 || task === 7)
       setAiModel("gemma3:12b");
     else if (task === 1 || task === 3)
       setAiModel("jobautomation/OpenEuroLLM-German");
