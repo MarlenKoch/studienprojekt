@@ -39,6 +39,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const { currentMode } = useProjectTimer();
   const [isShowingSynonym, setIsShowingSynonym] = useState(false);
   const [synonym, setSynonym] = useState("");
+  const [isEditingChatTitle, setIsEditingChatTitle] = useState(false);
 
   // States für das Kommentar-Popup
   const [openNoteAnswerIndex, setOpenNoteAnswerIndex] = useState<number | null>(
@@ -122,7 +123,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       return;
     }
     if (task === 0 || (task === 8 && currentMode != 0)) {
-      toast.warn("Bitte wähle ine zulässige Anfrage!");
+      toast.warn("Bitte wähle eine zulässige Anfrage!");
       return;
     }
 
@@ -290,7 +291,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     setIsNewChatActive(true);
     setActiveChat(null);
     setAnswers([]);
-    setChatTitle("blub test");
+    setChatTitle("Chat");
     setAiModel(aiModelList[0] || "");
     setTask(0);
     setWritingStyle("");
@@ -325,7 +326,9 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     currentMode === 1 || currentMode === 2
       ? taskOptions.filter((opt) => opt.label !== "eigener Prompt")
       : taskOptions;
+
   // ========== RENDER ==========
+
   return (
     <div className={chatStyles.wrapper}>
       <Splitter
@@ -465,34 +468,14 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                         }
                       >
                         <div className={chatStyles.bubbleMeta}>
-                          <span className={chatStyles.bubbleAvatar}>🤖</span>
-                          <span>AI</span>
-                        </div>
-                        <div className={chatStyles.bubbleText}>
-                          <span
-                            style={{
-                              cursor: currentMode !== 3 ? "pointer" : "default",
-                            }}
-                            onClick={
-                              currentMode !== 3
-                                ? () => {
-                                    setOpenNoteAnswerIndex(i);
-                                    setNoteDraft(ans.userNote || "");
-                                    setUserNoteEnabledDraft(
-                                      ans.userNoteEnabled
-                                    );
-                                  }
-                                : undefined
-                            }
-                            title={
-                              currentMode !== 3
-                                ? "Kommentar hinzufügen/bearbeiten"
-                                : ""
-                            }
-                          >
+                          <div className={chatStyles.bubbleMetaSideContainer}>
+                            <span className={chatStyles.bubbleAvatar}>🤖</span>
+                            <span>{ans.aiModel}</span>
+                          </div>
+                          <div className={chatStyles.bubbleMetaSideContainer}>
                             <Tooltip text="Antwort kopieren">
                               <button
-                                className={chatStyles.iconBtn}
+                                className={chatStyles.copyBtn}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   navigator.clipboard.writeText(
@@ -503,6 +486,46 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                                 📋
                               </button>
                             </Tooltip>
+                            {currentMode !== 3 && (
+                              <Tooltip text="Kommentieren">
+                                <button
+                                  className={chatStyles.copyBtn}
+                                  onClick={() => {
+                                    setOpenNoteAnswerIndex(i);
+                                    setNoteDraft(ans.userNote || "");
+                                    setUserNoteEnabledDraft(
+                                      ans.userNoteEnabled
+                                    );
+                                  }}
+                                >
+                                  💬
+                                </button>
+                              </Tooltip>
+                            )}
+                          </div>
+                        </div>
+                        <div className={chatStyles.bubbleText}>
+                          <span
+                            style={{
+                              cursor: currentMode !== 3 ? "pointer" : "default",
+                            }}
+                            // onClick={
+                            //   currentMode !== 3
+                            //     ? () => {
+                            //         setOpenNoteAnswerIndex(i);
+                            //         setNoteDraft(ans.userNote || "");
+                            //         setUserNoteEnabledDraft(
+                            //           ans.userNoteEnabled
+                            //         );
+                            //       }
+                            //     : undefined
+                            // }
+                            title={
+                              currentMode !== 3
+                                ? "Kommentar hinzufügen/bearbeiten"
+                                : ""
+                            }
+                          >
                             <div className={chatStyles.markdown}>
                               <ReactMarkdown>{ans.aiAnswer}</ReactMarkdown>
                             </div>
@@ -533,14 +556,25 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                       </select>
                     </Tooltip>
                     <InfoTip text="Sehr langer text zum testen jwnvwj vwrjv jrhnv rwjhv wrhgnw ehnew ewjnv ewgnew gjewh ewjng ew">
-                      <button
+                      {/* <button
                         className={chatStyles.iconBtn}
                         onClick={handleSend}
-                        title="Anfrage senden"
                       >
-                        <span role="img" aria-label="send">
-                          🚀
-                        </span>
+                        <span role="img">🚀</span>
+                      </button> */}
+                      <button
+                        className={chatStyles.sendBtn}
+                        onClick={handleSend}
+                      >
+                        <img
+                          src="/logo.png"
+                          alt="🚀"
+                          style={{
+                            width: "1.5em",
+                            height: "1.5em",
+                            objectFit: "contain",
+                          }}
+                        />
                       </button>
                     </InfoTip>
                   </div>
@@ -605,7 +639,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
               )}
 
               {/* Chat-Titel & Speichern, ganz unten */}
-              <div className={chatStyles.saveChatRow}>
+              {/* <div className={chatStyles.saveChatRow}>
                 <Tooltip text="Chat-Titel bearbeiten">
                   <input
                     className={chatStyles.field}
@@ -623,6 +657,53 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                     Chat speichern
                   </button>
                 </Tooltip>
+              </div> */}
+
+              <div className={chatStyles.saveChatRow}>
+                {isEditingChatTitle ? (
+                  <>
+                    <Tooltip text="Chat-Titel bearbeiten">
+                      <input
+                        className={chatStyles.field}
+                        type="text"
+                        value={chatTitle}
+                        onChange={(e) => setChatTitle(e.target.value)}
+                        placeholder="Chat-Titel"
+                        autoFocus
+                      />
+                    </Tooltip>
+                    <Tooltip text="Chat speichern">
+                      <button
+                        className={chatStyles.btn}
+                        onClick={() => {
+                          saveChatWithAnswers();
+                          setIsEditingChatTitle(false);
+                        }}
+                      >
+                        Bestätigen
+                      </button>
+                    </Tooltip>
+                    <Tooltip text="Abbrechen">
+                      <button
+                        className={chatStyles.btn}
+                        onClick={() => setIsEditingChatTitle(false)}
+                        style={{ marginLeft: "8px" }}
+                        type="button"
+                      >
+                        Abbrechen
+                      </button>
+                    </Tooltip>
+                  </>
+                ) : (
+                  <Tooltip text="Chat speichern">
+                    <button
+                      className={chatStyles.btn}
+                      onClick={() => setIsEditingChatTitle(true)}
+                    >
+                      Chat speichern
+                    </button>
+                  </Tooltip>
+                )}
               </div>
 
               {/* Kommentar Popup */}
@@ -636,18 +717,16 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                     className={chatStyles.answerNotePopContent}
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <h4>Kommentar bearbeiten</h4>
-                    <Tooltip text="Kommentar-Text bearbeiten">
-                      <TextareaAutosize
-                        rows={5}
-                        maxRows={13}
-                        className={chatStyles.textarea}
-                        style={{ width: "100%" }}
-                        value={noteDraft}
-                        onChange={(e) => setNoteDraft(e.target.value)}
-                        disabled={isSavingNote || currentMode === 3}
-                      />
-                    </Tooltip>
+                    <h4 style={{ marginTop: 0 }}>Kommentar bearbeiten</h4>
+                    <TextareaAutosize
+                      rows={5}
+                      maxRows={13}
+                      className={chatStyles.textarea}
+                      style={{ width: "100%" }}
+                      value={noteDraft}
+                      onChange={(e) => setNoteDraft(e.target.value)}
+                      disabled={isSavingNote || currentMode === 3}
+                    />
                     <div style={{ margin: "10px 0" }}>
                       <label className={chatStyles.label}>
                         Kommentar aktivieren:

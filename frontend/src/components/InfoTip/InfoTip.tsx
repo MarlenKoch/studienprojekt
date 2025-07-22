@@ -31,7 +31,7 @@ const InfoTip: React.FC<InfoTipProps> = ({ children, title, text }) => {
   // Das InfoTip wird jetzt direkt unter das i-Icon positioniert,
   // nicht mehr via Portal
   return (
-    <span className={styles.relativeContainer}>
+    <div className={styles.relativeContainer}>
       {children}
       <button
         ref={iconRef}
@@ -49,7 +49,7 @@ const InfoTip: React.FC<InfoTipProps> = ({ children, title, text }) => {
           <div className={styles.InfoTipText}>{text}</div>
         </div>
       )}
-    </span>
+    </div>
   );
 };
 

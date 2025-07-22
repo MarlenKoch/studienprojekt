@@ -7,8 +7,7 @@ import { toast } from "react-toastify";
 import { InfoPopUp } from "../InfoPopUp/InfoPopUp";
 import styles from "./Home.module.css";
 import { Ladebildschirm } from "../Ladebildschirm/Ladebildschirm";  
-
-
+import Tooltip from "../Tooltip/Tooltip";
 
 const modeLabel = (mode: number) => {
   switch (mode) {
@@ -23,9 +22,7 @@ const modeLabel = (mode: number) => {
     default:
       return "unbekannt";
   }
-  
 };
-
 
 const Home: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -34,7 +31,6 @@ const Home: React.FC = () => {
   const [showInfoPopUp, setShowInfoPopUp] = useState(false); // Popup-Status
   const [addMode, setAddMode] = useState(false);
   const [ladeBildschirm, setLadeBildschirm] = useState(false);
-
 
 
   const {
@@ -114,7 +110,10 @@ const Home: React.FC = () => {
         <ul className={styles.projectGrid}>
           <li>
             {!addMode ? (
-              <button className={styles.projectBox} onClick={() => setAddMode(true)}>
+              <button
+                className={styles.projectBox}
+                onClick={() => setAddMode(true)}
+              >
                 + Neues Projekt
               </button>
             ) : (
@@ -136,8 +135,18 @@ const Home: React.FC = () => {
                   <option value={2}>Arbeiten schreiben</option>
                 </select>
                 <div className={styles.buttonRow}>
-                  <button onClick={handleAddProject} className={styles.miniButton}>Erstellen</button>
-                  <button onClick={() => setAddMode(false)} className={styles.miniButton}>X</button>
+                  <button
+                    onClick={handleAddProject}
+                    className={styles.miniButton}
+                  >
+                    Erstellen
+                  </button>
+                  <button
+                    onClick={() => setAddMode(false)}
+                    className={styles.miniButton}
+                  >
+                    X
+                  </button>
                 </div>
               </div>
             )}
@@ -146,22 +155,27 @@ const Home: React.FC = () => {
             <li key={project.id}>
               <Link
                 className={styles.projectBox}
-
                 to={`/project/${project.id}`}
                 onClick={() => {
                   setCurrentProjectId(project.id);
                   setProjectMode(project.id, project.mode);
                 }}
               >
-
-                {project.title}
-                <span className={styles.modeFont} style={{ fontSize: "80%", marginTop: "8px" }}>({modeLabel(project.mode)})</span>
+                {/* {project.title} */}
+                <Tooltip text={project.title}>
+                  <div className={styles.title}>{project.title}</div>
+                </Tooltip>
+                <span
+                  className={styles.modeFont}
+                  style={{ fontSize: "80%", marginTop: "8px" }}
+                >
+                  ({modeLabel(project.mode)})
+                </span>
               </Link>
             </li>
           ))}
         </ul>
       </div>
-
     </div>
     </div>
   );
