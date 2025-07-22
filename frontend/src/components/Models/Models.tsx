@@ -103,7 +103,7 @@ export const Models: React.FC = () => {
                 </form>
             </div>
 
-            <h2>Bereits installierte Modelle</h2>
+            <h2>vorinstallierte Modelle</h2>
             <div className={styles.modelList}>
                 {MODELS1.map((m, i) => (
                     <div

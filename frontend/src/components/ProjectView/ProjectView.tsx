@@ -190,7 +190,7 @@ const ProjectView: React.FC = () => {
       // if (isCreatingPromptJson === true) {
       //   toast.error("Project ID is undefined");
       // }
-      toast.error("ID des Projektes ist nicht definiert");
+      console.error("ID des Projektes ist nicht definiert" );
     }
   };
 
@@ -233,7 +233,7 @@ const ProjectView: React.FC = () => {
     // }
 
     if (!id) {
-      toast.error("ID des Projektes ist nicht definiert");
+      console.error("ID des Projektes ist nicht definiert");
       return;
     }
 
@@ -348,7 +348,7 @@ const ProjectView: React.FC = () => {
       setProjectMode(project.id, 3);
       toast.success(`Modus geändert zu: ${newMode}.`);
     } catch (error) {
-      toast.error("Fehler beim Änder des Projektmodus");
+      toast.error("Fehler beim Ändern des Projektmodus");
       console.error("Error updating project mode:", error);
     }
   };
