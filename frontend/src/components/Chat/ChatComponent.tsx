@@ -429,7 +429,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
               <div>
                 <InfoTip
                   top={true}
-                  text="Wenn ein KI-Chat zu einem Absatz erstellt wird, wird dem KI-Modell bei Anfragen der Inhalt des Absatzes mitgegeben, sodass es diesen Inhalt für die Antwort verwenden kann. Damit kann z.B. ein Absatze umformuliert oder zusammengefasst werden."
+                  text="Wenn ein KI-Chat zu einem Absatz erstellt wird, wird dem KI-Modell bei Anfragen der Inhalt des Absatzes mitgegeben, sodass es diesen Inhalt für die Antwort verwenden kann. Damit kann z.B. ein Absatz umformuliert oder zusammengefasst werden."
                 >
                   <button className={chatStyles.btn} onClick={handleNewChat}>
                     + Neuer Chat
@@ -680,7 +680,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                       </datalist>
                     </InfoTip>
                     {isShowingSynonym && (
-                      <InfoTip text="Gib hier das Wort ein, für das das Synonym vorgeschlagen werden soll. Die KI nutzt dann deinen Textabschnitt, und versucht dieses Wort darin zu ersetzen.">
+                      <InfoTip text="Gib hier das Wort ein, für das das Synonym vorgeschlagen werden soll. Die KI nutzt dann deinen Textabschnitt, und versucht in diesem Kontext ähnliche Wörter zu finden.">
                         <input
                           className={
                             chatStyles.field + " " + chatStyles.syninput
