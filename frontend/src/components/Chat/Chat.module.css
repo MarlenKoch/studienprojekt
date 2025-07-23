@@ -505,3 +505,17 @@
   font-size: 1.1rem;
   margin-top: 12px;
 }
+
+.commentHeader {
+  flex-direction: row;
+  display: flex;
+  justify-content: space-between;
+  padding-left: 8px;
+  align-items: center;
+  padding-bottom: 4px;
+}
+
+.inputWide {
+  width: 900px;
+  box-sizing: border-box;
+}

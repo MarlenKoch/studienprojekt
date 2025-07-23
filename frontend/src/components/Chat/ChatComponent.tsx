@@ -41,13 +41,12 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   const [isEditingChatTitle, setIsEditingChatTitle] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-
   // States für das Kommentar-Popup
   const [openNoteAnswerIndex, setOpenNoteAnswerIndex] = useState<number | null>(
     null
   );
   const [noteDraft, setNoteDraft] = useState("");
-  const [userNoteEnabledDraft, setUserNoteEnabledDraft] = useState(false); // <-- NEU 
+  const [userNoteEnabledDraft, setUserNoteEnabledDraft] = useState(false); // <-- NEU
   const [isSavingNote, setIsSavingNote] = useState(false);
   // const [isInfoPopUpOpen, setIsInfoPopUpOpen] = useState(false);
 
@@ -507,12 +506,16 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           }
         >
           {(activeChat || isNewChatActive) && (
-            <> {isLoading && (
-              <div className={chatStyles.loadingOverlay}>
-                <div className={chatStyles.loader}></div>
-                <div className={chatStyles.loadingText}>KI wird befragt...</div>
-              </div>
-            )}
+            <>
+              {" "}
+              {isLoading && (
+                <div className={chatStyles.loadingOverlay}>
+                  <div className={chatStyles.loader}></div>
+                  <div className={chatStyles.loadingText}>
+                    KI wird befragt...
+                  </div>
+                </div>
+              )}
               {/* Chat-Verlauf/Fragen & Antworten (WhatsApp-Style) */}
               <div className={chatStyles.bubbleChatContainer}>
                 {answers.map((ans, i) => (
@@ -600,7 +603,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                   </React.Fragment>
                 ))}
               </div>
-
               {/* Aufgaben-Auswahl und Absenden-Button */}
               {currentMode !== 3 && (
                 <div className={chatStyles.chatControlBox}>
@@ -649,7 +651,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                       />
                     </InfoTip>
                     <InfoTip text="Dem KI-Modell kann mitgeteilt werden, in welchem Schreibstil es einen Text verfassen soll. Dies wird dem Prompt hinzugefügt.">
-                      <select
+                      {/* <select
                         className={chatStyles.field}
                         value={writingStyle}
                         onChange={(e) => setWritingStyle(e.target.value)}
@@ -659,7 +661,23 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                             {opt.label}
                           </option>
                         ))}
-                      </select>
+                      </select> */}
+                      <input
+                        className={chatStyles.field}
+                        list="writing-style-options"
+                        value={writingStyle}
+                        onChange={(e) => setWritingStyle(e.target.value)}
+                        placeholder="Schreibstil (optional)"
+                      />
+                      <datalist id="writing-style-options">
+                        {writingStyles
+                          .filter((opt) => !!opt.value)
+                          .map((opt) => (
+                            <option value={opt.value} key={opt.value}>
+                              {opt.label}
+                            </option>
+                          ))}
+                      </datalist>
                     </InfoTip>
                     {isShowingSynonym && (
                       <InfoTip text="Gib hier das Wort ein, für das das Synonym vorgeschlagen werden soll. Die KI nutzt dann deinen Textabschnitt, und versucht dieses Wort darin zu ersetzen.">
@@ -699,7 +717,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                   </div>
                 </div>
               )}
-
               <div className={chatStyles.saveChatRow}>
                 {isEditingChatTitle ? (
                   <>
@@ -744,7 +761,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                   </Tooltip>
                 )}
               </div>
-
               {/* Kommentar Popup */}
               {openNoteAnswerIndex !== null && (
                 <>
@@ -756,7 +772,20 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                     className={chatStyles.answerNotePopContent}
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <h4 style={{ marginTop: 0 }}>Kommentar bearbeiten</h4>
+                    <div className={chatStyles.commentHeader}>
+                      <h4 style={{ margin: 0 }}>Kommentar bearbeiten</h4>
+                      <Tooltip text="Antwort kopieren">
+                        <button
+                          className={chatStyles.copyBtn}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigator.clipboard.writeText(noteDraft || "");
+                          }}
+                        >
+                          📋
+                        </button>
+                      </Tooltip>
+                    </div>
                     <TextareaAutosize
                       rows={13}
                       maxRows={13}
