@@ -46,9 +46,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     null
   );
   const [noteDraft, setNoteDraft] = useState("");
-  const [userNoteEnabledDraft, setUserNoteEnabledDraft] = useState(false); // <-- NEU
+  const [userNoteEnabledDraft, setUserNoteEnabledDraft] = useState(false);
   const [isSavingNote, setIsSavingNote] = useState(false);
-  // const [isInfoPopUpOpen, setIsInfoPopUpOpen] = useState(false);
 
   const fetchChats = async () => {
     if (paragraphId === null) return;
@@ -117,7 +116,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
   // ========== Hauptfunktionen ==========
 
   const handleSend = async () => {
-    if (currentMode === 3) return; // Sicherheit
+    if (currentMode === 3) return;
     if (paragraphId === null) {
       console.error("ID des Absatzes fehlt");
       return;
@@ -152,7 +151,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           answers: answers.map((ans) => ({
             task: ans.task,
             aiAnswer: ans.aiAnswer,
-            userNote: ans.userNoteEnabled ? ans.userNote : "", //TODO nur übergebn wenn... (erledigt)
+            userNote: ans.userNoteEnabled ? ans.userNote : "",
           })),
         }),
       },
@@ -192,12 +191,11 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       console.error("Error:", error);
       toast.warn("Beim generieren der KI-Antwort ist ein Fehler aufgetreten");
     } finally {
-      setIsLoading(false); // auch wenn error weg
+      setIsLoading(false);
     }
   };
 
   // ========== SPEICHERN Chat + Answers ==========
-  // Hilfsfunktion, da für auto-save & Button benötigt!
   const saveChatWithAnswers = async (answersToSave?: Answer[]) => {
     const _answers = answersToSave || answers;
 
@@ -324,7 +322,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
 
   const handleDeleteChat = async (chatId: number) => {
     try {
-      // Den Chat löschen
       await axios.delete(`http://localhost:8000/chats/${chatId}`);
       fetchChats();
     } catch (error) {
@@ -485,7 +482,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                   </div>
                 </div>
               )}
-              {/* Chat-Verlauf/Fragen & Antworten (WhatsApp-Style) */}
               <div className={chatStyles.bubbleChatContainer}>
                 {answers.map((ans, i) => (
                   <React.Fragment key={ans.id ?? `local-${i}`}>
@@ -616,17 +612,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                       />
                     </InfoTip>
                     <InfoTip text="Dem KI-Modell kann mitgeteilt werden, in welchem Schreibstil es einen Text verfassen soll. Dies wird dem Prompt hinzugefügt.">
-                      {/* <select
-                        className={chatStyles.field}
-                        value={writingStyle}
-                        onChange={(e) => setWritingStyle(e.target.value)}
-                      >
-                        {writingStyles.map((opt) => (
-                          <option value={opt.value} key={opt.value}>
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select> */}
                       <input
                         className={chatStyles.field}
                         list="writing-style-options"

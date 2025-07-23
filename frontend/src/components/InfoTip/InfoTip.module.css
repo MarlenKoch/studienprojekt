@@ -39,8 +39,6 @@
 
 .bigInfoTipPopup {
   position: absolute;
-  /* bottom: 40px; */
-  /* right: 0; */
   min-width: 220px;
   max-width: 340px;
   background: #fff;

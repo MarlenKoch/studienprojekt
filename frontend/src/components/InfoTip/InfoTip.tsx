@@ -12,7 +12,6 @@ const InfoTip: React.FC<InfoTipProps> = ({ children, text, top, left }) => {
   const [visible, setVisible] = useState(false);
   const iconRef = useRef<HTMLButtonElement | null>(null);
 
-  // Klick außerhalb schließt das Popup
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (

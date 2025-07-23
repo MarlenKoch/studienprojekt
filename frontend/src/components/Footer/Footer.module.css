@@ -6,7 +6,6 @@
   width: 100%;
   z-index: 1000;
   background-color: var(--HeadFoodBar);
-  /* box-shadow: 0 2px 15px -2px; */
 }
 
 .footerLinks {

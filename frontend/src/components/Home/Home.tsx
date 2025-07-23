@@ -27,8 +27,8 @@ const modeLabel = (mode: number) => {
 const Home: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [newProjectTitle, setNewProjectTitle] = useState("");
-  const [newProjectMode, setNewProjectMode] = useState<number>(0); // Initiale Mode-Auswahl
-  const [showInfoPopUp, setShowInfoPopUp] = useState(false); // Popup-Status
+  const [newProjectMode, setNewProjectMode] = useState<number>(0);
+  const [showInfoPopUp, setShowInfoPopUp] = useState(false);
   const [addMode, setAddMode] = useState(false);
   const [ladeBildschirm, setLadeBildschirm] = useState(false);
 
@@ -162,7 +162,6 @@ const Home: React.FC = () => {
                     setProjectMode(project.id, project.mode);
                   }}
                 >
-                  {/* {project.title} */}
                   <Tooltip text={project.title}>
                     <div className={styles.title}>{project.title}</div>
                   </Tooltip>

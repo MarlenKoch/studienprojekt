@@ -62,11 +62,10 @@ const ProjectView: React.FC = () => {
                 Math.floor(Date.now() / 1000)
             );
           } else {
-            setShowTimerPopup(true); // Show timer popup
+            setShowTimerPopup(true);
           }
         }
       } catch (error) {
-        // 2. Use toast for error
         toast.error("Fehler beim Laden des Projekts");
         console.error("Error fetching project:", error);
       }
@@ -122,7 +121,6 @@ const ProjectView: React.FC = () => {
     if (isChangingMode === true) {
       if (project?.mode === 2) {
         updateProjectMode(3);
-        // setIsCreatingPromptJson(true);
         getPromptsGeneratePDF();
         getPromptsGeneratePDF();
         handleGeneratePDF();
@@ -205,7 +203,6 @@ const ProjectView: React.FC = () => {
       );
 
       setParagraphs([...paragraphs, response.data]);
-      // setNewParagraphContent("");
       toast.success("Textabschnitt hinzugefügt");
     } catch (error) {
       toast.error("Fehler beim Erstellen des Absatzes");
@@ -321,8 +318,8 @@ const ProjectView: React.FC = () => {
     await generatePDF(
       contentJson,
       project.title || "Projekt",
-      "/logo.png", // Falls du kein Logo hast, setze ""
-      false // Kein Promptverzeichnis, sondern Text-Export!
+      "/logo.png",
+      false
     );
 
     toast.success("PDF wurde erstellt!");
@@ -344,8 +341,6 @@ const ProjectView: React.FC = () => {
           Verbleibende Zeit: <strong>{formatTimeLeft(timeLeft)}</strong>
         </div>
       )}
-
-      {/* Top-Bar: Titel + Edit/Delete */}
       <div className={styles.topBar}>
         {isEditingTitle ? (
           <>
@@ -417,7 +412,6 @@ const ProjectView: React.FC = () => {
         <div>
           <button
             className={styles.actionBtn}
-            // onClick={() => setIsCreatingPromptJson(true)}
             onClick={() => getPromptsGeneratePDF()}
           >
             KI-Nutzungsverzeichnis herunterladen

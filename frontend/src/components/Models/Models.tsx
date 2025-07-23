@@ -95,11 +95,7 @@ export const Models: React.FC = () => {
             top={true}
             text="Das Modell wird über die Ollama API auf deinem Gerät installiert und steht dann lokal zur Verfügung. Je nach Größe des Modells kann das Herunterladen eine Weile dauern. Eine Übersicht unterschiedlicher Modelle findest du auch auf der offiziellen Ollama Seite."
           >
-            <button
-            // className={styles.Btn}
-            >
-              Modell herunterladen
-            </button>
+            <button>Modell herunterladen</button>
           </InfoTip>
         </form>
       </div>
