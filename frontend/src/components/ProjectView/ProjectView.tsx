@@ -249,7 +249,7 @@ const ProjectView: React.FC = () => {
           `http://localhost:8000/paragraphs/with_answers/${paragraphId}`
         );
       }
-      // 4. Aus localem State entfernen
+      //Aus localem State entfernen
       setParagraphs(paragraphs.filter((p) => p.id !== paragraphId));
       if (activeParagraphId === paragraphId) setActiveParagraphId(null);
 
@@ -267,11 +267,11 @@ const ProjectView: React.FC = () => {
     }
 
     try {
-      // 2. Projekt löschen
+      //Projekt löschen
       await axios.delete(`http://localhost:8000/projects/${project.id}`);
 
       toast.success("Projekt und alle Paragraphen gelöscht!");
-      navigate("/"); // Zur Startseite oder zur Projektliste, je nach Routing
+      navigate("/");
     } catch (error) {
       toast.error("Fehler beim Löschen des Projekts oder Paragraphen.");
       console.error("Error deleting project or paragraphs:", error);
@@ -349,20 +349,12 @@ const ProjectView: React.FC = () => {
       <div className={styles.topBar}>
         {isEditingTitle ? (
           <>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-start",
-                flex: 1,
-                textAlign: "left",
-              }}
-            >
+            <div className={styles.editTitleContainer}>
               <input
                 className={styles.input}
                 type="text"
                 value={editableTitle}
                 onChange={(e) => setEditableTitle(e.target.value)}
-                style={{ fontSize: "1.5rem" }}
               />
               <Tooltip text="Speichern">
                 <button
@@ -401,14 +393,7 @@ const ProjectView: React.FC = () => {
           </>
         ) : (
           <>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-start",
-                flex: 1,
-                textAlign: "left",
-              }}
-            >
+            <div className={styles.editTitleContainer}>
               <div className={styles.topBarTitleContainer}>
                 <Tooltip text={project?.title || ""}>
                   <span className={styles.topBarTitle}>{project?.title}</span>
@@ -467,46 +452,22 @@ const ProjectView: React.FC = () => {
         key={activeParagraphId ? "open-1" : "closed-1"}
         className={styles.splitter}
         gutterSize={activeParagraphId ? 5 : 0}
-        style={{
-          flex: 1,
-          minHeight: 0,
-          height: "100%",
-          width: "100%",
-          minWidth: "min-content",
-        }}
       >
         <SplitterPanel
           size={activeParagraphId ? 50 : 100000}
           minSize={10}
+          className={styles.splitterPanel}
           style={{
-            height: "100%",
             flex: activeParagraphId ? 1 : 2,
-            minHeight: 0,
-            display: "flex",
           }}
         >
           <div
             className={styles.sectionCard}
             style={{
-              flex: 1,
-              height: "100%",
-              minHeight: 0,
-              display: "flex",
-              flexDirection: "row",
-              position: "relative",
               paddingRight: activeParagraphId ? "0px" : "8px",
             }}
           >
-            <div
-              style={{
-                flex: 1,
-                height: "100%",
-                minHeight: 0,
-                display: "flex",
-                flexDirection: "column",
-                position: "relative",
-              }}
-            >
+            <div className={styles.paragraphListContainer}>
               <ul className={styles.paragraphList}>
                 {paragraphs.map((paragraph) => (
                   <li key={paragraph.id}>
@@ -603,11 +564,7 @@ const ProjectView: React.FC = () => {
             {activeParagraphId && (
               <Tooltip text="Chats schließen">
                 <button
-                  style={{
-                    margin: 0,
-                    padding: 0,
-                    background: "none",
-                  }}
+                  className={styles.arrowBtn}
                   onClick={() => setActiveParagraphId(null)}
                 >
                   {"◀"}
@@ -618,11 +575,9 @@ const ProjectView: React.FC = () => {
         </SplitterPanel>
         <SplitterPanel
           size={activeParagraphId ? 50 : 0}
+          className={styles.splitterPanel}
           style={{
-            height: "100%",
             flex: activeParagraphId ? 1 : 0,
-            minHeight: 0,
-            display: "flex",
           }}
         >
           {activeParagraphId !== null && (

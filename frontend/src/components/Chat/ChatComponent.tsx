@@ -392,39 +392,17 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       <Splitter
         key={activeChat || isNewChatActive ? "open-2" : "closed-2"}
         className={chatStyles.splitter}
-        style={{
-          height: "100%",
-          width: "100%",
-        }}
         gutterSize={activeChat || isNewChatActive ? 5 : 0}
       >
         <SplitterPanel
           size={activeChat || isNewChatActive ? 50 : 100000}
           style={{
-            height: "100%",
             flex: activeChat || isNewChatActive ? 1 : 2,
-            minHeight: 0,
-            display: "flex",
-            flexDirection: "row",
-            width: "100%",
             paddingRight: activeChat || isNewChatActive ? "0px" : "24px",
-
-            alignItems: "center",
           }}
-          className={chatStyles.sectionCard}
+          className={chatStyles.sectionCard1}
         >
-          <div
-            style={{
-              flex: 1,
-              height: "100%",
-              minHeight: 0,
-              display: "flex",
-              flexDirection: "column",
-              position: "relative",
-              gap: "12px",
-              minWidth: 0,
-            }}
-          >
+          <div className={chatStyles.chatListContainer}>
             {(currentMode === 0 || currentMode === 1 || currentMode === 2) && (
               <div>
                 <InfoTip
@@ -474,11 +452,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
           {(activeChat || isNewChatActive) && (
             <Tooltip text="Seitenleiste schließen">
               <button
-                style={{
-                  margin: 0,
-                  padding: 0,
-                  background: "none",
-                }}
+                className={chatStyles.arrowBtn}
                 onClick={() => {
                   setActiveChat(null);
                   setIsNewChatActive(false);
@@ -492,16 +466,11 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
         <SplitterPanel
           size={activeChat || isNewChatActive ? 1 : 0}
           style={{
-            height: "100%",
             flex: activeChat || isNewChatActive ? 1 : 0,
-            minHeight: 0,
-            display: "flex",
-            flexDirection: "column",
-            width: "100%",
           }}
           className={
             activeChat || isNewChatActive
-              ? chatStyles.sectionCard
+              ? chatStyles.sectionCard2
               : chatStyles.none
           }
         >
@@ -627,13 +596,9 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                         onClick={handleSend}
                       >
                         <img
+                          className={chatStyles.sendBtnImg}
                           src="/logo.png"
                           alt="🚀"
-                          style={{
-                            width: "1.5em",
-                            height: "1.5em",
-                            objectFit: "contain",
-                          }}
                         />
                       </button>
                     </InfoTip>

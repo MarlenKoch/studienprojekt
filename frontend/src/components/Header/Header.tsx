@@ -4,17 +4,10 @@ import styles from "./Header.module.css";
 const Header: React.FC = () => {
   return (
     <div className={styles.header}>
-      <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
-        <img
-          className={styles.logo}
-          src="/logo.png"
-          alt="KI-Logo"
-          style={{
-            transform: "rotate(90deg) scaleX(-1)",
-          }}
-        />
+      <Link to="/">
+        <img className={styles.logo} src="/logo.png" alt="KI-Logo" />
       </Link>
-      <Link to="/KIModelle" style={{ textDecoration: "none", color: "inherit" }}>
+      <Link to="/KIModelle">
         <button>KI-Modelle</button>
       </Link>
     </div>
