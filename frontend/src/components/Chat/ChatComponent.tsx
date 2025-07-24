@@ -271,7 +271,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       }
       if (changed) await fetchAnswers(chatId);
       fetchChats();
-      if (!answersToSave) toast.warn("Chat und Antworten gespeichert!");
+      if (!answersToSave) toast.success("Chat und Antworten gespeichert!");
     }
     setIsNewChatActive(false);
   };
