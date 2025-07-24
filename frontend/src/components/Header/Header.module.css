@@ -5,11 +5,11 @@
   justify-content: space-between;
   background-color: var(--HeadFoodBar);
   height: 80px;
-  /* box-shadow: 0 2px 15px -2px; */
 }
 
 .logo {
   height: 60px;
   margin: 10px;
   margin-left: 20px;
+  transform: rotate(90deg) scaleX(-1);
 }

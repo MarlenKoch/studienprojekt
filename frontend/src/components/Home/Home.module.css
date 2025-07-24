@@ -8,7 +8,7 @@
 .scrollableContainer {
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: calc(100vh - 140px);
+  max-height: calc(100vh - 138px);
   font-size: large;
   padding: 0;
   margin: 0;
@@ -112,20 +112,20 @@ a.projectBox {
 }
 
 .modeFont {
-  font-size: 0.75em;
+  font-size: 80%;
   font-weight: 400;
   margin-top: 8px;
-  opacity: 0.85; /* Optional für dezenteren Look */
+  opacity: 0.85;
 }
 
 .title {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 5; /* Anzahl erlaubter Zeilen */
+  -webkit-line-clamp: 5;
   line-clamp: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  word-break: break-word; /* Lange Wörter umbrechen */
+  word-break: break-word;
   white-space: normal;
   padding: 12px;
   padding-bottom: 0;

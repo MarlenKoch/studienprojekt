@@ -16,7 +16,7 @@ const Tooltip: React.FC<TooltipProps> = ({ children, text }) => {
     if (childRef.current) {
       const rect = childRef.current.getBoundingClientRect();
       setCoords({
-        top: rect.top + window.scrollY - 8, // 36px oberhalb des Elements
+        top: rect.top + window.scrollY - 8,
         left: rect.left + window.scrollX + rect.width / 2,
       });
       setVisible(true);
