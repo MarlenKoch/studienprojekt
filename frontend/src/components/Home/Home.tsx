@@ -163,7 +163,9 @@ const Home: React.FC = () => {
                   }}
                 >
                   <Tooltip text={project.title}>
-                    <div className={styles.title}>{project.title}</div>
+                    <div className={styles.title} lang="de">
+                      {project.title}
+                    </div>
                   </Tooltip>
                   <span className={styles.modeFont}>
                     ({modeLabel(project.mode)})

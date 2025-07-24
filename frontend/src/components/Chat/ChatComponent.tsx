@@ -425,7 +425,11 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                       .filter(Boolean)
                       .join(" ")}
                   >
-                    <div className={chatStyles.chatTitle} title={chat.title}>
+                    <div
+                      className={chatStyles.chatTitle}
+                      title={chat.title}
+                      lang="de"
+                    >
                       {chat.title}
                     </div>
                     {currentMode === 0 && (

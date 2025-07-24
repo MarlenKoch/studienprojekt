@@ -126,6 +126,7 @@ a.projectBox {
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-word;
+  hyphens: auto;
   white-space: normal;
   padding: 12px;
   padding-bottom: 0;

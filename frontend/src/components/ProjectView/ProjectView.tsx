@@ -485,6 +485,7 @@ const ProjectView: React.FC = () => {
                         }}
                         readOnly={project?.mode === 3}
                         minRows={8}
+                        lang="de"
                       />
                       <div className={styles.paragraphActions}>
                         <Tooltip text="KI-Chat">
