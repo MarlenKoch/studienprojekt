@@ -428,17 +428,18 @@
 
 
 .loadingOverlay {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  position: fixed;           /* war: absolute */
+  top: 0; right: 0; bottom: 0; left: 0;
+  width: 100vw;              /* optional: nimmt gesamten Viewport */
+  height: 100vh;             /* optional: nimmt gesamten Viewport */
   background: rgba(96, 105, 111, 0.65);
-  z-index: 99;
+  z-index: 9999;             /* höherer Wert für Sicherheit */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  pointer-events: all;
-  border-radius: 16px;
+  pointer-events: all;       /* blockiert Klicks darunter */
+  border-radius: 0;          /* KEINE Abrundung, damit Ecken nicht "durchlässig" sind */
 }
 
 .loader {
