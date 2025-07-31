@@ -41,6 +41,7 @@
 
 .sectionCard2 {
   flex-direction: column;
+  min-width: 240px;
 }
 
 .scrollableContainer {
