@@ -45,10 +45,6 @@ Für das Projekt werden folgende Technologien verwendet:
      python -m venv venv
      ```
    - Aktivieren Sie die virtuelle Umgebung:
-     - Auf Windows:
-       ```bash
-       .\venv\Scripts\activate
-       ```
      - Auf Mac/Linux:
        ```bash
        source venv/bin/activate
@@ -58,7 +54,23 @@ Für das Projekt werden folgende Technologien verwendet:
      pip install -r requirements.txt
      ```
 
+  3. **Ollama**
+
+  Ollama muss für die Nutzung der KI-Modelle zur Verfügung stehen und kann über diesen Link installiert werden:
+
+  https://ollama.com/download
+
+  
+
 ## Verwendung
+
+### Starten von Ollama
+
+Nach dem Installieren muss Ollama mit folgendem Befehl gestartet werden: 
+
+  ```bash
+  ollama serve
+  ```
 
 ### Starten des Frontend-Servers
 
@@ -78,6 +90,6 @@ uvicorn main:app --reload
 
 Sobald beide Server laufen, öffnen Sie Ihren bevorzugten Webbrowser und navigieren Sie zur URL:
 ```
-http://localhost:3000
+http://localhost:5173
 ```
 
