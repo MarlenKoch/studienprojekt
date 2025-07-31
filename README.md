@@ -25,9 +25,9 @@ Für das Projekt werden folgende Technologien verwendet:
 
 ### Voraussetzungen
 
-- Node.js für die Ausführung von React-Anwendungen
-- Python 3.x für die Backend-Entwicklung
-- Lokale Installation von Ollama-Modellen
+- Node.js für das Frontend
+- Python 3 für das Backend
+- Lokale Installation von Ollama
 
 ### Installation
 
