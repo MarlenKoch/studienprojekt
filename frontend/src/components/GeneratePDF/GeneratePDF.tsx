@@ -74,7 +74,7 @@ export const generatePDF = async (
     logoHeight = logoY + logoH;
   }
   const topElementBottom = Math.max(titleY + titleHeight, logoHeight);
-  const contentStartY = topElementBottom + 30;
+  const contentStartY = topElementBottom + 60;
 
   // ==== PARSING (typisiert) ====
   let parsed: ContentJsonType = {};

@@ -7,9 +7,14 @@ const Header: React.FC = () => {
       <Link to="/">
         <img className={styles.logo} src="/logo.png" alt="KI-Logo" />
       </Link>
-      <Link to="/KIModelle">
-        <button>KI-Modelle</button>
-      </Link>
+      <div>
+        <Link to="/Informationen">
+          <button>Informationen</button>
+        </Link>
+        <Link to="/KIModelle">
+          <button>KI-Modelle</button>
+        </Link>
+      </div>
     </div>
   );
 };

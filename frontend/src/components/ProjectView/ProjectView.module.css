@@ -103,7 +103,7 @@
 .textarea {
   width: 100%;
   min-height: 180px;
-  font-size: 1.07rem;
+  font-size: calc((100vw - 1200px) / 400 + 1.07rem);
   padding: 14px 16px;
   border-radius: 14px;
   background: var(--wuerstchen);
