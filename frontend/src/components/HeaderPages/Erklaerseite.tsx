@@ -33,19 +33,29 @@ const INFOS = [
       "Ein Prompt ist der Text oder die Frage, die du dem KI-Modell gibst. Darauf reagiert das Modell und versucht, die beste Antwort oder Lösung zu finden.",
   },
   {
-    name: "Token",
-    description:
-      "Ein Token ist ein kleiner Teil eines Textes – das kann ein Wort oder sogar nur ein Stück davon sein. KI-Modelle rechnen ihre Texte in Tokens um. Wie viele Tokens ein Modell nutzen kann, bestimmt, wie viel Kontext möglich ist.",
-  },
-  {
     name: "Lokal",
     description:
-      "Lokal bedeutet, dass ein Programm direkt auf deinem eigenen Computer läuft – nicht in der Cloud oder auf fremden Servern. So bleiben alle Daten bei dir.",
+      "Lokal bedeutet, dass ein Programm direkt auf deinem eigenen Computer läuft – nicht in der Cloud oder auf fremden Servern. So bleiben alle Daten bei dir. Aus Datenschutzgründen laufen deswegen auch die verwendeten KI-Modelle auf deinem Rechner.",
   },
   {
-    name: "Trainieren",
+    name: "Vordefinierte Prompts",
     description:
-      "Ein KI-Modell wird trainiert, indem es viele Beispiele bekommt. Daraus lernt es, wie Sprache funktioniert, und kann dann selbst Texte generieren oder Fragen beantworten.",
+      "Wählst du eine der vorgegebenen Aufgaben, wird dem KI-Modell aus dem Backend ein Prompt mitgegeben. Der sagt dem Modell, welche Aufgabe es lösen und in welchem Format es antworten soll.",
+  },
+  {
+    name: "Vorinstallierte KI-Modelle",
+    description:
+      "Die Modelle Gemma3, jobautomation/OpenEuroLLM-German und mayflowergmbh/wiederchat lieferten bei Tests die besten Antworten für die vordefinierten Aufgaben und werden daher als Standard verwendet.",
+  },
+  {
+    name: "Wie nutzt die KI meinen Text?",
+    description:
+      "Erstellst du zu einem Absatz einen KI-Chat, wird der Inhalt des Absatzes bei jeder Anfrage als Zusatzinformation an die KI gegeben. Hast du jedoch bereits mehrere Texte im Chatverlauf, beachtet das KI-Modell eher diese Texte als den Inhalt deines Absatzes. Soll die KI also unbedingt auf den Inhalt deines Absatzes eingehen, erstelle einen neuen Chat zu diesem Absatz.",
+  },
+  {
+    name: "Wieso kann ich Kommentare “aktivieren”?",
+    description:
+      "Das Aktivieren von Kommentaren bedeutet, dass du diese dem KI-Modell bei der nächsten Anfrage ebenfalls als Kontextinformation mitgibst.",
   },
 ];
 
