@@ -3,15 +3,15 @@ import styles from "./InfoTip.module.css";
 
 interface InfoTipProps {
   children: ReactNode;
-  title?: string;
   text: string;
+  top?: boolean;
+  left?: boolean;
 }
 
-const InfoTip: React.FC<InfoTipProps> = ({ children, title, text }) => {
+const InfoTip: React.FC<InfoTipProps> = ({ children, text, top, left }) => {
   const [visible, setVisible] = useState(false);
   const iconRef = useRef<HTMLButtonElement | null>(null);
 
-  // Klick außerhalb schließt das Popup
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (
@@ -28,8 +28,6 @@ const InfoTip: React.FC<InfoTipProps> = ({ children, title, text }) => {
     return () => document.removeEventListener("mousedown", handleClick);
   }, [visible]);
 
-  // Das InfoTip wird jetzt direkt unter das i-Icon positioniert,
-  // nicht mehr via Portal
   return (
     <div className={styles.relativeContainer}>
       {children}
@@ -44,8 +42,15 @@ const InfoTip: React.FC<InfoTipProps> = ({ children, title, text }) => {
         <span className={styles.circleI}>i</span>
       </button>
       {visible && (
-        <div className={styles.bigInfoTipPopup}>
-          {title && <div className={styles.InfoTipTitle}>{title}</div>}
+        <div
+          className={
+            styles.bigInfoTipPopup +
+            " " +
+            (top ? styles.bigInfoTipPopupTop : styles.bigInfoTipPopupBottom) +
+            " " +
+            (left ? styles.bigInfoTipPopupLeft : styles.bigInfoTipPopupRight)
+          }
+        >
           <div className={styles.InfoTipText}>{text}</div>
         </div>
       )}

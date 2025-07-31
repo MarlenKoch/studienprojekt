@@ -6,7 +6,6 @@
 .tooltipTextPortal {
   position: absolute;
   transform: translate(-50%, -100%);
-  /* Styling wie gehabt: */
   background-color: #333;
   color: #fff;
   text-align: center;
@@ -23,12 +22,8 @@
 .title {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  /* -webkit-line-clamp: 5; Anzahl erlaubter Zeilen */
-  /* line-clamp: 0; */
   overflow: hidden;
   text-overflow: ellipsis;
-  word-break: break-word; /* Lange Wörter umbrechen */
+  word-break: break-word;
   white-space: normal;
-  /* padding: 12px; */
-  /* padding-bottom: 0; */
 }

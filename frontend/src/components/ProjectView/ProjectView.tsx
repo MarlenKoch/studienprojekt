@@ -6,9 +6,6 @@ import { Paragraph } from "../../types/Paragraph";
 import ChatComponent from "../Chat/ChatComponent";
 import { useProjectTimer } from "../../context/ProjectTimerContext";
 import "jspdf-autotable";
-// import jsPDF from "jspdf";
-
-//import primereact from "primereact";
 
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -26,14 +23,10 @@ const ProjectView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [project, setProject] = useState<Project | null>(null);
   const [paragraphs, setParagraphs] = useState<Paragraph[]>([]);
-  // const [newParagraphContent, setNewParagraphContent] = useState("");
   const [activeParagraphId, setActiveParagraphId] = useState<number | null>(
     null
   );
   const [aiModelList, setaiModelList] = useState<string[]>([]);
-  //const [promptsJson, setPromptsJson] = useState<string>("");
-  // const [isCreatingPromptJson, setIsCreatingPromptJson] =
-  //   useState<boolean>(false);
   const navigate = useNavigate();
   // Timer Popup
   const [showTimerPopup, setShowTimerPopup] = useState(false);
@@ -69,11 +62,10 @@ const ProjectView: React.FC = () => {
                 Math.floor(Date.now() / 1000)
             );
           } else {
-            setShowTimerPopup(true); // Show timer popup
+            setShowTimerPopup(true);
           }
         }
       } catch (error) {
-        // 2. Use toast for error
         toast.error("Fehler beim Laden des Projekts");
         console.error("Error fetching project:", error);
       }
@@ -129,7 +121,6 @@ const ProjectView: React.FC = () => {
     if (isChangingMode === true) {
       if (project?.mode === 2) {
         updateProjectMode(3);
-        // setIsCreatingPromptJson(true);
         getPromptsGeneratePDF();
         getPromptsGeneratePDF();
         handleGeneratePDF();
@@ -137,36 +128,6 @@ const ProjectView: React.FC = () => {
       setIsChangingMode(false);
     }
   }, [isChangingMode]);
-
-  // Fetches prompts and generates PDF when requested.
-  // useEffect(() => {
-  //   if (!isCreatingPromptJson) return;
-  //   const getPromptsGeneratePDF = async () => {
-  //     if (project?.id !== undefined) {
-  //       try {
-  //         const response = await axios.get<string>(
-  //           `http://localhost:8000/promptverzeichnis/`,
-  //           { params: { projectId: project.id } }
-  //         );
-  //         generatePDF(
-  //           JSON.stringify(response.data),
-  //           `Promptverzeichnis ${project?.title ?? "Projekt"}`,
-  //           "/logo.png"
-  //         );
-  //         toast.success("PDF generated and downloaded!");
-  //       } catch (error) {
-  //         toast.error("Error fetching chats for PDF");
-  //         console.error("Error fetching chats:", error);
-  //       }
-  //     } else {
-  //       if (isCreatingPromptJson === true) {
-  //         toast.error("Project ID is undefined");
-  //       }
-  //     }
-  //   };
-  //   setIsCreatingPromptJson(false);
-  //   getPromptsGeneratePDF();
-  // }, [isCreatingPromptJson]);
 
   const getPromptsGeneratePDF = async () => {
     if (project?.id !== undefined) {
@@ -187,10 +148,7 @@ const ProjectView: React.FC = () => {
         console.error("Error fetching chats:", error);
       }
     } else {
-      // if (isCreatingPromptJson === true) {
-      //   toast.error("Project ID is undefined");
-      // }
-      console.error("ID des Projektes ist nicht definiert" );
+      console.error("ID des Projektes ist nicht definiert");
     }
   };
 
@@ -227,11 +185,6 @@ const ProjectView: React.FC = () => {
 
   // Handles adding a new paragraph
   const handleAddParagraph = async () => {
-    // if (newParagraphContent.trim() === "") {
-    //   toast.warn("Please enter the paragraph content.");
-    //   return;
-    // }
-
     if (!id) {
       console.error("ID des Projektes ist nicht definiert");
       return;
@@ -250,7 +203,6 @@ const ProjectView: React.FC = () => {
       );
 
       setParagraphs([...paragraphs, response.data]);
-      // setNewParagraphContent("");
       toast.success("Textabschnitt hinzugefügt");
     } catch (error) {
       toast.error("Fehler beim Erstellen des Absatzes");
@@ -294,13 +246,11 @@ const ProjectView: React.FC = () => {
           `http://localhost:8000/paragraphs/with_answers/${paragraphId}`
         );
       }
-      // 4. Aus localem State entfernen
+      //Aus localem State entfernen
       setParagraphs(paragraphs.filter((p) => p.id !== paragraphId));
       if (activeParagraphId === paragraphId) setActiveParagraphId(null);
 
-      toast.success(
-        "Absatz und dazugehörige Chats gelöscht"
-      );
+      toast.success("Absatz und dazugehörige Chats gelöscht");
     } catch (error) {
       toast.error("Fehler beim Löschen eines Absatzes oder Chats.");
       console.error(error);
@@ -313,19 +263,12 @@ const ProjectView: React.FC = () => {
       return;
     }
 
-    // if (
-    //   !window.confirm(
-    //     "Möchtest du das Projekt und alle Paragraphen wirklich löschen?"
-    //   )
-    // )
-    //   return;
-
     try {
-      // 2. Projekt löschen
+      //Projekt löschen
       await axios.delete(`http://localhost:8000/projects/${project.id}`);
 
       toast.success("Projekt und alle Paragraphen gelöscht!");
-      navigate("/"); // Zur Startseite oder zur Projektliste, je nach Routing
+      navigate("/");
     } catch (error) {
       toast.error("Fehler beim Löschen des Projekts oder Paragraphen.");
       console.error("Error deleting project or paragraphs:", error);
@@ -375,8 +318,8 @@ const ProjectView: React.FC = () => {
     await generatePDF(
       contentJson,
       project.title || "Projekt",
-      "/logo.png", // Falls du kein Logo hast, setze ""
-      false // Kein Promptverzeichnis, sondern Text-Export!
+      "/logo.png",
+      false
     );
 
     toast.success("PDF wurde erstellt!");
@@ -398,25 +341,15 @@ const ProjectView: React.FC = () => {
           Verbleibende Zeit: <strong>{formatTimeLeft(timeLeft)}</strong>
         </div>
       )}
-
-      {/* Top-Bar: Titel + Edit/Delete */}
       <div className={styles.topBar}>
         {isEditingTitle ? (
           <>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-start",
-                flex: 1,
-                textAlign: "left",
-              }}
-            >
+            <div className={styles.editTitleContainer}>
               <input
                 className={styles.input}
                 type="text"
                 value={editableTitle}
                 onChange={(e) => setEditableTitle(e.target.value)}
-                style={{ fontSize: "1.5rem" }}
               />
               <Tooltip text="Speichern">
                 <button
@@ -455,51 +388,43 @@ const ProjectView: React.FC = () => {
           </>
         ) : (
           <>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-start",
-                flex: 1,
-                textAlign: "left",
-              }}
-            >
-              <div>
+            <div className={styles.editTitleContainer}>
+              <div className={styles.topBarTitleContainer}>
                 <Tooltip text={project?.title || ""}>
                   <span className={styles.topBarTitle}>{project?.title}</span>
                 </Tooltip>
                 {(project?.mode === 1 || project?.mode === 2) && (
-                  <span className={styles.tag}>Im Schülermodus</span>
+                  <span className={styles.tag}>Schülermodus</span>
                 )}
               </div>
             </div>
-              <button
-                className={styles.actionBtn}
-                onClick={() => {
-                  setIsEditingTitle(true);
-                  setEditableTitle(project?.title ?? "");
-                }}
-              >
-                Titel bearbeiten
-              </button>
+            <button
+              className={styles.actionBtn}
+              onClick={() => {
+                setIsEditingTitle(true);
+                setEditableTitle(project?.title ?? "");
+              }}
+            >
+              Titel bearbeiten
+            </button>
           </>
         )}
         <div>
-            <button
-              className={styles.actionBtn}
-              // onClick={() => setIsCreatingPromptJson(true)}
-              onClick={() => getPromptsGeneratePDF()}
-            >
-              KI-Nutzungsverzeichnis herunterladen
-            </button>
-            <button className={styles.actionBtn} onClick={handleGeneratePDF}>
-              Text herunterladen
-            </button>
-            <button
-              className={[styles.actionBtn, styles.danger].join(" ")}
-              onClick={handleDeleteProject}
-            >
-              Projekt löschen
-            </button>
+          <button
+            className={styles.actionBtn}
+            onClick={() => getPromptsGeneratePDF()}
+          >
+            KI-Nutzungsverzeichnis herunterladen
+          </button>
+          <button className={styles.actionBtn} onClick={handleGeneratePDF}>
+            Text herunterladen
+          </button>
+          <button
+            className={[styles.actionBtn, styles.danger].join(" ")}
+            onClick={handleDeleteProject}
+          >
+            Projekt löschen
+          </button>
 
           {project?.mode === 2 && (
             <Tooltip text="Abgeben">
@@ -521,46 +446,22 @@ const ProjectView: React.FC = () => {
         key={activeParagraphId ? "open-1" : "closed-1"}
         className={styles.splitter}
         gutterSize={activeParagraphId ? 5 : 0}
-        style={{
-          flex: 1,
-          minHeight: 0,
-          height: "100%",
-          width: "100%",
-          minWidth: "min-content",
-        }}
       >
         <SplitterPanel
           size={activeParagraphId ? 50 : 100000}
           minSize={10}
+          className={styles.splitterPanel}
           style={{
-            height: "100%",
             flex: activeParagraphId ? 1 : 2,
-            minHeight: 0,
-            display: "flex",
           }}
         >
           <div
             className={styles.sectionCard}
             style={{
-              flex: 1,
-              height: "100%",
-              minHeight: 0,
-              display: "flex",
-              flexDirection: "row",
-              position: "relative",
               paddingRight: activeParagraphId ? "0px" : "8px",
             }}
           >
-            <div
-              style={{
-                flex: 1,
-                height: "100%",
-                minHeight: 0,
-                display: "flex",
-                flexDirection: "column",
-                position: "relative",
-              }}
-            >
+            <div className={styles.paragraphListContainer}>
               <ul className={styles.paragraphList}>
                 {paragraphs.map((paragraph) => (
                   <li key={paragraph.id}>
@@ -645,23 +546,19 @@ const ProjectView: React.FC = () => {
                 project?.mode === 1 ||
                 project?.mode === 2) && (
                 <div>
-                    <button
-                      className={styles.actionBtn}
-                      onClick={handleAddParagraph}
-                    >
-                      Absatz hinzufügen
-                    </button>
+                  <button
+                    className={styles.actionBtn}
+                    onClick={handleAddParagraph}
+                  >
+                    Absatz hinzufügen
+                  </button>
                 </div>
               )}
             </div>
             {activeParagraphId && (
               <Tooltip text="Chats schließen">
                 <button
-                  style={{
-                    margin: 0,
-                    padding: 0,
-                    background: "none",
-                  }}
+                  className={styles.arrowBtn}
                   onClick={() => setActiveParagraphId(null)}
                 >
                   {"◀"}
@@ -672,11 +569,9 @@ const ProjectView: React.FC = () => {
         </SplitterPanel>
         <SplitterPanel
           size={activeParagraphId ? 50 : 0}
+          className={styles.splitterPanel}
           style={{
-            height: "100%",
             flex: activeParagraphId ? 1 : 0,
-            minHeight: 0,
-            display: "flex",
           }}
         >
           {activeParagraphId !== null && (

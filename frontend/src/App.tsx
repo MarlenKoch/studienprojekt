@@ -20,10 +20,10 @@ const App: React.FC = () => {
             <ToastContainer position="top-center" autoClose={2400} />
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/project/:id" element={<ProjectView />} />{" "}
+              <Route path="/project/:id" element={<ProjectView />} />
               <Route path="/impressum" element={<Impressum />} />
               <Route path="/ueberUns" element={<UeberUns />} />
-              <Route path="/KIModelle" element={<Models/>}/>
+              <Route path="/KIModelle" element={<Models />} />
             </Routes>
           </main>
           <Footer />

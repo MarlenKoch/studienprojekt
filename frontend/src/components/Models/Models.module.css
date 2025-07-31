@@ -1,15 +1,14 @@
 .formGroup {
-  display: flex;           
+  display: flex;
   flex-direction: row;
-  align-items: center;     
-  gap: 18px;               
-  margin-top: 36px;        
+  align-items: center;
+  gap: 18px;
+  margin-top: 36px;
   margin-bottom: 28px;
   max-width: 540px;
   margin-left: auto;
   margin-right: auto;
 }
-
 
 .inputBox {
   width: 100%;
@@ -50,10 +49,10 @@
 .modelCard {
   background: var(--box);
   border-radius: 15px;
-  box-shadow: 0 2px 18px rgba(0,0,0,0.23);
+  box-shadow: 0 2px 18px rgba(0, 0, 0, 0.23);
   padding: 24px 20px 18px 20px;
   cursor: pointer;
-  transition: box-shadow 0.2s, transform .13s, border-color 0.13s;
+  transition: box-shadow 0.2s, transform 0.13s, border-color 0.13s;
   min-height: 80px;
   display: flex;
   flex-direction: column;
@@ -62,8 +61,9 @@
   color: var(--white);
 }
 
-.modelCard:hover, .modelCard.active {
-  box-shadow: 0 6px 32px rgba(166,203,190, 0.14);
+.modelCard:hover,
+.modelCard.active {
+  box-shadow: 0 6px 32px rgba(166, 203, 190, 0.14);
   transform: translateY(-2px) scale(1.0125);
   border-color: var(--accent);
 }
