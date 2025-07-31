@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./FooterPages.module.css"
+import styles from "./FooterPages.module.css";
 
 const DataSafetyInformation: React.FC = () => {
   return (
@@ -9,9 +9,15 @@ const DataSafetyInformation: React.FC = () => {
       <section style={{ marginBottom: 32 }}>
         <h2>Ziel des Projekts</h2>
         <p>
-          Ziel ist es, einen fortschrittlichen Schreibassistenten zu entwickeln, der den Einsatz von künstlicher Intelligenz während des Schreibprozesses optimiert und somit die Effizienz und Effektivität des Schreibens steigert.
+          Ziel ist es, einen fortschrittlichen Schreibassistenten zu entwickeln,
+          der den Einsatz von künstlicher Intelligenz während des
+          Schreibprozesses optimiert und somit die Effizienz und Effektivität
+          des Schreibens steigert.
           <br />
-          <strong>Das Projekt entsteht im Rahmen der Studienprojekte der Hochschule für Wirtschaft und Recht Berlin.</strong>
+          <strong>
+            Das Projekt entsteht im Rahmen der Studienprojekte der Hochschule
+            für Wirtschaft und Recht Berlin.
+          </strong>
         </p>
       </section>
 
@@ -22,10 +28,12 @@ const DataSafetyInformation: React.FC = () => {
             <strong>Frontend</strong>
             <ul>
               <li>
-                <b>React:</b> Für die Entwicklung der Benutzeroberfläche und interaktiver Elemente
+                <b>React:</b> Für die Entwicklung der Benutzeroberfläche und
+                interaktiver Elemente
               </li>
               <li>
-                <b>TypeScript:</b> Typisierung zur Fehlervermeidung und besseren Wartbarkeit
+                <b>TypeScript:</b> Typisierung zur Fehlervermeidung und besseren
+                Wartbarkeit
               </li>
             </ul>
           </li>
@@ -34,7 +42,8 @@ const DataSafetyInformation: React.FC = () => {
             <strong>Backend</strong>
             <ul>
               <li>
-                <b>Python FastAPI:</b> Entwicklung schneller und effizienter REST-APIs
+                <b>Python FastAPI:</b> Entwicklung schneller und effizienter
+                REST-APIs
               </li>
               <li>
                 <b>SQLite:</b> Einfaches, schnelles Datenbankmanagement
@@ -46,16 +55,16 @@ const DataSafetyInformation: React.FC = () => {
           </li>
           <li>
             <br />
-            <strong>AI Modelle</strong>
+            <strong>KI-Modelle</strong>
             <ul>
               <li>
-                <b>Ollama Modelle:</b> Lokale KI-Modelle für fortschrittliche Textverarbeitung
+                <b>Ollama-Modelle:</b> Lokale KI-Modelle für fortschrittliche
+                Textverarbeitung
               </li>
             </ul>
           </li>
         </ul>
       </section>
-
     </div>
   );
 };
