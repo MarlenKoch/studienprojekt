@@ -271,7 +271,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
       }
       if (changed) await fetchAnswers(chatId);
       fetchChats();
-      if (!answersToSave) toast.warn("Chat und Antworten gespeichert!");
+      if (!answersToSave) toast.success("Chat und Antworten gespeichert!");
     }
     setIsNewChatActive(false);
   };
@@ -425,7 +425,11 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                       .filter(Boolean)
                       .join(" ")}
                   >
-                    <div className={chatStyles.chatTitle} title={chat.title}>
+                    <div
+                      className={chatStyles.chatTitle}
+                      title={chat.title}
+                      lang="de"
+                    >
                       {chat.title}
                     </div>
                     {currentMode === 0 && (
@@ -529,39 +533,25 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                                 📋
                               </button>
                             </Tooltip>
-                            {currentMode !== 3 && (
-                              <Tooltip text="Kommentieren">
-                                <button
-                                  className={chatStyles.copyBtn}
-                                  onClick={() => {
-                                    setOpenNoteAnswerIndex(i);
-                                    setNoteDraft(ans.userNote || "");
-                                    setUserNoteEnabledDraft(
-                                      ans.userNoteEnabled
-                                    );
-                                  }}
-                                >
-                                  💬
-                                </button>
-                              </Tooltip>
-                            )}
+
+                            <Tooltip text="Kommentieren">
+                              <button
+                                className={chatStyles.copyBtn}
+                                onClick={() => {
+                                  setOpenNoteAnswerIndex(i);
+                                  setNoteDraft(ans.userNote || "");
+                                  setUserNoteEnabledDraft(ans.userNoteEnabled);
+                                }}
+                              >
+                                💬
+                              </button>
+                            </Tooltip>
                           </div>
                         </div>
                         <div className={chatStyles.bubbleText}>
-                          <span
-                            style={{
-                              cursor: currentMode !== 3 ? "pointer" : "default",
-                            }}
-                            title={
-                              currentMode !== 3
-                                ? "Kommentar hinzufügen/bearbeiten"
-                                : ""
-                            }
-                          >
-                            <div className={chatStyles.markdown}>
-                              <ReactMarkdown>{ans.aiAnswer}</ReactMarkdown>
-                            </div>
-                          </span>
+                          <div className={chatStyles.markdown}>
+                            <ReactMarkdown>{ans.aiAnswer}</ReactMarkdown>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -701,14 +691,16 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                     </button>
                   </>
                 ) : (
-                  <Tooltip text="Chat speichern">
-                    <button
-                      className={chatStyles.btn}
-                      onClick={() => setIsEditingChatTitle(true)}
-                    >
-                      Chat speichern
-                    </button>
-                  </Tooltip>
+                  currentMode !== 3 && (
+                    <Tooltip text="Chat speichern">
+                      <button
+                        className={chatStyles.btn}
+                        onClick={() => setIsEditingChatTitle(true)}
+                      >
+                        Chat speichern
+                      </button>
+                    </Tooltip>
+                  )
                 )}
               </div>
               {/* Kommentar Popup */}
@@ -745,42 +737,62 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                       onChange={(e) => setNoteDraft(e.target.value)}
                       disabled={isSavingNote || currentMode === 3}
                     />
-                    <div style={{ margin: "10px 0" }}>
-                      <label className={chatStyles.label}>
-                        Kommentar aktivieren:
-                      </label>
-                      <InfoTip text="Ist ein Kommentar aktiviert, wird er dem KI-Modell bei der nächsten Anfrage als Kontext mitgegeben. Das Bedeutet, die KI kann alle Informationen und Hinweise aus dem Kommentar bei der nächsten Antwort beachten.">
-                        <Switch
-                          checked={userNoteEnabledDraft}
-                          onChange={setUserNoteEnabledDraft}
-                        />
-                      </InfoTip>
-                    </div>
-                    <div style={{ marginTop: 10 }}>
-                      <Tooltip text="Kommentar speichern">
-                        <button
-                          className={
-                            chatStyles.saveCommentBtn + " " + chatStyles.btn
-                          }
-                          onClick={handleSaveNote}
-                          disabled={isSavingNote}
-                        >
-                          Speichern
-                        </button>
-                      </Tooltip>
-                      <Tooltip text="Abbrechen">
-                        <button
-                          className={[chatStyles.btn, chatStyles.cancel].join(
-                            " "
-                          )}
-                          style={{ marginLeft: 10 }}
-                          onClick={() => setOpenNoteAnswerIndex(null)}
-                          disabled={isSavingNote}
-                        >
-                          Abbrechen
-                        </button>
-                      </Tooltip>
-                    </div>
+                    {currentMode !== 3 ? (
+                      <>
+                        <div style={{ margin: "10px 0" }}>
+                          <label className={chatStyles.label}>
+                            Kommentar aktivieren:
+                          </label>
+                          <InfoTip text="Ist ein Kommentar aktiviert, wird er dem KI-Modell bei der nächsten Anfrage als Kontext mitgegeben. Das Bedeutet, die KI kann alle Informationen und Hinweise aus dem Kommentar bei der nächsten Antwort beachten.">
+                            <Switch
+                              checked={userNoteEnabledDraft}
+                              onChange={setUserNoteEnabledDraft}
+                            />
+                          </InfoTip>
+                        </div>
+                        <div style={{ marginTop: 10 }}>
+                          <Tooltip text="Kommentar speichern">
+                            <button
+                              className={
+                                chatStyles.saveCommentBtn + " " + chatStyles.btn
+                              }
+                              onClick={handleSaveNote}
+                              disabled={isSavingNote}
+                            >
+                              Speichern
+                            </button>
+                          </Tooltip>
+                          <Tooltip text="Abbrechen">
+                            <button
+                              className={[
+                                chatStyles.btn,
+                                chatStyles.cancel,
+                              ].join(" ")}
+                              style={{ marginLeft: 10 }}
+                              onClick={() => setOpenNoteAnswerIndex(null)}
+                              disabled={isSavingNote}
+                            >
+                              Abbrechen
+                            </button>
+                          </Tooltip>
+                        </div>
+                      </>
+                    ) : (
+                      <div style={{ margin: "10px 0" }}>
+                        <Tooltip text="Schließen">
+                          <button
+                            className={[chatStyles.btn, chatStyles.cancel].join(
+                              " "
+                            )}
+                            style={{ marginLeft: 10 }}
+                            onClick={() => setOpenNoteAnswerIndex(null)}
+                            disabled={isSavingNote}
+                          >
+                            Schließen
+                          </button>
+                        </Tooltip>
+                      </div>
+                    )}
                   </div>
                 </>
               )}

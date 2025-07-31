@@ -398,15 +398,17 @@ const ProjectView: React.FC = () => {
                 )}
               </div>
             </div>
-            <button
-              className={styles.actionBtn}
-              onClick={() => {
-                setIsEditingTitle(true);
-                setEditableTitle(project?.title ?? "");
-              }}
-            >
-              Titel bearbeiten
-            </button>
+            {project?.mode !== 3 && (
+              <button
+                className={styles.actionBtn}
+                onClick={() => {
+                  setIsEditingTitle(true);
+                  setEditableTitle(project?.title ?? "");
+                }}
+              >
+                Titel bearbeiten
+              </button>
+            )}
           </>
         )}
         <div>
@@ -485,6 +487,7 @@ const ProjectView: React.FC = () => {
                         }}
                         readOnly={project?.mode === 3}
                         minRows={8}
+                        lang="de"
                       />
                       <div className={styles.paragraphActions}>
                         <Tooltip text="KI-Chat">
