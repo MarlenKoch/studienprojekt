@@ -384,18 +384,21 @@
 }
 
 .loadingOverlay {
-  position: fixed;           
-  top: 0; right: 0; bottom: 0; left: 0;
-  width: 100vw;              
-  height: 100vh;   
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background: rgba(96, 105, 111, 0.65);
-  z-index: 9999;             
+  z-index: 9999;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  pointer-events: all;       
-  border-radius: 0;          
+  pointer-events: all;
+  border-radius: 0;
 }
 
 .loader {
