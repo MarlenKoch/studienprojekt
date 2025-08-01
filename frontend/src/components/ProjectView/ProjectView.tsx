@@ -494,7 +494,6 @@ const ProjectView: React.FC = () => {
                           <button
                             className={styles.iconBtn}
                             onClick={() => setActiveParagraphId(paragraph.id)}
-                            title="AI Chat"
                           >
                             🚀
                           </button>
@@ -508,7 +507,6 @@ const ProjectView: React.FC = () => {
                                 paragraph.content || ""
                               );
                             }}
-                            title="Copy"
                           >
                             📋
                           </button>
