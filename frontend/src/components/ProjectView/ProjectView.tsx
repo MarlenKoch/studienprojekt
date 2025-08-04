@@ -18,6 +18,7 @@ import TextareaAutosize from "react-textarea-autosize";
 import Tooltip from "../Tooltip/Tooltip";
 
 import styles from "./ProjectView.module.css";
+import logo from "../../assets/logo.png";
 
 const ProjectView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -139,7 +140,7 @@ const ProjectView: React.FC = () => {
         generatePDF(
           JSON.stringify(response.data),
           `Promptverzeichnis ${project?.title ?? "Projekt"}`,
-          "/logo.png",
+          logo,
           true
         );
         toast.success("PDF heruntergeladen");
@@ -315,12 +316,7 @@ const ProjectView: React.FC = () => {
     const contentJson = JSON.stringify({ paragraphs: formattedParagraphs });
 
     // PDF generieren
-    await generatePDF(
-      contentJson,
-      project.title || "Projekt",
-      "/logo.png",
-      false
-    );
+    await generatePDF(contentJson, project.title || "Projekt", logo, false);
 
     toast.success("PDF wurde erstellt!");
   };

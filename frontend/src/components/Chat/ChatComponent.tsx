@@ -13,6 +13,7 @@ import chatStyles from "./Chat.module.css";
 import Tooltip from "../Tooltip/Tooltip";
 import InfoTip from "../InfoTip/InfoTip";
 import TextareaAutosize from "react-textarea-autosize";
+import logo from "../../assets/logo.png";
 
 interface ChatComponentProps {
   paragraphId: number | null;
@@ -579,7 +580,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                       >
                         <img
                           className={chatStyles.sendBtnImg}
-                          src="/logo.png"
+                          src={logo}
                           alt="🚀"
                         />
                       </button>

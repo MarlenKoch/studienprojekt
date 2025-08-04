@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 import styles from "./Header.module.css";
+import logo from "../../assets/logo.png";
 
 const Header: React.FC = () => {
   return (
     <div className={styles.header}>
       <Link to="/">
-        <img className={styles.logo} src="/logo.png" alt="KI-Logo" />
+        <img className={styles.logo} src={logo} alt="KI-Logo" />
       </Link>
       <div className={styles.header}>
         <Link to="/Informationen">
