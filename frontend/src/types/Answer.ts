@@ -1,11 +1,11 @@
 export interface Answer {
   id?: number;
-  task: number; // User-Eingabe
+  task: number;
   aiModel: string;
   userPrompt: string;
   timestamp: number;
-  aiAnswer: string; // AI-Antwort
-  userNote: string; // (optional)
+  aiAnswer: string;
+  userNote: string;
   userNoteEnabled: boolean;
   chat_id?: number;
   project_id?: number;

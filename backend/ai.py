@@ -108,7 +108,6 @@ async def pullModel(model_name: str = Body(..., embed=True)):
             return {"status": "success", "detail": f"Model '{model_name}' wird geladen..."}
     except httpx.HTTPStatusError as exc:
         raise HTTPException(status_code=exc.response.status_code, detail=f"{exc.response.text}")
-        # raise HTTPException(status_code=333, detail="Python ist blöd, der schuppen ist kaputt und ich will nach hause")
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
 
