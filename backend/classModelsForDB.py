@@ -3,7 +3,6 @@ from sqlalchemy.orm import relationship
 from db import Base
 
 
-# Klassendefinitionen:
 # Speichern von Projekten
 class Project(Base):
     __tablename__ = "projects"
@@ -16,7 +15,6 @@ class Project(Base):
     
     paragraphs = relationship("Paragraph", back_populates="project", cascade="all, delete-orphan")
     answers = relationship("Answer", back_populates="project", cascade="all, delete-orphan")
-
 
 
 # Speichern der einzelnen Paragraphen

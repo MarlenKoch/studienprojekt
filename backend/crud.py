@@ -12,7 +12,7 @@ from dbSchemas import (
 )
 
 
-# CRUD for Projects
+# CRUD für Projects
 def get_projects(db: Session):
     return db.query(Project).all()
 
@@ -33,7 +33,7 @@ def update_project(db: Session, projectId: int, projectData: ProjectUpdate):
     project = get_project(db, projectId)
     if not project:
         return None
-    updated_fields = projectData.dict(exclude_unset=True)  #bei patch für optionale Felder
+    updated_fields = projectData.dict(exclude_unset=True)  
     for key, value in updated_fields.items():
         setattr(project, key, value)
     db.commit()
@@ -50,7 +50,7 @@ def delete_project(db: Session, projectId: int):
     return None
 
 
-# CRUD for Paragraphs
+# CRUD für Paragraphs
 def get_paragraphs(db: Session):
     return db.query(Paragraph).all()
 
@@ -80,7 +80,7 @@ def update_paragraph(db: Session, paragraphId: int, updatedData: ParagraphUpdate
         print("Paragraph not found or no fields to update.")
     return None
 
-# damit es auch für den nicht-Schülermodus eine Lösung gibt, die dann die Answers zu dem Paragraph löscht
+# für den nicht-Schülermodus:
 def delete_paragraph(db: Session, paragraphId: int):
     paragraph = get_paragraph(db, paragraphId)
     if paragraph:
@@ -102,7 +102,7 @@ def delete_paragraph_and_answers(db: Session, paragraphId: int):
     return paragraph
 
 
-# CRUD for Chats
+# CRUD für Chats
 def get_chats(db: Session):
     return db.query(Chat).all()
 
@@ -180,7 +180,7 @@ def update_answer(db: Session, answer_id: int, answer_data: AnswerUpdate):
     return answer
 
 
-# Relationship specific queries
+# besondere Anfragen
 def get_chats_for_paragraph(db: Session, paragraphId: int):
     return db.query(Chat).filter(Chat.paragraphId == paragraphId).all()
 

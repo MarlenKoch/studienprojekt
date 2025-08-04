@@ -11,13 +11,12 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Liste der erlaubten Ursprünge
+    allow_origins=["http://localhost:5173"],  
     allow_credentials=True,
-    allow_methods=["*"],  # Erlaubte HTTP-Methoden (z.B., GET, POST, etc.)
-    allow_headers=["*"],  # Erlaubte Header
+    allow_methods=["*"],  
+    allow_headers=["*"],  
 )
 
 app.include_router(chats.router, prefix="/chats", tags=["chats"])
