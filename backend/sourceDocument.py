@@ -1,9 +1,8 @@
 from typing import List
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.orm import Session
-from crud import get_answer, get_answers_for_project
+from crud import get_answers_for_project
 from db import get_db
-from dbSchemas import AnswerResponse
 
 app = FastAPI()
 
@@ -28,6 +27,7 @@ def setTask(task):
     else:
         return ""
 
+# Abfrage aller nötigen Informationen zur Erstellung des KI-Nutzungsverzeichnisses
 @app.get("/promptverzeichnis")
 async def generateSourceDocument(projectId, db: Session = Depends(get_db)):
     answers = get_answers_for_project(db, projectId)

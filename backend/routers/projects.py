@@ -27,7 +27,7 @@ def create_project_endpoint(project: ProjectCreate, db: Session = Depends(get_db
     return create_project(db, project)
 
 
-# Endpoint zum Updaten eines Projektes nach ID
+# Endpoint zum Aktualisieren eines Projektes nach ID
 @router.put("/{projectId}", response_model=ProjectResponse)
 def update_project_endpoint(
     projectId: int, updated_data: ProjectUpdate, db: Session = Depends(get_db)

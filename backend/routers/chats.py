@@ -29,12 +29,12 @@ def get_chat_endpoint(chatId: int, db: Session = Depends(get_db)):
     return chat
 
 
-# Endpoint zum Updaten eines Chats
+# Endpoint zum Aktualisieren eines Chats
 @router.put("/{chatId}", response_model=ChatResponse)
 def update_chat_endpoint(
     chatId: int,
     chat_update: ChatCreate,
-    db: Session = Depends(get_db),  # hier ChatUpdate statt Create einfügen
+    db: Session = Depends(get_db),  
 ):
     updated_chat = update_chat(db, chatId, chat_update)
     if not updated_chat:

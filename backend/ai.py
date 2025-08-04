@@ -45,7 +45,7 @@ def switchPrompt(task, synonym):
     else:
         return ""
 
-
+# KI-Anfrage
 @app.post("/aiChat", response_model=AiResponse)
 async def aiChat(request: AiRequest):
     userInfo = assembleUserPrompt(request.userPrompt)
@@ -69,6 +69,7 @@ async def aiChat(request: AiRequest):
         )
 
 
+# Abrufen aller verfügbaren KI-Modelle
 @app.get("/aiModels")
 async def getModels():
     try:
@@ -85,6 +86,8 @@ async def getModels():
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
 
+
+# neue KI-Modelle runterladen
 @app.post("/pullAiModel")
 async def pullModel(model_name: str = Body(..., embed=True)):
     try:
@@ -113,7 +116,7 @@ async def pullModel(model_name: str = Body(..., embed=True)):
 
     
     
-
+# Prüfen ob empfohlene Modelle vorhanden sind, diese installieren
 REQUIRED_MODELS = ["gemma3:12b", "jobautomation/OpenEuroLLM-German:latest", "mayflowergmbh/wiederchat:latest" ]
 
 @app.get("/requiredAiModels")
@@ -131,10 +134,8 @@ async def checkModels():
         except Exception as exc:
             raise HTTPException(status_code=500, detail=str(exc))
 
-        # vorhandene Modelle
         available = [m["name"] for m in data.get("models", [])]
 
-        # fehlende Modelle
         missing = [m for m in REQUIRED_MODELS if m not in available]
 
         results = {"available": available}

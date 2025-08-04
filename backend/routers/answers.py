@@ -35,7 +35,7 @@ def get_answer_endpoint(answer_id: int, db: Session = Depends(get_db)):
     return answer
 
 
-# Endpoint zum Updaten einer Answer
+# Endpoint zum Aktualisieren einer Answer
 @router.put("/{answer_id}", response_model=AnswerResponse)
 def update_answer_endpoint(
     answer_id: int, answer_update: AnswerUpdate, db: Session = Depends(get_db)

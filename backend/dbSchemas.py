@@ -3,8 +3,6 @@ from typing import Optional
 
 
 # Definitionen der Pydantic Modelle
-# kontrolliert, ob die alle Werte die required sind gesetzt werden und den richtigen Typ haben
-
 
 # Project
 class ProjectCreate(BaseModel):
