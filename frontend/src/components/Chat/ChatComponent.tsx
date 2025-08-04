@@ -80,8 +80,6 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
     }
   };
 
-  // ========== Lifecycle Effekt: Paragraph wechseln oder Modus switchen ==========
-
   useEffect(() => {
     fetchChats();
     setAnswers([]);

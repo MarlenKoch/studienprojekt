@@ -76,7 +76,7 @@ export const generatePDF = async (
   const topElementBottom = Math.max(titleY + titleHeight, logoHeight);
   const contentStartY = topElementBottom + 60;
 
-  // ==== PARSING (typisiert) ====
+  // ==== PARSING ====
   let parsed: ContentJsonType = {};
   try {
     parsed = contentJson ? JSON.parse(contentJson) : {};
@@ -118,8 +118,6 @@ export const generatePDF = async (
             const pageWidth = doc.internal.pageSize.getWidth();
             const margin = 40;
             const titleMaxWidth = pageWidth - 2 * margin;
-
-            // Hier den Titel genau passend kürzen:
             const truncatedTitle = truncateTextToWidth(
               doc,
               pdfTitle,

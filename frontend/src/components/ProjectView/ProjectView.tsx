@@ -46,7 +46,7 @@ const ProjectView: React.FC = () => {
     currentMode,
   } = useProjectTimer();
 
-  // Fetches project and paragraph data
+  // Projekt und Paragraphen laden
   useEffect(() => {
     const fetchProject = async () => {
       try {
@@ -153,7 +153,7 @@ const ProjectView: React.FC = () => {
     }
   };
 
-  // Fetches the available AI model names
+  // AI Modelle laden
   useEffect(() => {
     const fetchOllamaModelNames = async () => {
       try {
@@ -184,7 +184,6 @@ const ProjectView: React.FC = () => {
     }
   }, [project?.title]);
 
-  // Handles adding a new paragraph
   const handleAddParagraph = async () => {
     if (!id) {
       console.error("ID des Projektes ist nicht definiert");
@@ -211,7 +210,6 @@ const ProjectView: React.FC = () => {
     }
   };
 
-  // Updates content locally
   const handleParagraphChange = (paragraphId: number, newContent: string) => {
     setParagraphs(
       paragraphs.map((paragraph) =>
@@ -222,7 +220,6 @@ const ProjectView: React.FC = () => {
     );
   };
 
-  // Save paragraph
   const handleSaveParagraph = async (paragraphId: number) => {
     const paragraph = paragraphs.find((p) => p.id === paragraphId);
     if (!paragraph) return;
@@ -247,7 +244,6 @@ const ProjectView: React.FC = () => {
           `http://localhost:8000/paragraphs/with_answers/${paragraphId}`
         );
       }
-      //Aus localem State entfernen
       setParagraphs(paragraphs.filter((p) => p.id !== paragraphId));
       if (activeParagraphId === paragraphId) setActiveParagraphId(null);
 
@@ -265,7 +261,6 @@ const ProjectView: React.FC = () => {
     }
 
     try {
-      //Projekt löschen
       await axios.delete(`http://localhost:8000/projects/${project.id}`);
 
       toast.success("Projekt und alle Paragraphen gelöscht!");
@@ -281,7 +276,6 @@ const ProjectView: React.FC = () => {
     setIsChangingMode(true);
   };
 
-  // Update mode
   const updateProjectMode = async (newMode: number) => {
     if (!project) {
       toast.warn("Kein Projekt geladen");
@@ -306,18 +300,12 @@ const ProjectView: React.FC = () => {
       toast.error("Keine Paragraphen im Projekt");
       return;
     }
-
-    // Paragraphs korrekt vorbereiten
     const formattedParagraphs: ParagraphString[] = paragraphs.map((para) => ({
       content: para.content,
     }));
 
-    // ContentJson korrekt strukturieren
     const contentJson = JSON.stringify({ paragraphs: formattedParagraphs });
-
-    // PDF generieren
     await generatePDF(contentJson, project.title || "Projekt", logo, false);
-
     toast.success("PDF wurde erstellt!");
   };
 
