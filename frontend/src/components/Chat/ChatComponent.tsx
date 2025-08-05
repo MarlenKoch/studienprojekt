@@ -657,7 +657,9 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
                   <>
                     <Tooltip text="Chat-Titel bearbeiten">
                       <input
-                        className={chatStyles.field}
+                        className={
+                          chatStyles.field + " " + chatStyles.fieldSmall
+                        }
                         type="text"
                         value={chatTitle}
                         onChange={(e) => setChatTitle(e.target.value)}
